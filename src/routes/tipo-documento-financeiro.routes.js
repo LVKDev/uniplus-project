@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 
-const tipoDocumentoService = require('../services/tipo-documento-financeiro.service');
+const tipoDocumentoService = require("../services/tipo-documento-financeiro.service");
 
 const router = express.Router();
 
@@ -27,10 +27,20 @@ const router = express.Router();
  *       200:
  *         description: Lista de tipos de documentos financeiros
  */
-router.get('/api/tipos-documentos-financeiros', async (req, res, next) => {
+router.get("/api/tipos-documentos-financeiros", async (req, res, next) => {
   try {
     const options = { params: req.query };
-    const data = await tipoDocumentoService.listarTiposDocumentoFinanceiro(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await tipoDocumentoService.listarTiposDocumentoFinanceiro(
+      options,
+      context,
+    );
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -54,18 +64,34 @@ router.get('/api/tipos-documentos-financeiros', async (req, res, next) => {
  *       200:
  *         description: Tipo de documento encontrado
  */
-router.get('/api/tipos-documentos-financeiros/:codigo', async (req, res, next) => {
-  try {
-    const { codigo } = req.params;
-    if (!codigo) {
-      return res.status(400).json({ success: false, error: 'Codigo obrigatorio.' });
-    }
+router.get(
+  "/api/tipos-documentos-financeiros/:codigo",
+  async (req, res, next) => {
+    try {
+      const { codigo } = req.params;
+      if (!codigo) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Codigo obrigatorio." });
+      }
 
-    const data = await tipoDocumentoService.obterTipoDocumentoFinanceiroPorCodigo(codigo);
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
+      const context = {
+        rota: req.path,
+        metodo: req.method,
+        userId: req.user?.id,
+        userRole: req.user?.role,
+        tenantId: req.user?.tenantId,
+      };
+      const data =
+        await tipoDocumentoService.obterTipoDocumentoFinanceiroPorCodigo(
+          codigo,
+          context,
+        );
+      return res.json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 module.exports = router;

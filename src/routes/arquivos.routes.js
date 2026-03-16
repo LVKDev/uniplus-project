@@ -32,7 +32,14 @@ router.get("/api/arquivos", async (req, res, next) => {
     }
 
     const options = { params: req.query };
-    const data = await arquivosService.listarArquivos(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await arquivosService.listarArquivos(options, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);

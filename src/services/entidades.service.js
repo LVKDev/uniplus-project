@@ -1,10 +1,20 @@
-const auditService = require('./audit.service');
-const uniplusService = require('./uniplus.service');
+const auditService = require("./audit.service");
+const uniplusService = require("./uniplus.service");
+const { validarAcessoMultiTenant } = require("./multitenant.service");
 
-const AUDIT_TABLE = 'entidades_log';
-const RESOURCE = 'entidades';
+const AUDIT_TABLE = "entidades_log";
+const RESOURCE = "entidades";
 
-async function registrarAuditoria({ codigo, payload, operacao, status, rota, metodo }) {
+async function registrarAuditoria({
+  codigo,
+  payload,
+  operacao,
+  status,
+  rota,
+  metodo,
+  userId = null,
+  tenantId = null,
+}) {
   await auditService.registrarAuditoria({
     table: AUDIT_TABLE,
     recurso: RESOURCE,
@@ -14,17 +24,34 @@ async function registrarAuditoria({ codigo, payload, operacao, status, rota, met
     payload,
     operacao,
     status,
+    userId,
+    tenantId,
   });
 }
 
 async function listarEntidades(options = {}, context = {}) {
   try {
+    const { userId, userRole, tenantId } = context;
+    if (userId && userRole) {
+      const { canAccess, reason } = await validarAcessoMultiTenant(
+        userId,
+        userRole,
+        tenantId,
+      );
+      if (!canAccess) {
+        const err = new Error(`Acesso negado: ${reason}`);
+        err.status = 403;
+        throw err;
+      }
+    }
     const data = await uniplusService.listarEntidades(options);
     await registrarAuditoria({
       codigo: null,
       payload: options?.params || options,
-      operacao: 'LISTAR',
-      status: 'SUCESSO',
+      operacao: "LISTAR",
+      status: "SUCESSO",
+      userId,
+      tenantId,
       ...context,
     });
     return data;
@@ -33,8 +60,10 @@ async function listarEntidades(options = {}, context = {}) {
       await registrarAuditoria({
         codigo: null,
         payload: options?.params || options,
-        operacao: 'LISTAR',
-        status: 'FALHA',
+        operacao: "LISTAR",
+        status: "FALHA",
+        userId: context?.userId,
+        tenantId: context?.tenantId,
         ...context,
       });
     } catch (auditError) {
@@ -46,12 +75,27 @@ async function listarEntidades(options = {}, context = {}) {
 
 async function obterEntidadePorCodigo(codigo, context = {}) {
   try {
+    const { userId, userRole, tenantId } = context;
+    if (userId && userRole) {
+      const { canAccess, reason } = await validarAcessoMultiTenant(
+        userId,
+        userRole,
+        tenantId,
+      );
+      if (!canAccess) {
+        const err = new Error(`Acesso negado: ${reason}`);
+        err.status = 403;
+        throw err;
+      }
+    }
     const data = await uniplusService.obterEntidadePorCodigo(codigo);
     await registrarAuditoria({
       codigo,
       payload: { codigo },
-      operacao: 'CONSULTAR',
-      status: 'SUCESSO',
+      operacao: "CONSULTAR",
+      status: "SUCESSO",
+      userId,
+      tenantId,
       ...context,
     });
     return data;
@@ -60,8 +104,10 @@ async function obterEntidadePorCodigo(codigo, context = {}) {
       await registrarAuditoria({
         codigo,
         payload: { codigo },
-        operacao: 'CONSULTAR',
-        status: 'FALHA',
+        operacao: "CONSULTAR",
+        status: "FALHA",
+        userId: context?.userId,
+        tenantId: context?.tenantId,
         ...context,
       });
     } catch (auditError) {
@@ -73,14 +119,36 @@ async function obterEntidadePorCodigo(codigo, context = {}) {
 
 async function criarEntidade(dados, context = {}) {
   try {
+    const { userId, userRole, tenantId } = context;
+    if (userId && userRole) {
+      if (!["admin", "superadmin"].includes(userRole)) {
+        const err = new Error(
+          "Apenas Admin e SuperAdmin podem criar entidades",
+        );
+        err.status = 403;
+        throw err;
+      }
+      const { canAccess, reason } = await validarAcessoMultiTenant(
+        userId,
+        userRole,
+        tenantId,
+      );
+      if (!canAccess) {
+        const err = new Error(`Acesso negado: ${reason}`);
+        err.status = 403;
+        throw err;
+      }
+    }
     const resposta = await uniplusService.criarEntidade(dados);
     const codigo = resposta?.codigo || dados?.codigo || null;
 
     await registrarAuditoria({
       codigo,
       payload: dados,
-      operacao: 'CRIAR',
-      status: 'SUCESSO',
+      operacao: "CRIAR",
+      status: "SUCESSO",
+      userId,
+      tenantId,
       ...context,
     });
 
@@ -90,8 +158,10 @@ async function criarEntidade(dados, context = {}) {
       await registrarAuditoria({
         codigo: dados?.codigo || null,
         payload: dados,
-        operacao: 'CRIAR',
-        status: 'FALHA',
+        operacao: "CRIAR",
+        status: "FALHA",
+        userId: context?.userId,
+        tenantId: context?.tenantId,
         ...context,
       });
     } catch (auditError) {
@@ -103,14 +173,36 @@ async function criarEntidade(dados, context = {}) {
 
 async function atualizarEntidade(dados, context = {}) {
   try {
+    const { userId, userRole, tenantId } = context;
+    if (userId && userRole) {
+      if (!["admin", "superadmin"].includes(userRole)) {
+        const err = new Error(
+          "Apenas Admin e SuperAdmin podem atualizar entidades",
+        );
+        err.status = 403;
+        throw err;
+      }
+      const { canAccess, reason } = await validarAcessoMultiTenant(
+        userId,
+        userRole,
+        tenantId,
+      );
+      if (!canAccess) {
+        const err = new Error(`Acesso negado: ${reason}`);
+        err.status = 403;
+        throw err;
+      }
+    }
     const resposta = await uniplusService.atualizarEntidade(dados);
     const codigo = resposta?.codigo || dados?.codigo || null;
 
     await registrarAuditoria({
       codigo,
       payload: dados,
-      operacao: 'ATUALIZAR',
-      status: 'SUCESSO',
+      operacao: "ATUALIZAR",
+      status: "SUCESSO",
+      userId,
+      tenantId,
       ...context,
     });
 
@@ -120,8 +212,10 @@ async function atualizarEntidade(dados, context = {}) {
       await registrarAuditoria({
         codigo: dados?.codigo || null,
         payload: dados,
-        operacao: 'ATUALIZAR',
-        status: 'FALHA',
+        operacao: "ATUALIZAR",
+        status: "FALHA",
+        userId: context?.userId,
+        tenantId: context?.tenantId,
         ...context,
       });
     } catch (auditError) {
@@ -138,8 +232,8 @@ async function apagarEntidade(codigo, context = {}) {
     await registrarAuditoria({
       codigo,
       payload: { codigo },
-      operacao: 'APAGAR',
-      status: 'SUCESSO',
+      operacao: "APAGAR",
+      status: "SUCESSO",
       ...context,
     });
 
@@ -149,8 +243,8 @@ async function apagarEntidade(codigo, context = {}) {
       await registrarAuditoria({
         codigo,
         payload: { codigo },
-        operacao: 'APAGAR',
-        status: 'FALHA',
+        operacao: "APAGAR",
+        status: "FALHA",
         ...context,
       });
     } catch (auditError) {

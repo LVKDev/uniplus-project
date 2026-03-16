@@ -1,11 +1,13 @@
-const express = require('express');
+const express = require("express");
 
-const vendasService = require('../services/vendas.service');
+const vendasService = require("../services/vendas.service");
 
 const router = express.Router();
 
 function hasDataFilter(params) {
-  return Object.keys(params).some((key) => key === 'data' || key.startsWith('data.'));
+  return Object.keys(params).some(
+    (key) => key === "data" || key.startsWith("data."),
+  );
 }
 
 /**
@@ -37,10 +39,17 @@ function hasDataFilter(params) {
  *       200:
  *         description: Lista de vendas
  */
-router.get('/api/vendas', async (req, res, next) => {
+router.get("/api/vendas", async (req, res, next) => {
   try {
     const options = { params: req.query };
-    const data = await vendasService.listarVendas(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await vendasService.listarVendas(options, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -70,10 +79,17 @@ router.get('/api/vendas', async (req, res, next) => {
  *       200:
  *         description: Lista de itens de vendas
  */
-router.get('/api/vendas/itens', async (req, res, next) => {
+router.get("/api/vendas/itens", async (req, res, next) => {
   try {
     const options = { params: req.query };
-    const data = await vendasService.listarVendasItens(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await vendasService.listarVendasItens(options, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -97,17 +113,27 @@ router.get('/api/vendas/itens', async (req, res, next) => {
  *       200:
  *         description: Lista de movimentacoes
  */
-router.get('/api/estoque/movimentacoes', async (req, res, next) => {
+router.get("/api/estoque/movimentacoes", async (req, res, next) => {
   try {
     if (!hasDataFilter(req.query)) {
       return res.status(400).json({
         success: false,
-        error: 'O parametro data (ou data.ge/data.le) e obrigatorio.',
+        error: "O parametro data (ou data.ge/data.le) e obrigatorio.",
       });
     }
 
     const options = { params: req.query };
-    const data = await vendasService.listarMovimentacaoEstoque(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await vendasService.listarMovimentacaoEstoque(
+      options,
+      context,
+    );
     return res.json({ success: true, data });
   } catch (error) {
     next(error);

@@ -1,86 +1,131 @@
-const express = require('express');
-const pedidosRoutes = require('./routes/pedidos.routes');
-const entidadesRoutes = require('./routes/entidades.routes');
-const produtosRoutes = require('./routes/produtos.routes');
-const ordensServicoRoutes = require('./routes/ordens-servico.routes');
-const vendasRoutes = require('./routes/vendas.routes');
-const arquivosRoutes = require('./routes/arquivos.routes');
-const tipoDocumentoRoutes = require('./routes/tipo-documento-financeiro.routes');
-const gourmetRoutes = require('./routes/gourmet.routes');
-const portalRoutes = require('./routes/portal-comercial.routes');
-const healthRoutes = require('./routes/health.routes');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./docs/swagger');
+require("dotenv").config();
 
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const {
+  authenticate,
+  auditLog,
+  errorHandler,
+} = require("./middleware/auth.middleware");
+const {
+  globalTenantValidation,
+} = require("./middleware/tenantValidator.middleware");
+const {
+  corsMiddleware,
+  corsErrorHandler,
+} = require("./middleware/cors.middleware");
+const {
+  loginLimiter,
+  apiLimiter,
+  writeLimiter,
+} = require("./middleware/rateLimiting.middleware");
+
+// Importar rotas
+const authRoutes = require("./routes/auth.routes");
+const unidadesRoutes = require("./routes/unidades.routes");
+const usuariosRoutes = require("./routes/usuarios.routes");
+const produtosRoutes = require("./routes/produtos.routes");
+const clientesRoutes = require("./routes/clientes.routes");
+const dadosConfigRoutes = require("./routes/dados-config.routes");
+const auditoriaRoutes = require("./routes/auditoria.routes");
+
+// Inicializar Express
 const app = express();
 
-const basicAuthUser = process.env.BASIC_AUTH_USER;
-const basicAuthPass = process.env.BASIC_AUTH_PASS;
+// ============================================
+// MIDDLEWARES GLOBAIS
+// ============================================
 
-// Parse JSON bodies.
+// Segurança: Headers de proteção (HSTS, CSP, X-Frame-Options, etc)
+app.use(helmet());
+
+// CORS: Restrição a domínios autorizados
+app.use(corsMiddleware);
+app.use(corsErrorHandler);
+
+// Parse JSON e cookies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-// Optional Basic Auth protection for all routes.
-app.use((req, res, next) => {
-  if (!basicAuthUser || !basicAuthPass) {
-    return next();
-  }
+// Rate limiting geral (100 req/min por IP)
+app.use(apiLimiter);
 
-  const authHeader = req.headers.authorization || '';
-  const [scheme, token] = authHeader.split(' ');
-  if (scheme !== 'Basic' || !token) {
-    res.set('WWW-Authenticate', 'Basic realm="UniPlus API"');
-    return res.status(401).json({ success: false, error: 'Autenticacao requerida.' });
-  }
+// Logs de auditoria
+app.use(auditLog);
 
-  const decoded = Buffer.from(token, 'base64').toString('utf8');
-  const separatorIndex = decoded.indexOf(':');
-  if (separatorIndex === -1) {
-    res.set('WWW-Authenticate', 'Basic realm="UniPlus API"');
-    return res.status(401).json({ success: false, error: 'Autenticacao invalida.' });
-  }
+// Servir arquivos estáticos (public)
+app.use(express.static("public"));
 
-  const user = decoded.slice(0, separatorIndex);
-  const pass = decoded.slice(separatorIndex + 1);
-  if (user !== basicAuthUser || pass !== basicAuthPass) {
-    res.set('WWW-Authenticate', 'Basic realm="UniPlus API"');
-    return res.status(401).json({ success: false, error: 'Credenciais invalidas.' });
-  }
+// ============================================
+// ROTAS PÚBLICAS (sem autenticação)
+// ============================================
 
-  return next();
+// Health check
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// API routes.
-app.use(healthRoutes);
-app.use(pedidosRoutes);
-app.use(entidadesRoutes);
-app.use(produtosRoutes);
-app.use(ordensServicoRoutes);
-app.use(vendasRoutes);
-app.use(arquivosRoutes);
-app.use(tipoDocumentoRoutes);
-app.use(gourmetRoutes);
-app.use(portalRoutes);
+// Auth routes (login, logout) com rate limiting específico para login
+app.use("/auth/login", loginLimiter);
+app.use("/auth", authRoutes);
 
-// Swagger docs.
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/openapi.json', (req, res) => {
-  res.json(swaggerSpec);
-});
+// ============================================
+// MIDDLEWARES PROTEGIDOS (requer autenticação)
+// ============================================
 
-// 404 handler for unknown routes.
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: 'Rota nao encontrada.' });
-});
+// Autenticação mandatória para rotas abaixo
+app.use(authenticate);
 
-// Global error handler.
-app.use((err, req, res, next) => {
-  const status = err.status || 500;
-  res.status(status).json({
-    success: false,
-    error: err.message || 'Erro interno.',
-    details: err.details || err.auditError || null,
+// Validação de tenant global (adiciona unit_id ao req)
+app.use(globalTenantValidation);
+
+// ============================================
+// ROTAS PROTEGIDAS (rerem JWT válido)
+// ============================================
+
+// Rotas de Unidades (Super Admin)
+app.use("/api/unidades", unidadesRoutes);
+
+// Rotas de Usuários (Admin de Unidade)
+app.use("/api/usuarios", usuariosRoutes);
+
+// Rotas de Produtos (SPRINT 4)
+app.use("/api/produtos", produtosRoutes);
+
+// Rotas de Clientes (SPRINT 4)
+app.use("/api/clientes", clientesRoutes);
+
+// Rotas de Dados de Configuração (SPRINT 4)
+app.use("/api", dadosConfigRoutes);
+
+// Rotas de Auditoria (SPRINT 5 - Listar logs de auditoria)
+app.use("/api/auditoria", auditoriaRoutes);
+
+// Aqui virão as rotas de usuários, dados, etc
+app.get("/api/protected", (req, res) => {
+  res.json({
+    message: "Rota protegida acessada com sucesso",
+    user: req.user,
   });
 });
+
+// ============================================
+// TRATAMENTO DE ERROS
+// ============================================
+
+// 404 - Rota não encontrada
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "Rota não encontrada",
+    path: req.path,
+    method: req.method,
+  });
+});
+
+// Error handler (deve ser o último)
+app.use(errorHandler);
 
 module.exports = app;

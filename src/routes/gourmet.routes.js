@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 
-const gourmetService = require('../services/gourmet.service');
+const gourmetService = require("../services/gourmet.service");
 
 const router = express.Router();
 
@@ -21,10 +21,17 @@ const router = express.Router();
  *       200:
  *         description: Lista de contas Gourmet
  */
-router.get('/api/gourmet/contas', async (req, res, next) => {
+router.get("/api/gourmet/contas", async (req, res, next) => {
   try {
     const options = { params: req.query };
-    const data = await gourmetService.listarContas(options);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await gourmetService.listarContas(options, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -61,14 +68,23 @@ router.get('/api/gourmet/contas', async (req, res, next) => {
  *       200:
  *         description: Conta Gourmet criada
  */
-router.post('/api/gourmet/contas', async (req, res, next) => {
+router.post("/api/gourmet/contas", async (req, res, next) => {
   try {
     const payload = req.body;
     if (!payload) {
-      return res.status(400).json({ success: false, error: 'Payload obrigatorio.' });
+      return res
+        .status(400)
+        .json({ success: false, error: "Payload obrigatorio." });
     }
 
-    const data = await gourmetService.criarConta(payload);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await gourmetService.criarConta(payload, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);

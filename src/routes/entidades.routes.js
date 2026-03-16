@@ -79,7 +79,13 @@ router.get("/api/entidades", async (req, res, next) => {
   try {
     const { single, all, vendedores, ...raw } = req.query;
     const options = { params: raw };
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (options.params.limit !== undefined) {
       options.params.limit = Number(options.params.limit);
@@ -158,7 +164,13 @@ router.get("/api/entidades", async (req, res, next) => {
 router.get("/api/entidades/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
       return res
         .status(400)
@@ -224,7 +236,13 @@ router.get("/api/entidades/:codigo", async (req, res, next) => {
 router.post("/api/entidades", async (req, res, next) => {
   try {
     const payload = req.body?.entidade ? req.body.entidade : req.body;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (!payload || typeof payload !== "object") {
       return res
@@ -341,7 +359,13 @@ router.post("/api/entidades", async (req, res, next) => {
 router.put("/api/entidades", async (req, res, next) => {
   try {
     const payload = req.body?.entidade ? req.body.entidade : req.body;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (!payload || typeof payload !== "object") {
       return res
@@ -442,7 +466,13 @@ router.put("/api/entidades", async (req, res, next) => {
 router.delete("/api/entidades/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
       return res
         .status(400)

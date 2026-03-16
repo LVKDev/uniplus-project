@@ -1,245 +1,163 @@
-const express = require("express");
+/**
+ * Rotas de Produtos - SPRINT 4
+ * Apenas usuários com permissão ver_produtos podem listar
+ * Apenas usuários com permissão editar_produtos podem fazer PATCH
+ */
 
-const produtosService = require("../services/produtos.service");
-const { DEFAULT_LIMIT } = require("../config/constants");
+const express = require("express");
+const { authenticate } = require("../middleware/auth.middleware");
+const { PERMISSOES } = require("../config/constants");
+const { requirePermission } = require("../lib/rbac");
+const {
+  listarProdutos,
+  obterProduto,
+  atualizarProduto,
+} = require("../services/produtos.service");
 
 const router = express.Router();
 
 /**
- * @openapi
- * /api/produtos:
- *   get:
- *     summary: Lista produtos
- *     tags: [Produtos]
- *     parameters:
- *       - in: query
- *         name: codigo
- *         schema:
- *           type: string
- *         description: Filtra por codigo
- *         example: "15"
- *       - in: query
- *         name: nome
- *         schema:
- *           type: string
- *         description: Filtra por nome (prefixo)
- *         example: "AGUA"
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         description: Limite de registros
- *         example: 100
- *       - in: query
- *         name: offset
- *         schema:
- *           type: integer
- *         description: Offset de pagina
- *         example: 0
- *       - in: query
- *         name: single
- *         schema:
- *           type: boolean
- *         description: Retorna apenas um registro
- *         example: false
- *       - in: query
- *         name: all
- *         schema:
- *           type: boolean
- *         description: Retorna todos os registros ignorando paginacao
- *         example: true
- *     responses:
- *       200:
- *         description: Lista de produtos
- *         content:
- *           application/json:
- *             examples:
- *               sucesso:
- *                 value:
- *                   success: true
- *                   data:
- *                     - codigo: "15"
- *                       nome: "AGUA SANITARIA OLIMPO 2X5L"
- *                       unidadeMedida: "UN"
- *                       preco: 12.73
+ * GET /api/produtos
+ * Lista produtos da unidade
+ * Protected: Requer permissão ver_produtos
  */
+router.get(
+  "/",
+  authenticate,
+  requirePermission(PERMISSOES.ver_produtos),
+  async (req, res) => {
+    try {
+      const { codigo, nome, limit, offset } = req.query;
+      const { id: userId, unit_id: unitId, role: userRole } = req.user;
 
-router.get("/api/produtos", async (req, res, next) => {
-  try {
-    const { single, all, ...raw } = req.query;
-    const options = { params: raw };
-    const context = { rota: req.path, metodo: req.method };
+      if (!unitId) {
+        return res.status(400).json({
+          success: false,
+          error: "Unit ID não informado",
+        });
+      }
 
-    if (options.params.limit !== undefined) {
-      options.params.limit = Number(options.params.limit);
-    }
-    if (options.params.offset !== undefined) {
-      options.params.offset = Number(options.params.offset);
-    }
-    const limitValue = options.params.limit;
-    const offsetValue = options.params.offset;
+      const filtros = {};
+      if (codigo) filtros.codigo = codigo;
+      if (nome) filtros.nome = nome;
+      if (limit) filtros.limit = parseInt(limit) || 25;
+      if (offset) filtros.offset = parseInt(offset) || 0;
 
-    if (all !== undefined) {
-      options.all = all === "true";
-    } else if (single === "true") {
-      options.all = false;
-    } else if (offsetValue !== undefined) {
-      options.all = false;
-    } else if (limitValue !== undefined) {
-      options.all = Number(limitValue) === DEFAULT_LIMIT;
-    } else {
-      options.all = true;
-    }
+      const resultado = await listarProdutos(filtros, {
+        userId,
+        unitId,
+        userRole,
+      });
 
-    const data = await produtosService.listarProdutos(options, context);
-
-    if (single === "true") {
-      const primeiro = Array.isArray(data) ? data[0] || null : data || null;
-      return res.json({ success: true, data: primeiro });
-    }
-
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * @openapi
- * /api/produtos/{codigo}:
- *   get:
- *     summary: Busca produto por codigo
- *     tags: [Produtos]
- *     parameters:
- *       - in: path
- *         name: codigo
- *         required: true
- *         schema:
- *           type: string
- *         example: "15"
- *     responses:
- *       200:
- *         description: Produto encontrado
- */
-router.get("/api/produtos/:codigo", async (req, res, next) => {
-  try {
-    const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
-    if (!codigo) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Codigo obrigatorio." });
-    }
-
-    const data = await produtosService.obterProdutoPorCodigo(codigo, context);
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * @openapi
- * /api/produtos:
- *   post:
- *     summary: Cria um produto
- *     tags: [Produtos]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ProdutoWrapper'
- *           examples:
- *             basico:
- *               value:
- *                 produto:
- *                   codigo: "9001"
- *                   nome: "Produto Exemplo"
- *                   unidadeMedida: "UN"
- *                   preco: 9.99
- *     responses:
- *       201:
- *         description: Produto criado
- *         content:
- *           application/json:
- *             examples:
- *               sucesso:
- *                 value:
- *                   success: true
- */
-router.post("/api/produtos", async (req, res, next) => {
-  try {
-    const payload = req.body?.produto ? req.body.produto : req.body;
-    const context = { rota: req.path, metodo: req.method };
-
-    if (!payload || typeof payload !== "object") {
-      return res
-        .status(400)
-        .json({ success: false, error: "Payload invalido." });
-    }
-
-    if (
-      !payload.nome ||
-      !payload.unidadeMedida ||
-      payload.preco === undefined
-    ) {
-      return res.status(400).json({
+      res.status(200).json({
+        success: true,
+        data: resultado.items,
+        pagination: resultado.pagination,
+      });
+    } catch (error) {
+      console.error("Erro ao listar produtos:", error.message);
+      res.status(error.status || 500).json({
         success: false,
-        error: "Campos obrigatorios: nome, unidadeMedida, preco.",
+        error: error.message || "Erro ao listar produtos",
       });
     }
-
-    if (!Number.isFinite(Number(payload.preco))) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Campo "preco" invalido.' });
-    }
-
-    const data = await produtosService.criarProduto(
-      req.body?.produto ? req.body : { produto: payload },
-      context,
-    );
-    return res.status(201).json({ success: true, data });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 /**
- * @openapi
- * /api/produtos:
- *   put:
- *     summary: Atualiza um produto
- *     tags: [Produtos]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ProdutoWrapper'
- *           examples:
- *             atualizacao:
- *               value:
- *                 produto:
- *                   codigo: "15"
- *                   nome: "Produto Atualizado"
- *                   unidadeMedida: "UN"
- *                   preco: 12.73
- *     responses:
- *       200:
- *         description: Produto atualizado
- *         content:
- *           application/json:
- *             examples:
- *               sucesso:
+ * GET /api/produtos/:codigoProduto
+ * Busca um produto específico
+ * Protected: Requer permissão ver_produtos
+ */
+router.get(
+  "/:codigoProduto",
+  authenticate,
+  requirePermission(PERMISSOES.ver_produtos),
+  async (req, res) => {
+    try {
+      const { codigoProduto } = req.params;
+      const { id: userId, unit_id: unitId, role: userRole } = req.user;
+
+      const produto = await obterProduto(codigoProduto, {
+        userId,
+        unitId,
+        userRole,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: produto,
+      });
+    } catch (error) {
+      console.error(`Erro ao obter produto ${req.params.codigoProduto}:`, error.message);
+      res.status(error.status || 500).json({
+        success: false,
+        error: error.message || "Erro ao obter produto",
+      });
+    }
+  }
+);
+
+/**
+ * PATCH /api/produtos/:codigoProduto
+ * Edita um produto (preço, nome, descrição)
+ * Protected: Requer permissão editar_produtos
+ */
+router.patch(
+  "/:codigoProduto",
+  authenticate,
+  requirePermission(PERMISSOES.editar_produtos),
+  async (req, res) => {
+    try {
+      const { codigoProduto } = req.params;
+      const { id: userId, unit_id: unitId, role: userRole } = req.user;
+      const dados = req.body;
+
+      if (!dados || Object.keys(dados).length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: "Nenhum dado para atualizar",
+        });
+      }
+
+      const resultado = await atualizarProduto(codigoProduto, dados, {
+        userId,
+        unitId,
+        userRole,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: resultado,
+        message: `Produto ${codigoProduto} atualizado com sucesso`,
+      });
+    } catch (error) {
+      console.error(
+        `Erro ao atualizar produto ${req.params.codigoProduto}:`,
+        error.message,
+      );
+      res.status(error.status || 500).json({
+        success: false,
+        error: error.message || "Erro ao atualizar produto",
+      });
+    }
+  }
+);
+
+module.exports = router;
  *                 value:
  *                   success: true
  */
 router.put("/api/produtos", async (req, res, next) => {
   try {
     const payload = req.body?.produto ? req.body.produto : req.body;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (!payload || typeof payload !== "object") {
       return res
@@ -306,7 +224,13 @@ router.put("/api/produtos", async (req, res, next) => {
 router.delete("/api/produtos/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
       return res
         .status(400)

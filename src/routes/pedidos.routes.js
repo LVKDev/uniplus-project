@@ -1,12 +1,12 @@
-const express = require('express');
+const express = require("express");
 
 // HTTP routes for pedidos endpoints.
-const pedidosService = require('../services/pedidos.service');
+const pedidosService = require("../services/pedidos.service");
 
 const router = express.Router();
 
 function validarPedido(payload) {
-  if (!payload || typeof payload !== 'object') return 'Payload invalido.';
+  if (!payload || typeof payload !== "object") return "Payload invalido.";
   if (!payload.cliente) return 'Campo "cliente" e obrigatorio.';
   if (!payload.filial) return 'Campo "filial" e obrigatorio.';
   if (!Array.isArray(payload.itens) || payload.itens.length === 0) {
@@ -15,11 +15,17 @@ function validarPedido(payload) {
   return null;
 }
 
-router.get('/api/pedidos', async (req, res, next) => {
+router.get("/api/pedidos", async (req, res, next) => {
   try {
     const { single, ...raw } = req.query;
     const options = { params: raw };
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (options.params.limit !== undefined) {
       options.params.limit = Number(options.params.limit);
@@ -28,22 +34,31 @@ router.get('/api/pedidos', async (req, res, next) => {
       options.params.offset = Number(options.params.offset);
     }
 
-    if (options.params.cliente !== undefined && options.params['cliente.eq'] === undefined) {
-      options.params['cliente.eq'] = options.params.cliente;
+    if (
+      options.params.cliente !== undefined &&
+      options.params["cliente.eq"] === undefined
+    ) {
+      options.params["cliente.eq"] = options.params.cliente;
       delete options.params.cliente;
     }
-    if (options.params.codigo !== undefined && options.params['codigo.eq'] === undefined) {
-      options.params['codigo.eq'] = options.params.codigo;
+    if (
+      options.params.codigo !== undefined &&
+      options.params["codigo.eq"] === undefined
+    ) {
+      options.params["codigo.eq"] = options.params.codigo;
       delete options.params.codigo;
     }
-    if (options.params.status !== undefined && options.params['status.eq'] === undefined) {
-      options.params['status.eq'] = options.params.status;
+    if (
+      options.params.status !== undefined &&
+      options.params["status.eq"] === undefined
+    ) {
+      options.params["status.eq"] = options.params.status;
       delete options.params.status;
     }
 
     const data = await pedidosService.listarPedidos(options, context);
 
-    if (single === 'true') {
+    if (single === "true") {
       const primeiro = Array.isArray(data) ? data[0] || null : data || null;
       return res.json({ success: true, data: primeiro });
     }
@@ -101,12 +116,20 @@ router.get('/api/pedidos', async (req, res, next) => {
  *       200:
  *         description: Lista de pedidos
  */
-router.get('/api/pedidos/:codigo', async (req, res, next) => {
+router.get("/api/pedidos/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
-      return res.status(400).json({ success: false, error: 'Codigo obrigatorio.' });
+      return res
+        .status(400)
+        .json({ success: false, error: "Codigo obrigatorio." });
     }
 
     const data = await pedidosService.obterPedidoPorCodigo(codigo, context);
@@ -133,10 +156,16 @@ router.get('/api/pedidos/:codigo', async (req, res, next) => {
  *       200:
  *         description: Pedido encontrado
  */
-router.post('/api/pedidos', async (req, res, next) => {
+router.post("/api/pedidos", async (req, res, next) => {
   try {
     const payload = req.body?.dav || req.body;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (payload && !payload.data) {
       // UniPlus requires data (YYYY-MM-DD).
       payload.data = new Date().toISOString().slice(0, 10);
@@ -184,10 +213,16 @@ router.post('/api/pedidos', async (req, res, next) => {
  *       201:
  *         description: Pedido criado
  */
-router.put('/api/pedidos', async (req, res, next) => {
+router.put("/api/pedidos", async (req, res, next) => {
   try {
     const payload = req.body?.dav || req.body;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (payload && !payload.data) {
       payload.data = new Date().toISOString().slice(0, 10);
     }
@@ -198,7 +233,9 @@ router.put('/api/pedidos', async (req, res, next) => {
     }
 
     if (!payload.codigo) {
-      return res.status(400).json({ success: false, error: 'Campo "codigo" e obrigatorio.' });
+      return res
+        .status(400)
+        .json({ success: false, error: 'Campo "codigo" e obrigatorio.' });
     }
 
     const requestBody = req.body?.dav ? req.body : payload;
@@ -240,12 +277,20 @@ router.put('/api/pedidos', async (req, res, next) => {
  *       200:
  *         description: Pedido atualizado
  */
-router.delete('/api/pedidos/:codigo', async (req, res, next) => {
+router.delete("/api/pedidos/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
-      return res.status(400).json({ success: false, error: 'Codigo obrigatorio.' });
+      return res
+        .status(400)
+        .json({ success: false, error: "Codigo obrigatorio." });
     }
 
     const data = await pedidosService.apagarPedido(codigo, context);

@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 
-const portalService = require('../services/portal-comercial.service');
+const portalService = require("../services/portal-comercial.service");
 
 const router = express.Router();
 
@@ -21,19 +21,31 @@ const router = express.Router();
  *       200:
  *         description: Bloqueio agendado
  */
-router.post('/api/portal/bloquear-contrato/:cpfcnpj', async (req, res, next) => {
-  try {
-    const { cpfcnpj } = req.params;
-    if (!cpfcnpj) {
-      return res.status(400).json({ success: false, error: 'CPF/CNPJ obrigatorio.' });
-    }
+router.post(
+  "/api/portal/bloquear-contrato/:cpfcnpj",
+  async (req, res, next) => {
+    try {
+      const { cpfcnpj } = req.params;
+      if (!cpfcnpj) {
+        return res
+          .status(400)
+          .json({ success: false, error: "CPF/CNPJ obrigatorio." });
+      }
 
-    const data = await portalService.bloquearContrato(cpfcnpj);
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
+      const context = {
+        rota: req.path,
+        metodo: req.method,
+        userId: req.user?.id,
+        userRole: req.user?.role,
+        tenantId: req.user?.tenantId,
+      };
+      const data = await portalService.bloquearContrato(cpfcnpj, context);
+      return res.json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 /**
  * @openapi
@@ -52,19 +64,31 @@ router.post('/api/portal/bloquear-contrato/:cpfcnpj', async (req, res, next) => 
  *       200:
  *         description: Contrato desbloqueado
  */
-router.post('/api/portal/desbloquear-contrato/:cpfcnpj', async (req, res, next) => {
-  try {
-    const { cpfcnpj } = req.params;
-    if (!cpfcnpj) {
-      return res.status(400).json({ success: false, error: 'CPF/CNPJ obrigatorio.' });
-    }
+router.post(
+  "/api/portal/desbloquear-contrato/:cpfcnpj",
+  async (req, res, next) => {
+    try {
+      const { cpfcnpj } = req.params;
+      if (!cpfcnpj) {
+        return res
+          .status(400)
+          .json({ success: false, error: "CPF/CNPJ obrigatorio." });
+      }
 
-    const data = await portalService.desbloquearContrato(cpfcnpj);
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
+      const context = {
+        rota: req.path,
+        metodo: req.method,
+        userId: req.user?.id,
+        userRole: req.user?.role,
+        tenantId: req.user?.tenantId,
+      };
+      const data = await portalService.desbloquearContrato(cpfcnpj, context);
+      return res.json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 /**
  * @openapi
@@ -76,9 +100,16 @@ router.post('/api/portal/desbloquear-contrato/:cpfcnpj', async (req, res, next) 
  *       200:
  *         description: Lista de contratos
  */
-router.get('/api/portal/contratos', async (req, res, next) => {
+router.get("/api/portal/contratos", async (req, res, next) => {
   try {
-    const data = await portalService.listarContratos();
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await portalService.listarContratos(context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -102,10 +133,17 @@ router.get('/api/portal/contratos', async (req, res, next) => {
  *       200:
  *         description: Lista de contratos
  */
-router.get('/api/portal/contratos/:status', async (req, res, next) => {
+router.get("/api/portal/contratos/:status", async (req, res, next) => {
   try {
     const { status } = req.params;
-    const data = await portalService.listarContratosPorStatus(status);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await portalService.listarContratosPorStatus(status, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -129,10 +167,17 @@ router.get('/api/portal/contratos/:status', async (req, res, next) => {
  *       200:
  *         description: Contrato encontrado
  */
-router.get('/api/portal/contrato/:cpfcnpj', async (req, res, next) => {
+router.get("/api/portal/contrato/:cpfcnpj", async (req, res, next) => {
   try {
     const { cpfcnpj } = req.params;
-    const data = await portalService.obterContratoPorCpfCnpj(cpfcnpj);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await portalService.obterContratoPorCpfCnpj(cpfcnpj, context);
     return res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -162,10 +207,21 @@ router.get('/api/portal/contrato/:cpfcnpj', async (req, res, next) => {
  *       200:
  *         description: Contrato encontrado
  */
-router.get('/api/portal/contrato/:cpfcnpj/:status', async (req, res, next) => {
+router.get("/api/portal/contrato/:cpfcnpj/:status", async (req, res, next) => {
   try {
     const { cpfcnpj, status } = req.params;
-    const data = await portalService.obterContratoPorCpfCnpjEStatus(cpfcnpj, status);
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
+    const data = await portalService.obterContratoPorCpfCnpjEStatus(
+      cpfcnpj,
+      status,
+      context,
+    );
     return res.json({ success: true, data });
   } catch (error) {
     next(error);

@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 
-const ordensServicoService = require('../services/ordens-servico.service');
+const ordensServicoService = require("../services/ordens-servico.service");
 
 const router = express.Router();
 
@@ -33,11 +33,17 @@ const router = express.Router();
  *       200:
  *         description: Lista de ordens de servico
  */
-router.get('/api/ordens-servico', async (req, res, next) => {
+router.get("/api/ordens-servico", async (req, res, next) => {
   try {
     const { single, ...raw } = req.query;
     const options = { params: raw };
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
 
     if (options.params.limit !== undefined) {
       options.params.limit = Number(options.params.limit);
@@ -46,9 +52,12 @@ router.get('/api/ordens-servico', async (req, res, next) => {
       options.params.offset = Number(options.params.offset);
     }
 
-    const data = await ordensServicoService.listarOrdensServico(options, context);
+    const data = await ordensServicoService.listarOrdensServico(
+      options,
+      context,
+    );
 
-    if (single === 'true') {
+    if (single === "true") {
       const primeiro = Array.isArray(data) ? data[0] || null : data || null;
       return res.json({ success: true, data: primeiro });
     }
@@ -76,28 +85,44 @@ router.get('/api/ordens-servico', async (req, res, next) => {
  *       200:
  *         description: Ordem de servico encontrada
  */
-router.get('/api/ordens-servico/:codigo', async (req, res, next) => {
+router.get("/api/ordens-servico/:codigo", async (req, res, next) => {
   try {
     const { codigo } = req.params;
-    const context = { rota: req.path, metodo: req.method };
+    const context = {
+      rota: req.path,
+      metodo: req.method,
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      tenantId: req.user?.tenantId,
+    };
     if (!codigo) {
-      return res.status(400).json({ success: false, error: 'Codigo obrigatorio.' });
+      return res
+        .status(400)
+        .json({ success: false, error: "Codigo obrigatorio." });
     }
 
     try {
-      const data = await ordensServicoService.obterOrdemServicoPorCodigo(codigo, context);
+      const data = await ordensServicoService.obterOrdemServicoPorCodigo(
+        codigo,
+        context,
+      );
       return res.json({ success: true, data });
     } catch (error) {
       if (error.status !== 422) {
         throw error;
       }
 
-      const data = await ordensServicoService.listarOrdensServico({
-        params: { 'codigo.eq': codigo },
-      }, context);
+      const data = await ordensServicoService.listarOrdensServico(
+        {
+          params: { "codigo.eq": codigo },
+        },
+        context,
+      );
 
       if (Array.isArray(data) && data.length === 0) {
-        return res.status(404).json({ success: false, error: 'Ordem de servico nao encontrada.' });
+        return res
+          .status(404)
+          .json({ success: false, error: "Ordem de servico nao encontrada." });
       }
 
       const primeiro = Array.isArray(data) ? data[0] : data;

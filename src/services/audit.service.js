@@ -1,9 +1,20 @@
-const supabase = require('../config/supabase');
+const supabase = require("../config/supabase");
 
-const API_LOG_TABLE = 'api_logs';
+const API_LOG_TABLE = "api_logs";
 
 async function registrarAuditoria(
-  { table, recurso, rota, metodo, codigo, payload, operacao, status },
+  {
+    table,
+    recurso,
+    rota,
+    metodo,
+    codigo,
+    payload,
+    operacao,
+    status,
+    userId = null,
+    tenantId = null,
+  },
   { ignoreFailure = false } = {},
 ) {
   const base = {
@@ -12,6 +23,8 @@ async function registrarAuditoria(
     operacao,
     status,
     data_operacao: new Date().toISOString(),
+    user_id: userId,
+    tenant_id: tenantId,
   };
 
   const errors = [];
@@ -25,7 +38,7 @@ async function registrarAuditoria(
 
   const apiLog = {
     ...base,
-    recurso: recurso || 'desconhecido',
+    recurso: recurso || "desconhecido",
     rota: rota || null,
     metodo: metodo || null,
   };
@@ -35,8 +48,10 @@ async function registrarAuditoria(
   }
 
   if (errors.length && !ignoreFailure) {
-    const err = new Error('Falha ao registrar auditoria no Supabase.');
-    err.details = errors.map((item) => `${item.table}: ${item.message}`).join(' | ');
+    const err = new Error("Falha ao registrar auditoria no Supabase.");
+    err.details = errors
+      .map((item) => `${item.table}: ${item.message}`)
+      .join(" | ");
     throw err;
   }
 }
