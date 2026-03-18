@@ -74,9 +74,6 @@ async function loginUser(email, password) {
     // Buscar usuário pelo email com suas permissões
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        permissions: true,
-      },
       select: {
         id: true,
         email: true,
@@ -85,7 +82,12 @@ async function loginUser(email, password) {
         unitId: true,
         tenantId: true,
         isActive: true,
-        permissions: true,
+        permissions: {
+          select: {
+            resource: true,
+            action: true,
+          },
+        },
       },
     });
 

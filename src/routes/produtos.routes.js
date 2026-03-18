@@ -61,7 +61,7 @@ router.get(
         error: error.message || "Erro ao listar produtos",
       });
     }
-  }
+  },
 );
 
 /**
@@ -89,13 +89,16 @@ router.get(
         data: produto,
       });
     } catch (error) {
-      console.error(`Erro ao obter produto ${req.params.codigoProduto}:`, error.message);
+      console.error(
+        `Erro ao obter produto ${req.params.codigoProduto}:`,
+        error.message,
+      );
       res.status(error.status || 500).json({
         success: false,
         error: error.message || "Erro ao obter produto",
       });
     }
-  }
+  },
 );
 
 /**
@@ -141,62 +144,10 @@ router.patch(
         error: error.message || "Erro ao atualizar produto",
       });
     }
-  }
+  },
 );
 
 module.exports = router;
- *                 value:
- *                   success: true
- */
-router.put("/api/produtos", async (req, res, next) => {
-  try {
-    const payload = req.body?.produto ? req.body.produto : req.body;
-    const context = {
-      rota: req.path,
-      metodo: req.method,
-      userId: req.user?.id,
-      userRole: req.user?.role,
-      tenantId: req.user?.tenantId,
-    };
-
-    if (!payload || typeof payload !== "object") {
-      return res
-        .status(400)
-        .json({ success: false, error: "Payload invalido." });
-    }
-
-    if (!payload.codigo) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Campo "codigo" e obrigatorio.' });
-    }
-
-    if (
-      !payload.nome ||
-      !payload.unidadeMedida ||
-      payload.preco === undefined
-    ) {
-      return res.status(400).json({
-        success: false,
-        error: "Campos obrigatorios: codigo, nome, unidadeMedida, preco.",
-      });
-    }
-
-    if (!Number.isFinite(Number(payload.preco))) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Campo "preco" invalido.' });
-    }
-
-    const data = await produtosService.atualizarProduto(
-      req.body?.produto ? req.body : { produto: payload },
-      context,
-    );
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * @openapi

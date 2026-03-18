@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UniPlus - Dashboard SPRINT 3</title>
+    <title>UniPlus - Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
@@ -17,100 +21,142 @@
         min-height: 100vh;
       }
 
-      .header {
+      /* Header */
+      .navbar {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 1rem 1.5rem;
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: white !important;
+      }
+
+      .badge-role {
+        background: rgba(255, 255, 255, 0.25);
         color: white;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .header-left h1 {
-        font-size: 24px;
-        margin: 0;
-      }
-
-      .header-left .role-badge {
-        background: rgba(255, 255, 255, 0.3);
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 1rem;
       }
 
-      .header-right {
+      .user-section {
         display: flex;
         align-items: center;
-        gap: 15px;
-      }
-
-      .user-info {
-        text-align: right;
-        font-size: 12px;
-      }
-
-      .logout-btn {
-        background: rgba(255, 255, 255, 0.2);
+        gap: 1rem;
         color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        padding: 8px 15px;
-        border-radius: 5px;
+      }
+
+      .user-email {
+        font-size: 0.9rem;
+        opacity: 0.95;
+      }
+
+      .btn-logout {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+      }
+
+      .btn-logout:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: white;
+      }
+
+      /* Sidebar Navigation */
+      .sidebar {
+        background: white;
+        border-right: 1px solid #e0e0e0;
+        min-height: calc(100vh - 60px);
+        padding: 1.5rem 0;
+      }
+
+      .nav-menu {
+        list-style: none;
+      }
+
+      .nav-item {
+        display: none;
+      }
+
+      .nav-item.show {
+        display: block;
+      }
+
+      .nav-link {
+        display: block;
+        padding: 0.75rem 1.5rem;
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
         cursor: pointer;
-        transition: background 0.3s;
       }
 
-      .logout-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
+      .nav-link:hover {
+        background: #f0f0f0;
+        color: #667eea;
       }
 
-      .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 0 20px;
+      .nav-link.active {
+        background: #f9f9f9;
+        border-left-color: #667eea;
+        color: #667eea;
+      }
+
+      /* Main Content */
+      .main-content {
+        padding: 2rem;
       }
 
       .panel {
         background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: none;
+      }
+
+      .panel.active {
+        display: block;
       }
 
       .panel-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
       }
 
       .panel-header h2 {
-        font-size: 18px;
+        font-size: 1.5rem;
         color: #333;
         margin: 0;
       }
 
-      .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s;
-      }
-
       .btn-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s;
       }
 
       .btn-primary:hover {
@@ -118,53 +164,38 @@
         box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
       }
 
-      .btn-secondary {
-        background: #e0e0e0;
-        color: #333;
-      }
-
-      .btn-danger {
-        background: #ff6b6b;
-        color: white;
-        padding: 6px 12px;
-        font-size: 12px;
-      }
-
       .alert {
-        padding: 12px 15px;
-        border-radius: 5px;
-        margin-bottom: 15px;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
         display: none;
-        font-size: 14px;
       }
 
-      .alert.error {
-        background: #fee;
-        color: #c33;
-        border: 1px solid #fcc;
+      .alert.show {
         display: block;
       }
 
-      .alert.success {
-        background: #efe;
-        color: #3c3;
-        border: 1px solid #cfc;
-        display: block;
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
       }
 
-      .table-responsive {
-        overflow-x: auto;
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 14px;
+        font-size: 0.95rem;
       }
 
       th {
         background: #f5f5f5;
-        padding: 12px;
+        padding: 1rem;
         text-align: left;
         font-weight: 600;
         color: #333;
@@ -172,759 +203,358 @@
       }
 
       td {
-        padding: 12px;
+        padding: 0.9rem 1rem;
         border-bottom: 1px solid #e0e0e0;
       }
 
-      .loading {
+      tr:hover {
+        background: #f9f9f9;
+      }
+
+      .empty-state {
         text-align: center;
-        padding: 40px;
-        color: #666;
-      }
-
-      .spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #667eea;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-        margin-right: 10px;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .modal.active {
-        display: flex;
-      }
-
-      .modal-content {
-        background: white;
-        border-radius: 10px;
-        padding: 30px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-      }
-
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .modal-close {
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
+        padding: 3rem 1rem;
         color: #999;
       }
 
+      .modal-content {
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        background: #f9f9f9;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
       .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 1rem;
       }
 
       .form-group label {
-        display: block;
         color: #333;
         font-weight: 600;
-        margin-bottom: 5px;
-        font-size: 14px;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
       }
 
-      .form-group input,
-      .form-group select {
-        width: 100%;
-        padding: 10px 12px;
+      .form-control {
+        padding: 0.6rem 0.9rem;
         border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        font-size: 14px;
+        border-radius: 4px;
+        font-size: 0.95rem;
       }
 
-      .form-group input:focus,
-      .form-group select:focus {
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .form-group input:focus {
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
 
-      .form-group textarea {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        font-size: 14px;
-        resize: vertical;
-        font-family: inherit;
+      .modal-content {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
 
-      .permissions-group {
+      .modal-header {
         background: #f9f9f9;
-        padding: 15px;
-        border-radius: 5px;
-        border: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
       }
 
-      .permissions-group label {
-        display: flex;
-        align-items: center;
-        font-weight: normal;
-        margin-bottom: 10px;
-        gap: 10px;
-        cursor: pointer;
-      }
-
-      .permissions-group input[type="checkbox"] {
-        width: auto;
-      }
-
-      .permissions-group label:last-child {
-        margin-bottom: 0;
-      }
-
-      .modal-footer {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-        justify-content: flex-end;
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 40px;
-        color: #999;
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 4px 8px;
-        background: #e0e0e0;
-        border-radius: 3px;
-        font-size: 12px;
+      .modal-title {
+        font-weight: 600;
         color: #333;
       }
 
-      .badge-success {
-        background: #c3e9cb;
-        color: #0b5313;
-      }
-
-      .badge-danger {
-        background: #f8d7da;
-        color: #721c24;
-      }
-
-      .section-hidden {
-        display: none;
-      }
-
       @media (max-width: 768px) {
-        .header {
-          flex-direction: column;
-          gap: 15px;
+        .sidebar {
+          position: fixed;
+          left: -250px;
+          top: 60px;
+          width: 250px;
+          height: calc(100vh - 60px);
+          z-index: 99;
+          transition: left 0.3s;
+        }
+
+        .sidebar.show {
+          left: 0;
         }
 
         .panel-header {
           flex-direction: column;
-          gap: 10px;
           align-items: flex-start;
         }
       }
     </style>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
 
   <body>
-    <div class="header">
-      <div class="header-left">
-        <h1>UniPlus</h1>
-        <div class="role-badge" id="roleBadge">—</div>
-      </div>
-      <div class="header-right">
-        <div class="user-info">
-          <div id="userEmail">user@example.com</div>
+    <!-- Header -->
+    <nav class="navbar">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center"
+      >
+        <div class="d-flex align-items-center">
+          <span class="navbar-brand">🚀 UniPlus</span>
+          <span class="badge-role" id="roleBadge">—</span>
         </div>
-        <button class="logout-btn" onclick="handleLogout()">Sair</button>
+        <div class="user-section">
+          <div class="user-email" id="userEmail">user@example.com</div>
+          <button class="btn btn-logout" id="logoutBtn">Sair</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="d-flex" style="min-height: calc(100vh - 60px)">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <ul class="nav-menu">
+          <!-- Super Admin -->
+          <li class="nav-item" data-role="SUPER_ADMIN">
+            <a class="nav-link" data-panel="unidades">📦 Gerenciar Unidades</a>
+          </li>
+
+          <!-- Admin de Unidade -->
+          <li class="nav-item" data-role="ADMIN_UNIDADE">
+            <a class="nav-link" data-panel="usuarios">👥 Gerenciar Usuários</a>
+          </li>
+
+          <!-- Funcionário -->
+          <li class="nav-item" data-role="FUNCIONARIO,ADMIN_UNIDADE">
+            <a class="nav-link" data-panel="produtos">📋 Produtos</a>
+          </li>
+
+          <li class="nav-item" data-role="FUNCIONARIO,ADMIN_UNIDADE">
+            <a class="nav-link" data-panel="clientes">🤝 Clientes</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="main-content flex-grow-1">
+        <div id="alertBox" class="alert"></div>
+
+        <!-- Unidades Panel -->
+        <div class="panel" id="unidades">
+          <div class="panel-header">
+            <h2>Gerenciar Unidades</h2>
+            <button
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#unidadeModal"
+            >
+              + Nova Unidade
+            </button>
+          </div>
+          <div id="unidadesList">Carregando...</div>
+        </div>
+
+        <!-- Usuários Panel -->
+        <div class="panel" id="usuarios">
+          <div class="panel-header">
+            <h2>Gerenciar Usuários</h2>
+            <button
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#usuarioModal"
+            >
+              + Novo Usuário
+            </button>
+          </div>
+          <div id="usuariosList">Carregando...</div>
+        </div>
+
+        <!-- Produtos Panel -->
+        <div class="panel" id="produtos">
+          <div class="panel-header">
+            <h2>Produtos</h2>
+          </div>
+          <div id="produtosList">Carregando...</div>
+        </div>
+
+        <!-- Clientes Panel -->
+        <div class="panel" id="clientes">
+          <div class="panel-header">
+            <h2>Clientes</h2>
+          </div>
+          <div id="clientesList">Carregando...</div>
+        </div>
       </div>
     </div>
 
-    <div class="container">
-      <div class="alert" id="alertBox"></div>
-
-      <!-- SEÇÃO: GERENCIAR UNIDADES (Super Admin) -->
-      <div class="panel section-hidden" id="unidadesSection">
-        <div class="panel-header">
-          <h2>Gerenciar Unidades</h2>
-          <button class="btn btn-primary" onclick="openCreateModal()">
-            + Nova Unidade
-          </button>
-        </div>
-        <div id="unidadesList"></div>
-      </div>
-
-      <!-- SEÇÃO: GERENCIAR USUÁRIOS (Admin de Unidade) -->
-      <div class="panel section-hidden" id="usuariosSection">
-        <div class="panel-header">
-          <h2>Gerenciar Usuários</h2>
-          <button class="btn btn-primary" onclick="openCreateUserModal()">
-            + Novo Usuário
-          </button>
-        </div>
-        <div id="usuariosList"></div>
-      </div>
-
-      <!-- SEÇÃO: PRODUTOS (SPRINT 4) -->
-      <div class="panel section-hidden" id="produtosSection">
-        <div class="panel-header">
-          <h2>Produtos</h2>
-        </div>
-        
-        <!-- Filtros -->
-        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end;">
-            <div class="form-group">
-              <label for="produtoCodigoFiltro">Código</label>
-              <input type="text" id="produtoCodigoFiltro" placeholder="Código do produto" />
-            </div>
-            <div class="form-group">
-              <label for="produtoNomeFiltro">Nome</label>
-              <input type="text" id="produtoNomeFiltro" placeholder="Nome do produto" />
-            </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-primary" onclick="handleBuscaProdutos()" style="flex: 1;">Buscar</button>
-              <button class="btn btn-secondary" onclick="handleLimparFiltrosProdutos()">Limpar</button>
-            </div>
+    <!-- Modals -->
+    <div class="modal fade" id="unidadeModal" tabindex="-1" aria-labelledby="unidadeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="unidadeModalLabel">Nova Unidade</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-        </div>
+          <div class="modal-body">
+            <form id="unidadeForm">
+              <input type="hidden" id="unidadeEditId" value="">
+              
+              <!-- Dados da Unidade -->
+              <h6 class="mb-3 text-muted">📍 Dados da Unidade</h6>
+              <div class="form-group mb-3">
+                <label for="unidadeNome">Nome da Unidade *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="unidadeNome"
+                  placeholder="Ex: Loja Rio de Janeiro"
+                  required
+                />
+              </div>
 
-        <!-- Tabela de produtos -->
-        <div id="produtosTableContainer">Carregando...</div>
-      </div>
+              <!-- Admin da Unidade -->
+              <h6 class="mb-3 text-muted">👤 Admin da Unidade</h6>
+              <div class="form-group mb-3">
+                <label for="adminEmail">Email do Admin *</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="adminEmail"
+                  placeholder="admin@loja.com"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="adminSenha">Senha do Admin *</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="adminSenha"
+                  placeholder="Mínimo 8 caracteres (maiúscula, minúscula, número)"
+                  required
+                />
+              </div>
 
-      <!-- SEÇÃO: CLIENTES (SPRINT 4) -->
-      <div class="panel section-hidden" id="clientesSection">
-        <div class="panel-header">
-          <h2>Clientes</h2>
-        </div>
-        
-        <!-- Filtros -->
-        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end;">
-            <div class="form-group">
-              <label for="clienteCodigoFiltro">Código</label>
-              <input type="text" id="clienteCodigoFiltro" placeholder="Código do cliente" />
-            </div>
-            <div class="form-group">
-              <label for="clienteNomeFiltro">Nome</label>
-              <input type="text" id="clienteNomeFiltro" placeholder="Nome do cliente" />
-            </div>
-            <div class="form-group">
-              <label for="clienteCNPJFiltro">CNPJ/CPF</label>
-              <input type="text" id="clienteCNPJFiltro" placeholder="CNPJ/CPF" />
-            </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-primary" onclick="handleBuscaClientes()" style="flex: 1;">Buscar</button>
-              <button class="btn btn-secondary" onclick="handleLimparFiltrosClientes()">Limpar</button>
-            </div>
+              <!-- Credenciais Uniplus -->
+              <h6 class="mb-3 text-muted">🔐 Credenciais Uniplus</h6>
+              <div class="form-group mb-3">
+                <label for="uniplusclientId">CLIENT_ID *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="uniplusclientId"
+                  placeholder="homologacao"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="uniplusclientSecret">CLIENT_SECRET *</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="uniplusclientSecret"
+                  placeholder="a50037cd-92f5-4bfd-8d52-f81cb5e6a08e"
+                  required
+                />
+              </div>
+
+              <small class="text-muted">
+                * Campos obrigatórios. A senha do admin será encriptada. As credenciais Uniplus serão validadas.
+              </small>
+            </form>
           </div>
-        </div>
-
-        <!-- Tabela de clientes -->
-        <div id="clientesTableContainer">Carregando...</div>
-      </div>
-    </div>
-
-    <!-- Toast Container (para notificações) -->
-    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
-
-    <!-- MODAL: CRIAR UNIDADE -->
-    <div class="modal" id="createModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Nova Unidade</h2>
-          <button class="modal-close" onclick="closeCreateModal()">×</button>
-        </div>
-
-        <form id="createForm" onsubmit="handleCreateSubmit(event)">
-          <div class="form-group">
-            <label for="nodeName">Nome da Unidade</label>
-            <input type="text" id="nodeName" placeholder="Ex: Unidade São Paulo" required />
-          </div>
-
-          <div class="form-group">
-            <label for="nodeUser">Username Uniplus</label>
-            <input type="text" id="nodeUser" placeholder="Usuario do Uniplus" required />
-          </div>
-
-          <div class="form-group">
-            <label for="nodePass">Password Uniplus</label>
-            <input type="password" id="nodePass" placeholder="Senha do Uniplus" required />
-          </div>
-
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
               Cancelar
             </button>
-            <button type="submit" class="btn btn-primary">Criar</button>
+            <button type="button" class="btn btn-primary" id="saveUnidadeBtn">
+              Criar Unidade
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
-    <!-- MODAL: EDITAR CREDENCIAIS UNIDADE -->
-    <div class="modal" id="editModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Atualizar Credenciais</h2>
-          <button class="modal-close" onclick="closeEditModal()">×</button>
-        </div>
-
-        <form id="editForm" onsubmit="handleEditSubmit(event)">
-          <div class="form-group">
-            <label>Nome da Unidade</label>
-            <div style="padding: 10px; background: #f5f5f5; border-radius: 5px;" id="editNodeName">—</div>
+    <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="usuarioModalLabel">Novo Usuário</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-
-          <div class="form-group">
-            <label for="editUser">Username Uniplus</label>
-            <input type="text" id="editUser" placeholder="Usuario do Uniplus" required />
+          <div class="modal-body">
+            <form id="usuarioForm">
+              <div class="form-group">
+                <label for="usuarioEmail">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="usuarioEmail"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="usuarioPass">Senha</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="usuarioPass"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="usuarioRole">Role</label>
+                <select class="form-control" id="usuarioRole" required>
+                  <option value="">Selecione...</option>
+                  <option value="FUNCIONARIO">Funcionário</option>
+                  <option value="ADMIN_UNIDADE">Admin de Unidade</option>
+                </select>
+              </div>
+            </form>
           </div>
-
-          <div class="form-group">
-            <label for="editPass">Password Uniplus</label>
-            <input type="password" id="editPass" placeholder="Senha do Uniplus" required />
-          </div>
-
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
               Cancelar
             </button>
-            <button type="submit" class="btn btn-primary">Atualizar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL: CRIAR USUÁRIO -->
-    <div class="modal" id="createUserModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Novo Usuário</h2>
-          <button class="modal-close" onclick="closeCreateUserModal()">×</button>
-        </div>
-
-        <form id="createUserForm" onsubmit="handleCreateUserSubmit(event)">
-          <div class="form-group">
-            <label for="createUserEmail">Email</label>
-            <input type="email" id="createUserEmail" placeholder="usuario@example.com" required />
-          </div>
-
-          <div class="form-group">
-            <label for="createUserPassword">Senha</label>
-            <input type="password" id="createUserPassword" placeholder="Mínimo 8 caracteres" required />
-          </div>
-
-          <div class="form-group">
-            <label for="createUserRole">Role</label>
-            <select id="createUserRole" required>
-              <option value="">Selecione um role</option>
-              <option value="FUNCIONARIO">Funcionário</option>
-              <option value="ADMIN_UNIDADE">Admin de Unidade</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Permissões</label>
-            <div class="permissions-group" id="createUserPermissions">
-              <!-- Checkboxes serão preenchidas via JavaScript -->
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">
-              Cancelar
+            <button type="button" class="btn btn-primary" id="saveUsuarioBtn">
+              Criar
             </button>
-            <button type="submit" class="btn btn-primary">Criar</button>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL: EDITAR USUÁRIO -->
-    <div class="modal" id="editUserModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Editar Usuário</h2>
-          <button class="modal-close" onclick="closeEditUserModal()">×</button>
         </div>
-
-        <form id="editUserForm" onsubmit="handleEditUserSubmit(event)">
-          <div class="form-group">
-            <label for="editUserEmail">Email</label>
-            <input type="email" id="editUserEmail" required />
-          </div>
-
-          <div class="form-group">
-            <label for="editUserRole">Role</label>
-            <select id="editUserRole" required>
-              <option value="FUNCIONARIO">Funcionário</option>
-              <option value="ADMIN_UNIDADE">Admin de Unidade</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Permissões</label>
-            <div class="permissions-group" id="editUserPermissions">
-              <!-- Checkboxes serão preenchidas via JavaScript -->
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeEditUserModal()">
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary">Atualizar</button>
-          </div>
-        </form>
       </div>
     </div>
 
-    <!-- MODAL: EDITAR PRODUTO (SPRINT 4) -->
-    <div class="modal" id="editProdutoModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="editProdutoCodigoLabel">Editando Produto</h2>
-          <button class="modal-close" onclick="(() => { const m = bootstrap.Modal.getInstance(document.getElementById('editProdutoModal')); m && m.hide(); })()">×</button>
-        </div>
-
-        <form id="editProdutoForm" onsubmit="handleEditProdutoSubmit(event)">
-          <div class="form-group">
-            <label for="editProdutoNome">Nome</label>
-            <input type="text" id="editProdutoNome" required />
-          </div>
-
-          <div class="form-group">
-            <label for="editProdutoPreco">Preço (R$)</label>
-            <input type="number" id="editProdutoPreco" step="0.01" min="0" required />
-          </div>
-
-          <div class="form-group">
-            <label for="editProdutoDescricao">Descrição</label>
-            <textarea id="editProdutoDescricao" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="editProdutoReferencia">Referência</label>
-            <input type="text" id="editProdutoReferencia" />
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="(() => { const m = bootstrap.Modal.getInstance(document.getElementById('editProdutoModal')); m && m.hide(); })()">
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL: EDITAR CLIENTE (SPRINT 4) -->
-    <div class="modal" id="editClienteModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="editClienteCodigoLabel">Editando Cliente</h2>
-          <button class="modal-close" onclick="(() => { const m = bootstrap.Modal.getInstance(document.getElementById('editClienteModal')); m && m.hide(); })()">×</button>
-        </div>
-
-        <form id="editClienteForm" onsubmit="handleEditClienteSubmit(event)">
-          <div class="form-group">
-            <label for="editClienteNome">Nome</label>
-            <input type="text" id="editClienteNome" required />
-          </div>
-
-          <div class="form-group">
-            <label for="editClienteEndereco">Endereço</label>
-            <input type="text" id="editClienteEndereco" />
-          </div>
-
-          <div class="form-group">
-            <label for="editClienteTelefone">Telefone</label>
-            <input type="tel" id="editClienteTelefone" />
-          </div>
-
-          <div class="form-group">
-            <label for="editClienteEmail">Email</label>
-            <input type="email" id="editClienteEmail" />
-          </div>
-
-          <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label for="editClienteCidade">Cidade</label>
-              <input type="text" id="editClienteCidade" />
-            </div>
-            <div>
-              <label for="editClienteEstado">Estado</label>
-              <input type="text" id="editClienteEstado" maxlength="2" />
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="(() => { const m = bootstrap.Modal.getInstance(document.getElementById('editClienteModal')); m && m.hide(); })()">
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <script src="/js/api-client.js"></script>
-    <script src="/js/unidades.js"></script>
-    <script src="/js/usuarios.js"></script>
-    <script src="/js/produtos.js"></script>
-    <script src="/js/clientes.js"></script>
-    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>
-
-    <script>
-      // Define permissões disponíveis
-      const PERMISSOES = [
-        { id: 'ver_produtos', label: 'Ver Produtos' },
-        { id: 'editar_produtos', label: 'Editar Produtos' },
-        { id: 'ver_clientes', label: 'Ver Clientes' },
-        { id: 'editar_clientes', label: 'Editar Clientes' },
-        { id: 'gerenciar_usuarios', label: 'Gerenciar Usuários' },
-        { id: 'ver_auditoria', label: 'Ver Auditoria' },
-      ];
-
-      function handleLogout() {
-        apiClient.logout();
-      }
-
-      function showAlert(message, type = 'error') {
-        const alertBox = document.getElementById('alertBox');
-        alertBox.textContent = message;
-        alertBox.className = `alert ${type}`;
-        setTimeout(() => {
-          alertBox.className = 'alert';
-        }, 5000);
-      }
-
-      function renderPermissionCheckboxes(containerId) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-
-        PERMISSOES.forEach(perm => {
-          const label = document.createElement('label');
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.value = perm.id;
-          checkbox.name = 'permissions';
-          label.appendChild(checkbox);
-          label.appendChild(document.createTextNode(perm.label));
-          container.appendChild(label);
-        });
-      }
-
-      async function initPage() {
-        if (!apiClient.isAuthenticated()) {
-          window.location.href = '/';
-          return;
-        }
-
-        const user = apiClient.getUser();
-        window.usuario = user; // Disponibilizar globalmente para produtos.js e clientes.js
-        
-        // Atualizar header
-        document.getElementById('userEmail').textContent = user.email;
-        document.getElementById('roleBadge').textContent = user.role;
-
-        // Renderizar checkboxes de permissões nos formulários
-        renderPermissionCheckboxes('createUserPermissions');
-        renderPermissionCheckboxes('editUserPermissions');
-
-        // Mostrar seções baseado no role
-        if (user.role === 'SUPER_ADMIN') {
-          document.getElementById('unidadesSection').classList.remove('section-hidden');
-          document.getElementById('usuariosSection').classList.add('section-hidden');
-          document.getElementById('produtosSection').classList.add('section-hidden');
-          document.getElementById('clientesSection').classList.add('section-hidden');
-          loadUnidades();
-        } else if (user.role === 'ADMIN_UNIDADE') {
-          document.getElementById('unidadesSection').classList.add('section-hidden');
-          document.getElementById('usuariosSection').classList.remove('section-hidden');
-          
-          // Mostrar Produtos se tiver permissão
-          if (user.permissions && user.permissions.includes('ver_produtos')) {
-            document.getElementById('produtosSection').classList.remove('section-hidden');
-          } else {
-            document.getElementById('produtosSection').classList.add('section-hidden');
-          }
-          
-          // Mostrar Clientes se tiver permissão
-          if (user.permissions && user.permissions.includes('ver_clientes')) {
-            document.getElementById('clientesSection').classList.remove('section-hidden');
-          } else {
-            document.getElementById('clientesSection').classList.add('section-hidden');
-          }
-          
-          loadUsuarios();
-        } else if (user.role === 'FUNCIONARIO') {
-          document.getElementById('unidadesSection').classList.add('section-hidden');
-          document.getElementById('usuariosSection').classList.add('section-hidden');
-          
-          // Mostrar Produtos se tiver permissão
-          if (user.permissions && user.permissions.includes('ver_produtos')) {
-            document.getElementById('produtosSection').classList.remove('section-hidden');
-          } else {
-            document.getElementById('produtosSection').classList.add('section-hidden');
-          }
-          
-          // Mostrar Clientes se tiver permissão
-          if (user.permissions && user.permissions.includes('ver_clientes')) {
-            document.getElementById('clientesSection').classList.remove('section-hidden');
-          } else {
-            document.getElementById('clientesSection').classList.add('section-hidden');
-          }
-        } else {
-          showAlert('Acesso negado: role desconhecido', 'error');
-          setTimeout(() => { window.location.href = '/'; }, 2000);
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', initPage);
-    </script>
-  </body>
-</html>
-      async function handleLogout() {
-        const logoutBtn = document.getElementById("logoutBtn");
-        const token = sessionStorage.getItem("token");
-
-        logoutBtn.disabled = true;
-        logoutBtn.textContent = "Saindo...";
-
-        try {
-          const response = await fetch("/auth/logout", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (response.ok) {
-            // Limpar sessionStorage
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-
-            // Redirecionar para login
-            showAlert("Logout realizado com sucesso!", "success");
-            setTimeout(() => {
-              window.location.href = "/index.html";
-            }, 1000);
-          } else {
-            showAlert("Erro ao fazer logout", "error");
-            logoutBtn.disabled = false;
-            logoutBtn.textContent = "Logout";
-          }
-        } catch (error) {
-          console.error("Erro:", error);
-          showAlert("Erro ao conectar com o servidor", "error");
-          logoutBtn.disabled = false;
-          logoutBtn.textContent = "Logout";
-        }
-      }
-
-      /**
-       * Mostra placeholder para funcionalidades em desenvolvimento
-       */
-      function showPlaceholder(name) {
-        showAlert(`Funcionalidade "${name}" em desenvolvimento!`);
-      }
-
-      // ============================================
-      // Inicialização
-      // ============================================
-
-      window.addEventListener("load", () => {
-        // Verificar autenticação
-        if (!checkAuth()) {
-          return;
-        }
-
-        // Atualizar UI
-        updateUIByRole();
-
-        // Event listeners
-        document
-          .getElementById("logoutBtn")
-          .addEventListener("click", handleLogout);
-
-        // SuperAdmin links
-        ["manageTenants", "manageUsers", "viewLogs", "systemConfig"].forEach(
-          (id) => {
-            const elem = document.getElementById(id);
-            if (elem) {
-              elem.addEventListener("click", () => {
-                showPlaceholder(elem.textContent.trim());
-              });
-            }
-          },
-        );
-
-        // Admin links
-        ["viewPedidos", "viewEntidades", "viewProdutos", "viewVendas"].forEach(
-          (id) => {
-            const elem = document.getElementById(id);
-            if (elem) {
-              elem.addEventListener("click", () => {
-                showPlaceholder(elem.textContent.trim());
-              });
-            }
-          },
-        );
-
-        // Cliente links
-        [
-          "viewMyPedidos",
-          "viewMyEntidade",
-          "viewMyVendas",
-          "viewProfile",
-        ].forEach((id) => {
-          const elem = document.getElementById(id);
-          if (elem) {
-            elem.addEventListener("click", () => {
-              showPlaceholder(elem.textContent.trim());
-            });
-          }
-        });
-      });
-
-      // Logout ao fechar aba (opcional)
-      // window.addEventListener('beforeunload', () => {
-      //     handleLogout();
-      // });
-    </script>
+    <script src="/js/api-client.js"></script>
+    <script src="/js/dashboard.js"></script>
   </body>
 </html>

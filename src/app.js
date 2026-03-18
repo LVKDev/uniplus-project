@@ -38,7 +38,18 @@ const app = express();
 // ============================================
 
 // Segurança: Headers de proteção (HSTS, CSP, X-Frame-Options, etc)
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "data:"],
+      connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
+    },
+  },
+}));
 
 // CORS: Restrição a domínios autorizados
 app.use(corsMiddleware);

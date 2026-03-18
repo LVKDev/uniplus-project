@@ -15,15 +15,14 @@ const { decrypt } = require("./encryption");
 
 const prisma = new PrismaClient();
 
-// Configuração base do Uniplus
-const UNIPLUS_BASE_URL = process.env.UNIPLUS_BASE_URL;
-const UNIPLUS_SERVER_URL =
-  process.env.UNIPLUS_SERVER_URL ||
-  (UNIPLUS_BASE_URL ? UNIPLUS_BASE_URL.replace(/\/public-api\/?$/, "") : null);
+// Configuração base do Uniplus (opcional - credenciais vão vir por unidade do banco)
+// const UNIPLUS_BASE_URL = process.env.UNIPLUS_BASE_URL;
+// const UNIPLUS_SERVER_URL = process.env.UNIPLUS_SERVER_URL ||
+//   (UNIPLUS_BASE_URL ? UNIPLUS_BASE_URL.replace(/\/public-api\/?$/, "") : null);
 
-if (!UNIPLUS_BASE_URL || !UNIPLUS_SERVER_URL) {
-  throw new Error("UNIPLUS_BASE_URL e UNIPLUS_SERVER_URL são obrigatórios");
-}
+// NOTE: Credenciais agora são armazenadas por unidade no banco de dados
+// e desencriptadas dinamicamente via getUnidadeFullCredentials()
+// Ver: src/services/unidades.service.js -> getUnidadeFullCredentials()
 
 // Cache de tokens (unitId -> {token, expiresAt})
 const tokenCache = new Map();

@@ -12,6 +12,7 @@ const {
   createUnidade,
   updateUnidadeCredentials,
   deleteUnidade,
+  createUnidadeWithAdmin,
   createUnidadeWithFullCredentials,
   updateUnidadeFullCredentials,
 } = require("../services/unidades.service");
@@ -74,38 +75,73 @@ router.get("/:unitId", requireRole(ROLES.SUPER_ADMIN), async (req, res) => {
 
 /**
  * POST /api/unidades
- * Cria uma nova unidade com credenciais Uniplus
+ * Cria uma nova unidade + admin user
  * Protected: SUPER_ADMIN
  * Body: {
  *   nome: string (obrigatório),
- *   credencial_uniplus_user: string (obrigatório),
- *   credencial_uniplus_pass: string (obrigatório)
+ *   admin_email: string (obrigatório),
+ *   admin_senha: string (obrigatório),
+ *   uniplus_client_id: string (obrigatório),
+ *   uniplus_client_secret: string (obrigatório)
  * }
  */
 router.post("/", requireRole(ROLES.SUPER_ADMIN), async (req, res) => {
   try {
-    const { nome, credencial_uniplus_user, credencial_uniplus_pass } = req.body;
-
-    // Validar entrada
-    if (!nome || !credencial_uniplus_user || !credencial_uniplus_pass) {
-      return res.status(400).json({
-        success: false,
-        error: "Nome, username e password Uniplus são obrigatórios",
-      });
-    }
-
-    // Criar unidade
-    const unidade = await createUnidade(
+    const {
       nome,
+      admin_email,
+      admin_senha,
+      uniplus_client_id,
+      uniplus_client_secret,
+      // Manter compatibilidade com formato antigo
       credencial_uniplus_user,
       credencial_uniplus_pass,
-    );
+    } = req.body;
 
-    res.status(201).json({
-      success: true,
-      data: unidade,
-      message: "Unidade criada com sucesso",
-    });
+    // Validar entrada (novo formato)
+    if (admin_email && admin_senha) {
+      if (!nome || !admin_email || !admin_senha || !uniplus_client_id || !uniplus_client_secret) {
+        return res.status(400).json({
+          success: false,
+          error: "Nome, email do admin, senha, CLIENT_ID e CLIENT_SECRET são obrigatórios",
+        });
+      }
+
+      // Criar unidade com admin
+      const result = await createUnidadeWithAdmin(
+        nome,
+        admin_email,
+        admin_senha,
+        uniplus_client_id,
+        uniplus_client_secret,
+      );
+
+      res.status(201).json({
+        success: true,
+        data: result,
+        message: "Unidade e admin criados com sucesso",
+      });
+    } else {
+      // Formato antigo (compatibilidade)
+      if (!nome || !credencial_uniplus_user || !credencial_uniplus_pass) {
+        return res.status(400).json({
+          success: false,
+          error: "Nome, username e password Uniplus são obrigatórios",
+        });
+      }
+
+      const unidade = await createUnidade(
+        nome,
+        credencial_uniplus_user,
+        credencial_uniplus_pass,
+      );
+
+      res.status(201).json({
+        success: true,
+        data: unidade,
+        message: "Unidade criada com sucesso",
+      });
+    }
   } catch (error) {
     console.error("Erro ao criar unidade:", error);
 

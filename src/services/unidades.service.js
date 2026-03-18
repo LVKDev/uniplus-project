@@ -7,6 +7,8 @@
  */
 
 const { PrismaClient } = require("@prisma/client");
+const bcryptjs = require("bcryptjs");
+const axios = require("axios");
 const {
   encryptCredentials,
   decryptCredentials,
@@ -431,6 +433,10 @@ async function updateUnidadeFullCredentials(unitId, credenciaisUniplus) {
 }
 
 /**
+ * Obtém credenciais de uma unidade
+ * @param {string} unitId - ID da unidade
+ * @returns {Promise<object>} Credenciais descriptografadas
+ */
 async function getUnidadeCredentials(unitId) {
   try {
     const unit = await prisma.unit.findUnique({
@@ -458,6 +464,168 @@ async function getUnidadeCredentials(unitId) {
   }
 }
 
+/**
+ * Cria uma unidade + admin user automaticamente
+ * @param {string} nome - Nome da unidade
+ * @param {string} adminEmail - Email do admin
+ * @param {string} adminSenha - Senha do admin (será hashada)
+ * @param {string} uniplusclientId - CLIENT_ID Uniplus
+ * @param {string} uniplusclientSecret - CLIENT_SECRET Uniplus
+ * @returns {Promise<object>} Dados da unidade e admin criados
+ */
+async function createUnidadeWithAdmin(
+  nome,
+  adminEmail,
+  adminSenha,
+  uniplusclientId,
+  uniplusclientSecret,
+) {
+  try {
+    // Validações
+    if (!nome || nome.trim() === "") {
+      throw new Error("Nome da unidade é obrigatório");
+    }
+
+    if (!adminEmail || adminEmail.trim() === "") {
+      throw new Error("Email do admin é obrigatório");
+    }
+
+    if (!adminSenha || adminSenha.trim() === "") {
+      throw new Error("Senha do admin é obrigatória");
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(adminEmail)) {
+      throw new Error("Email do admin inválido");
+    }
+
+    // Validar senha (8+ chars, maiúscula, minúscula, número)
+    const senhaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!senhaRegex.test(adminSenha)) {
+      throw new Error(
+        "Senha deve ter 8+ caracteres, maiúscula, minúscula e número",
+      );
+    }
+
+    if (!uniplusclientId || uniplusclientId.trim() === "") {
+      throw new Error("CLIENT_ID Uniplus é obrigatório");
+    }
+
+    if (!uniplusclientSecret || uniplusclientSecret.trim() === "") {
+      throw new Error("CLIENT_SECRET Uniplus é obrigatório");
+    }
+
+    // Validar credenciais Uniplus (testar token)
+    try {
+      const authBasic = Buffer.from(
+        `${uniplusclientId}:${uniplusclientSecret}`,
+      ).toString("base64");
+      const baseUrl = process.env.UNIPLUS_SERVER_URL || "https://next-01.webuniplus.com";
+      
+      const response = await axios.post(
+        `${baseUrl}/api-public/v1/geral/token`,
+        {},
+        {
+          headers: {
+            Authorization: `Basic ${authBasic}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 5000,
+        },
+      );
+
+      if (!response.data.access_token) {
+        throw new Error("Não foi possível autenticar com Uniplus");
+      }
+    } catch (uniError) {
+      console.error("Erro ao validar credenciais Uniplus:", uniError.message);
+      throw new Error(
+        `Erro ao validar credenciais Uniplus: ${uniError.message}`,
+      );
+    }
+
+    // Verificar se unidade com este nome já existe
+    const existingUnit = await prisma.unit.findUnique({
+      where: { nome: nome.trim() },
+    });
+
+    if (existingUnit) {
+      throw new Error("Unidade com este nome já existe");
+    }
+
+    // Verificar se email já existe
+    const existingUser = await prisma.user.findUnique({
+      where: { email: adminEmail.trim() },
+    });
+
+    if (existingUser) {
+      throw new Error("Email já cadastrado no sistema");
+    }
+
+    // Encriptar credenciais Uniplus (usando novo formato JSON)
+    const credenciaisUniplus = {
+      client_id: uniplusclientId.trim(),
+      client_secret: uniplusclientSecret.trim(),
+    };
+    const credenciaisEncriptadas = encryptCredentialsJSON(credenciaisUniplus);
+
+    // Hash da senha do admin
+    const senhaHash = await bcryptjs.hash(adminSenha, 10);
+
+    // Criar unidade PRIMEIRO
+    const unit = await prisma.unit.create({
+      data: {
+        nome: nome.trim(),
+        credenciais_json: credenciaisEncriptadas,
+      },
+      select: {
+        id: true,
+        nome: true,
+        createdAt: true,
+      },
+    });
+
+    // Depois criar o usuário admin para essa unidade
+    const { ROLES, PERMISSOES_POR_ROLE } = require("../config/constants");
+
+    const adminUser = await prisma.user.create({
+      data: {
+        email: adminEmail.trim(),
+        password: senhaHash,
+        role: ROLES.ADMIN_UNIDADE,
+        unit_id: unit.id,
+        permissions: PERMISSOES_POR_ROLE[ROLES.ADMIN_UNIDADE] || [],
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    return {
+      unidade: {
+        id: unit.id,
+        nome: unit.nome,
+        created_at: unit.createdAt,
+      },
+      admin: {
+        id: adminUser.id,
+        email: adminUser.email,
+        role: adminUser.role,
+        created_at: adminUser.createdAt,
+      },
+      success: true,
+      message: "Unidade e admin criados com sucesso",
+    };
+  } catch (error) {
+    console.error("Erro ao criar unidade com admin:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   // Legacy
   listUnidades,
@@ -471,4 +639,7 @@ module.exports = {
   createUnidadeWithFullCredentials,
   getUnidadeFullCredentials,
   updateUnidadeFullCredentials,
-}; Deleta uma unidade */
+
+  // With Admin
+  createUnidadeWithAdmin,
+};

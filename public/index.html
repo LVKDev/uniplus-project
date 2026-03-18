@@ -175,8 +175,8 @@
   <body>
     <div class="login-container">
       <div class="login-header">
-        <h1>UniPlus</h1>
-        <p>Sistema Satélite Multi-Tenant</p>
+        <h1>🚀 UniPlus</h1>
+        <p>Sistema de Autenticação</p>
       </div>
 
       <div class="alert" id="alertBox"></div>
@@ -216,382 +216,46 @@
       </form>
 
       <div class="demo-hint">
-        <p>
-          Demo: Use <code>superadmin@uniplus.local</code> com senha do .env
+        <h4
+          style="
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: #333;
+            font-weight: 600;
+          "
+        >
+          🔐 Credenciais SuperAdmin
+        </h4>
+        <p
+          style="
+            margin: 5px 0;
+            font-family: &quot;Courier New&quot;, monospace;
+            font-size: 12px;
+          "
+        >
+          <code
+            style="
+              background: #f5f5f5;
+              padding: 2px 6px;
+              border-radius: 3px;
+              color: #667eea;
+            "
+            >admin@cerionuniplus.com.br</code
+          >
+          /
+          <code
+            style="
+              background: #f5f5f5;
+              padding: 2px 6px;
+              border-radius: 3px;
+              color: #667eea;
+            "
+            >SuperAdmin@2026</code
+          >
         </p>
       </div>
     </div>
 
-    <script>
-      /**
-       * Exibe mensagem de alerta
-       * @param {string} message - Mensagem a exibir
-       * @param {string} type - 'error' ou 'success'
-       */
-      function showAlert(message, type = 'error') {
-        const alertBox = document.getElementById('alertBox');
-        alertBox.textContent = message;
-        alertBox.className = `alert ${type}`;
-        setTimeout(() => {
-          alertBox.className = 'alert';
-        }, 5000);
-      }
-
-      /**
-       * Alterna visibilidade do ícone de carregamento
-       * @param {boolean} show - true para mostrar, false para esconder
-       */
-      function setLoading(show) {
-        const loading = document.getElementById('loading');
-        const button = document.getElementById('loginButton');
-        if (show) {
-          loading.classList.add('active');
-          button.disabled = true;
-        } else {
-          loading.classList.remove('active');
-          button.disabled = false;
-        }
-      }
-
-      /**
-       * Handler de submit do formulário de login
-       * @param {Event} event - Evento do submit
-       */
-      async function handleLogin(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-
-        // Validações básicas
-        if (!email || !password) {
-          showAlert('Email e senha são obrigatórios', 'error');
-          return;
-        }
-
-        setLoading(true);
-
-        try {
-          // Enviar requisição de login
-          const response = await fetch('/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-            credentials: 'include', // Enviar cookies
-          });
-
-          const data = await response.json();
-
-          if (!response.ok || !data.success) {
-            showAlert(data.message || 'Erro ao fazer login', 'error');
-            setLoading(false);
-            return;
-          }
-
-          // Login bem-sucedido
-          showAlert('Login realizado! Redirecionando...', 'success');
-
-          // Armazenar dados do usuário no localStorage (opcional)
-          localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('token', data.token);
-
-          // Redirecionar para dashboard após 1.5 segundos
-          setTimeout(() => {
-            window.location.href = '/dashboard.html';
-          }, 1500);
-        } catch (error) {
-          console.error('Erro ao fazer login:', error);
-          showAlert('Erro ao conexão com servidor', 'error');
-          setLoading(false);
-        }
-      }
-
-      // Focar no campo de email ao carregar a página
-      document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('email').focus();
-      });
-    </script>
-  </body>
-</html>
-
-      .login-button:active {
-        transform: translateY(0);
-      }
-
-      .login-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .alert {
-        padding: 12px 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        display: none;
-      }
-
-      .alert-error {
-        background-color: #fee;
-        color: #c33;
-        border: 1px solid #fcc;
-        display: block;
-      }
-
-      .alert-success {
-        background-color: #efe;
-        color: #3c3;
-        border: 1px solid #cfc;
-        display: block;
-      }
-
-      .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 0.8s linear infinite;
-        margin-right: 10px;
-        vertical-align: middle;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .demo-credentials {
-        background-color: #f5f5f5;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 15px;
-        margin-top: 25px;
-        font-size: 12px;
-        color: #666;
-      }
-
-      .demo-credentials h4 {
-        color: #333;
-        margin-bottom: 8px;
-        font-size: 13px;
-      }
-
-      .demo-credentials p {
-        margin-bottom: 5px;
-        font-family: "Courier New", monospace;
-      }
-
-      .demo-credentials code {
-        background-color: #fff;
-        padding: 2px 5px;
-        border-radius: 3px;
-        color: #667eea;
-      }
-
-      .spinner-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="login-container">
-      <div class="login-header">
-        <h1>🚀 UniPlus</h1>
-        <p>Sistema de Autenticação</p>
-      </div>
-
-      <div id="alertContainer"></div>
-
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="seu@email.com"
-            required
-            autocomplete="email"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Digite sua senha"
-            required
-            autocomplete="current-password"
-          />
-        </div>
-
-        <button type="submit" class="login-button" id="loginBtn">Entrar</button>
-      </form>
-
-      <div class="demo-credentials">
-        <h4>🔐 Credenciais de Teste (SuperAdmin)</h4>
-        <p>Email: <code>admin@cerionuniplus.com.br</code></p>
-        <p>Senha: <code>SuperAdmin@2026</code></p>
-      </div>
-    </div>
-
-    <script>
-      const loginForm = document.getElementById("loginForm");
-      const emailInput = document.getElementById("email");
-      const passwordInput = document.getElementById("password");
-      const loginBtn = document.getElementById("loginBtn");
-      const alertContainer = document.getElementById("alertContainer");
-
-      /**
-       * Exibe alerta na tela
-       */
-      function showAlert(message, type = "error") {
-        const alertDiv = document.createElement("div");
-        alertDiv.className = `alert alert-${type}`;
-        alertDiv.textContent = message;
-        alertContainer.innerHTML = "";
-        alertContainer.appendChild(alertDiv);
-
-        // Auto-remover after 5 seconds (se success)
-        if (type === "success") {
-          setTimeout(() => {
-            alertDiv.style.display = "none";
-          }, 2000);
-        }
-      }
-
-      /**
-       * Limpa alertas
-       */
-      function clearAlert() {
-        alertContainer.innerHTML = "";
-      }
-
-      /**
-       * Valida campos do formulário
-       */
-      function validateForm() {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!email) {
-          showAlert("Por favor, digite seu email");
-          emailInput.focus();
-          return false;
-        }
-
-        if (!email.includes("@")) {
-          showAlert("Email inválido");
-          emailInput.focus();
-          return false;
-        }
-
-        if (!password) {
-          showAlert("Por favor, digite sua senha");
-          passwordInput.focus();
-          return false;
-        }
-
-        if (password.length < 6) {
-          showAlert("Senha deve ter pelo menos 6 caracteres");
-          passwordInput.focus();
-          return false;
-        }
-
-        return true;
-      }
-
-      /**
-       * Faz requisição de login
-       */
-      async function handleLogin(event) {
-        event.preventDefault();
-
-        // Validar
-        if (!validateForm()) {
-          return;
-        }
-
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        // Desabilitar botão
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="loading"></span>Autenticando...';
-
-        try {
-          const response = await fetch("/auth/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, password }),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            showAlert(data.message || "Erro ao fazer login", "error");
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = "Entrar";
-            return;
-          }
-
-          // Sucesso!
-          showAlert("Login realizado com sucesso!", "success");
-
-          // Salvar dados em sessionStorage (opcional)
-          sessionStorage.setItem("user", JSON.stringify(data.user));
-          sessionStorage.setItem("token", data.token);
-
-          // Redirecionar para dashboard depois de 1s
-          setTimeout(() => {
-            window.location.href = "/dashboard.html";
-          }, 1000);
-        } catch (error) {
-          console.error("Erro:", error);
-          showAlert("Erro ao conectar com o servidor", "error");
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = "Entrar";
-        }
-      }
-
-      /**
-       * Auto-fill com credenciais de teste (comentado por segurança)
-       * Descomente para desenvolvimento rápido
-       */
-      // window.addEventListener('load', () => {
-      //     emailInput.value = 'admin@cerionuniplus.com.br';
-      //     passwordInput.value = 'SuperAdmin@2026';
-      // });
-
-      // Event listener form submit
-      loginForm.addEventListener("submit", handleLogin);
-
-      // Remover alerta ao digitar
-      emailInput.addEventListener("input", clearAlert);
-      passwordInput.addEventListener("input", clearAlert);
-
-      /**
-       * Redirecionar se já logado
-       */
-      window.addEventListener("load", () => {
-        const token = sessionStorage.getItem("token");
-        if (token) {
-          // Já está autenticado, redirecionar
-          window.location.href = "/dashboard.html";
-        }
-      });
-    </script>
+    <script src="/js/login.js"></script>
   </body>
 </html>

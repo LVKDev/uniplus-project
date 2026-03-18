@@ -7,18 +7,14 @@ const rateLimit = require("express-rate-limit");
 
 /**
  * Rate Limiter para Login
- * Máximo 5 tentativas por IP em 15 minutos
+ * Máximo 5 tentativas por IP em 15 minutos (50 em desenvolvimento)
  */
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // 5 tentativas
+  max: process.env.NODE_ENV === "development" ? 50 : 5, // 50 tentativas em dev, 5 em prod
   message: "Muitas tentativas de login. Tente novamente em 15 minutos.",
   standardHeaders: true, // Retorna `RateLimit-*` headers
   legacyHeaders: false, // Desativa `X-RateLimit-*` headers
-  keyGenerator: (req, res) => {
-    // Usar IP do cliente (conta com proxy reverso)
-    return req.ip || req.connection.remoteAddress;
-  },
   skip: (req, res) => {
     // Não limitar em ambiente de teste
     return process.env.NODE_ENV === "test";
@@ -35,9 +31,6 @@ const apiLimiter = rateLimit({
   message: "Muitas requisições. Tente novamente em 1 minuto.",
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req, res) => {
-    return req.ip || req.connection.remoteAddress;
-  },
   skip: (req, res) => {
     return process.env.NODE_ENV === "test";
   },
@@ -53,18 +46,8 @@ const writeLimiter = rateLimit({
   message: "Muitas operações de escrita. Tente novamente em 1 minuto.",
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req, res) => {
-    // Se autenticado, usar userId; senão usar IP
-    return req.user?.id || req.ip || req.connection.remoteAddress;
-  },
   skip: (req, res) => {
     return process.env.NODE_ENV === "test";
-  },
-  // Apenas conta requisições de POST, PATCH, DELETE
-  onLimitReached: (req, res, options) => {
-    console.warn(
-      `⚠️ Rate limit atingido para ${req.method} ${req.path} - ${req.ip}`,
-    );
   },
 });
 
