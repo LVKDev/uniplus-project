@@ -47,7 +47,10 @@ async function registrarAuditoria(
           await prisma[modelName].create({ data: base });
         }
       } catch (error) {
-        console.warn(`[AUDIT ERROR] Falha ao registrar em ${table}:`, error.message);
+        console.warn(
+          `[AUDIT ERROR] Falha ao registrar em ${table}:`,
+          error.message,
+        );
       }
     }
 

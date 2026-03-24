@@ -9,7 +9,9 @@ try {
   const { PrismaClient } = require("@prisma/client");
   prisma = new PrismaClient();
 } catch (error) {
-  console.warn("⚠️  @prisma/client nao disponivel. Health check de database desativado.");
+  console.warn(
+    "⚠️  @prisma/client nao disponivel. Health check de database desativado.",
+  );
 }
 
 router.get("/health", (req, res) => {
