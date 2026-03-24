@@ -50,23 +50,44 @@ async function fetchAccessToken() {
     scope: "public-api",
   }).toString();
 
-  const response = await authClient.post("/oauth/token", body, {
-    headers: {
-      Authorization: `Basic ${authBasic}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
+  console.log(
+    "[UniPlus] 🔐 Gerando token OAuth...",
+    `URL: ${serverURL}/oauth/token`
+  );
 
-  const { access_token: accessToken, expires_in: expiresIn } =
-    response.data || {};
-  if (!accessToken) {
-    throw new Error("Resposta de token invalida da UniPlus.");
+  try {
+    const response = await authClient.post("/oauth/token", body, {
+      headers: {
+        Authorization: `Basic ${authBasic}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    const { access_token: accessToken, expires_in: expiresIn } =
+      response.data || {};
+    if (!accessToken) {
+      throw new Error("Resposta de token invalida da UniPlus.");
+    }
+
+    console.log(
+      "[UniPlus] ✅ Token gerado com sucesso, expira em",
+      expiresIn,
+      "segundos"
+    );
+
+    cachedToken = accessToken;
+    const ttlMs = (Number(expiresIn) || 3600) * 1000;
+    // Refresh 60 seconds before expiry to avoid clock drift.
+    tokenExpiresAt = Date.now() + ttlMs - 60_000;
+  } catch (error) {
+    console.error("[UniPlus] ❌ ERRO ao gerar token OAuth:");
+    console.error("[UniPlus] Status:", error.response?.status);
+    console.error(
+      "[UniPlus] Data:",
+      error.response?.data?.substring?.(0, 300) || error.message
+    );
+    throw error;
   }
-
-  cachedToken = accessToken;
-  const ttlMs = (Number(expiresIn) || 3600) * 1000;
-  // Refresh 60 seconds before expiry to avoid clock drift.
-  tokenExpiresAt = Date.now() + ttlMs - 60_000;
 }
 
 async function getAccessToken() {
@@ -116,6 +137,11 @@ uniplusClient.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
     const originalRequest = error.config;
+    const method = originalRequest?.method?.toUpperCase();
+    const url = originalRequest?.url;
+
+    console.error(`[UniPlus] ❌ ${method} ${url} → ${status}`);
+
     const retryCount = originalRequest?.__retryCount || 0;
     const maxRetries = 0; // DESABILITAR retries de 403 para não sobrecarregar
 
@@ -124,7 +150,7 @@ uniplusClient.interceptors.response.use(
       originalRequest.__retryCount = retryCount + 1;
       const delayMs = Math.pow(2, retryCount) * 1000;
       console.log(
-        `[UniPlus] 403 recebido. Tentativa ${retryCount + 1}/${maxRetries} em ${delayMs}ms...`,
+        `[UniPlus] 403 recebido. Tentativa ${retryCount + 1}/${maxRetries} em ${delayMs}ms...`
       );
       await new Promise((resolve) => setTimeout(resolve, delayMs));
       return uniplusClient.request(originalRequest);
@@ -135,6 +161,7 @@ uniplusClient.interceptors.response.use(
       originalRequest &&
       !originalRequest.__isRetryRequest
     ) {
+      console.log("[UniPlus] Token expirou, regenerando...");
       originalRequest.__isRetryRequest = true;
       cachedToken = null;
       tokenExpiresAt = 0;
@@ -148,7 +175,7 @@ uniplusClient.interceptors.response.use(
       message = "Nao autorizado (401). Verifique o token da UniPlus.";
     } else if (status === 403) {
       message =
-        "Acesso negado (403). após múltiplas tentativas. Verifique as credenciais e firewall.";
+        "Acesso negado (403). Verifique se as credenciais são válidas e se o IP não está bloqueado.";
     } else if (status >= 500) {
       message = "Erro interno no servidor da UniPlus.";
     }
