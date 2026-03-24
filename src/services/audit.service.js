@@ -74,5 +74,3 @@ async function registrarAuditoria(
 module.exports = {
   registrarAuditoria,
 };
-  registrarAuditoria,
-};
