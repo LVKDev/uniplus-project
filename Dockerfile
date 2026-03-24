@@ -1,12 +1,11 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma
 
-RUN apk add --no-cache curl \
-  && npm install \
+RUN npm install \
   && npm install prisma@5.18.0 --save-dev
 
 COPY src ./src
