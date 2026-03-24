@@ -1,9 +1,16 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
 const auditService = require("../services/audit.service");
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
+// Tenta carregar Prisma, mas não falha se não estiver disponível
+let prisma = null;
+try {
+  const { PrismaClient } = require("@prisma/client");
+  prisma = new PrismaClient();
+} catch (error) {
+  console.warn("⚠️  @prisma/client nao disponivel. Health check de database desativado.");
+}
 
 router.get("/health", (req, res) => {
   const response = {
@@ -42,7 +49,18 @@ router.get("/health", (req, res) => {
  *       200:
  *         description: API disponivel
  */
-router.get("/health/database", async (req, res, next) => {
+router.get("/health/database", async (req, res) => {
+  // Se Prisma não estiver disponível, responde com status parcial
+  if (!prisma) {
+    return res.status(200).json({
+      success: true,
+      status: "partial",
+      database: "unavailable (prisma not installed)",
+      message: "API rodando, mas database health check indisponível",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   try {
     // Testa conexão com o banco de dados
     await prisma.$queryRaw`SELECT 1`;
