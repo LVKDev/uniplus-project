@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: uniplus-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: uniplus_db
+      MYSQL_USER: uniplus
+      MYSQL_PASSWORD: uniplus123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - uniplus-network
+
+  # API Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uniplus-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PUBLIC_BASE_URL: http://localhost:3000
+      RUN_DB_MIGRATIONS: "true"
+
+      # UniPlus Integration (ERP)
+      UNIPLUS_BASE_URL: https://unisoftsistemas.com.br/public-api
+      UNIPLUS_SERVER_URL: https://unisoftsistemas.com.br
+      UNIPLUS_AUTH_BASIC: dGVzdF9jbGllbnQ6dGVzdF9zZWNyZXQ=
+      UNIPLUS_TOKEN: ""
+      UNIPLUS_ALL_LIMIT: 100
+
+      # Database
+      DATABASE_URL: mysql://uniplus:uniplus123@mysql:3306/uniplus_db
+
+      # API Security (disabled for n8n testing)
+      BASIC_AUTH_USER: ""
+      BASIC_AUTH_PASS: ""
+
+      # Optional Supabase
+      SUPABASE_URL: ""
+      SUPABASE_SERVICE_ROLE_KEY: ""
+
+      # Optional Portal
+      PORTAL_BASE_URL: ""
+      PORTAL_API_TOKEN: ""
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    networks:
+      - uniplus-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  uniplus-network:
+    driver: bridge

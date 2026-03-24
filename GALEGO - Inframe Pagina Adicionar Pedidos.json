@@ -1,0 +1,1348 @@
+{
+  "name": "GALEGO - Inframe Pagina Adicionar Pedidos",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entidade\": {\n    \"codigo\": \"\",\n    \"nome\": \"{{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"nome\"] }}\",\n    \"razaoSocial\": \"{{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"razao_social\"] }}\",\n    \"tipo\": \"1\",\n    \"tipoPessoa\": \"{{ $json[\"tipo_pessoa\"] }}\",\n    \"endereco\": \"{{ $node[\"Dados Confirmação\"].json[\"endereco\"][\"logradouro\"] }}\",\n    \"numeroEndereco\": \"{{ $node[\"Dados Confirmação\"].json[\"endereco\"][\"numero\"] }}\",\n    \"bairro\": \"{{ $node[\"Dados Confirmação\"].json[\"endereco\"][\"bairro\"] }}\",\n    \"cidade\": \"{{ $node[\"Dados Confirmação\"].json[\"endereco\"][\"cidade\"] }}\",\n    \"estado\": \"{{ $node[\"Dados Confirmação\"].json[\"endereco\"][\"uf\"] }}\",\n    \"celular\": \"{{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"telefone\"] }}\",\n    \"cnpjCpf\": \"{{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"cpf_cnpj\"] }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -752,
+        336
+      ],
+      "id": "e255d974-9b2e-4bed-947a-810212b4dff3",
+      "name": "Cadastrar Cliente",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/pedidos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        368,
+        528
+      ],
+      "id": "af4ddf18-1e49-4294-b65c-f493218608d9",
+      "name": "Novo Pedido",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "uniplus/pedido/inframe/galego",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        112
+      ],
+      "id": "c32362c1-2729-4fbd-83bf-5368554d4b12",
+      "name": "NOVO PEDIDO",
+      "webhookId": "a526ce4c-3bca-4051-b275-fbbd6b0a2254"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "22eea2a4-4ecf-439d-8c2a-cc0b19b5260a",
+              "name": "Endpoint",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1aa335e4-a8f1-40af-b6e2-a5d7ded2cd9f",
+              "name": "Token",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "8cc1e5da-9009-44e5-b6b5-f930cafa0c20",
+              "name": "Nome",
+              "value": "={{ $json.query.contactName }}",
+              "type": "string"
+            },
+            {
+              "id": "242c543f-ad19-4bdb-aff9-914bf23e0554",
+              "name": "Number",
+              "value": "={{ $json.query.contactNumber }}",
+              "type": "string"
+            },
+            {
+              "id": "d871904c-0bca-446a-9c40-a7fed4c7e7b6",
+              "name": "contactId",
+              "value": "={{ $json.query.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "ee1b28e3-6ee1-4055-9c29-061dd6c2b382",
+              "name": "ticketId",
+              "value": "={{ $json.query.ticketId }}",
+              "type": "number"
+            },
+            {
+              "id": "4a9a9155-4689-4255-a733-48353afdc912",
+              "name": "Usuário",
+              "value": "={{ $json.query.user_LoggedName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1424,
+        112
+      ],
+      "id": "9be99439-6f11-47d4-a188-688512fc3411",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        112
+      ],
+      "id": "94269de0-7089-4439-af79-ff98a4c0859a",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "uniplus/pedido/adicionar-pedido/galego",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        528
+      ],
+      "id": "098d1399-175c-4a7e-a554-5b931a4d8a72",
+      "name": "Webhook",
+      "webhookId": "74a61327-eb04-44c5-8e44-8df98e152fba"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "85deae75-951a-469b-bee9-6297d168ff3a",
+              "name": "tipo_cliente",
+              "value": "={{ $json.body.tipo_cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "0e562d61-e1be-47b8-b559-4f4a22b22b44",
+              "name": "cliente.id_cliente",
+              "value": "={{ $json.body.cliente.id_cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "9b3adf73-fe13-4475-9415-c5cb03b3db24",
+              "name": "cliente.tipo_cadastro",
+              "value": "={{ $json.body.cliente.tipo_cadastro }}",
+              "type": "string"
+            },
+            {
+              "id": "05cf77a6-2e89-4218-8ea5-93e326991c8e",
+              "name": "cliente.tipo_pessoa",
+              "value": "={{ $json.body.cliente.tipo_pessoa }}",
+              "type": "string"
+            },
+            {
+              "id": "2178af9b-ed8f-4916-80b6-53887117d2e2",
+              "name": "cliente.nome",
+              "value": "={{ $json.body.cliente.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "f580e8ce-e4cf-4cc9-acdf-c86040e44522",
+              "name": "cliente.razao_social",
+              "value": "={{ $json.body.cliente.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "df987c9e-c01e-4669-8b90-4073a53685c7",
+              "name": "cliente.cpf_cnpj",
+              "value": "={{ $json[\"body\"][\"cliente\"][\"cpf_cnpj\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "528d311b-49fb-46ef-ae7c-343323a83591",
+              "name": "cliente.telefone",
+              "value": "={{ $json.body.cliente.celular_whats }}",
+              "type": "string"
+            },
+            {
+              "id": "e15535d8-f950-42da-994b-de42d5cca9a8",
+              "name": "endereco.logradouro",
+              "value": "={{ $json.body.cliente.endereco.rua }}",
+              "type": "string"
+            },
+            {
+              "id": "68225846-8ad5-4d92-a1c6-6da75038a726",
+              "name": "endereco.numero",
+              "value": "={{ $json.body.cliente.endereco.numero }}",
+              "type": "string"
+            },
+            {
+              "id": "e26002c8-32dd-4e0b-b51d-fc726ab62f81",
+              "name": "endereco.bairro",
+              "value": "={{ $json.body.cliente.endereco.bairro }}",
+              "type": "string"
+            },
+            {
+              "id": "f686b68c-be63-45af-a27b-9add1cabd5bf",
+              "name": "endereco.cidade",
+              "value": "={{ $json.body.cliente.endereco.cidade }}",
+              "type": "string"
+            },
+            {
+              "id": "d8570fd2-aa4d-4f9e-8eb9-14de19fb9da6",
+              "name": "endereco.uf",
+              "value": "={{ $json.body.cliente.endereco.uf }}",
+              "type": "string"
+            },
+            {
+              "id": "8dda8ef5-bc58-4541-bdf6-55d5e0df8749",
+              "name": "endereco.complemento",
+              "value": "={{ $json.body.cliente.endereco.complemento }}",
+              "type": "string"
+            },
+            {
+              "id": "b5c5283f-2f4a-4609-b993-b42746872ee0",
+              "name": "itens",
+              "value": "={{ $json.body.itens }}",
+              "type": "array"
+            },
+            {
+              "id": "c7ae148d-accf-4065-aeea-781d11f09a8d",
+              "name": "obs",
+              "value": "={{ $json.body.obs }}",
+              "type": "string"
+            },
+            {
+              "id": "274c1d49-6585-4b18-8332-833d85b3f9ea",
+              "name": "cadastro_editado",
+              "value": "={{ $json.body.cadastro_editado }}",
+              "type": "boolean"
+            },
+            {
+              "id": "b75c3be4-e7f1-4508-afdd-94a4afc47d1c",
+              "name": "entregador",
+              "value": "={{ $json.body.entregador.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9a865b2c-46fc-4c1c-8866-05d9d2083198",
+              "name": "financeiro.total_pedido",
+              "value": "={{ $json.body.financeiro.total_pedido }}",
+              "type": "number"
+            },
+            {
+              "id": "9bd32cec-b24f-4127-883a-f2dd743b5b75",
+              "name": "financeiro.total_pago",
+              "value": "={{ $json.body.financeiro.total_pago }}",
+              "type": "number"
+            },
+            {
+              "id": "4735b984-dd7f-4f93-8ca1-dcc2f29d3829",
+              "name": "financeiro.troco_gerado",
+              "value": "={{ $json.body.financeiro.troco_gerado }}",
+              "type": "number"
+            },
+            {
+              "id": "f7abbe03-01ad-433f-ab83-68e301dd352f",
+              "name": "financeiro.troco_para",
+              "value": "={{ $json.body.financeiro.troco_para }}",
+              "type": "number"
+            },
+            {
+              "id": "ff924163-b602-4b72-9d6d-ceea3747de0b",
+              "name": "financeiro.detalhe_pagamentos",
+              "value": "={{ $json.body.financeiro.detalhe_pagamentos }}",
+              "type": "array"
+            },
+            {
+              "id": "e0bba8c1-57b4-497b-9e40-92d8afc57749",
+              "name": "operador",
+              "value": "={{ $json.body.operador }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1424,
+        528
+      ],
+      "id": "a37ed040-14fa-41cf-a228-bbadd3c8fbbe",
+      "name": "Dados Confirmação"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": {\n    \"success\": \"{{ $json.success }}\"\n  },\n  \"dados\": {\n    \"pedido\": \"{{ $json.data.mensagens[0] }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        528
+      ],
+      "id": "3ab7aa38-c60b-4f16-9c56-7b0ff7b3fc3d",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/produtos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -752,
+        112
+      ],
+      "id": "0f1fe395-dd24-4338-951c-2cba809e6975",
+      "name": "Busca Itens1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f1b346c-9ab5-40c7-8613-5262cdc05bb7",
+              "name": "Favicon",
+              "value": "https://i.ibb.co/tpqxTbWx/favicom-ceri-On.png",
+              "type": "string"
+            },
+            {
+              "id": "2974f565-9a53-444e-b95f-6d7c2dbcf208",
+              "name": "Logo",
+              "value": "https://i.ibb.co/dwY1dhX2/ceriOn.png",
+              "type": "string"
+            },
+            {
+              "id": "25318ff6-5c1d-48c3-8724-60e2e72d071e",
+              "name": "NOME BASE",
+              "value": "▪️ Uniplus - Teste",
+              "type": "string"
+            },
+            {
+              "id": "97a6f3eb-a2b8-4cc4-b5f3-eadf05ce7381",
+              "name": "PRODUTOS",
+              "value": "={{ $('Busca Itens1').item.json.data }}",
+              "type": "array"
+            },
+            {
+              "id": "d8823514-b52f-4a18-9f34-5f4ae7d90ec7",
+              "name": "CLIENTES",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            },
+            {
+              "id": "df33f276-f46d-4a20-a230-2bc4e7fc3d39",
+              "name": "VENDEDORES",
+              "value": "={{ $node[\"Busca Vendedor/Entregador\"].json }}",
+              "type": "string"
+            },
+            {
+              "id": "584ebeb9-d3b7-44f0-a61c-7c034e75850d",
+              "name": "Cidades e Estados",
+              "value": "={{ $node[\"Lista Cidades1\"].json[\"propertyName\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f3e83618-4b6b-4997-9704-be2b5a94ffd3",
+              "name": "Webhook Envio Pedido",
+              "value": "https://webhook.cerion.com.br/webhook/uniplus/pedido/adicionar-pedido/galego",
+              "type": "string"
+            },
+            {
+              "id": "1a1bb8b3-62ab-49e9-aa3e-cece2a7f6e26",
+              "name": "Usuário",
+              "value": "={{ $('Dados').item.json[\"Usuário\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        112
+      ],
+      "id": "5f0ab085-46da-4789-894d-d0d12d32390a",
+      "name": "INFORMAÇÕES"
+    },
+    {
+      "parameters": {
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -528,
+        112
+      ],
+      "id": "4254e6b0-faf5-4525-b6d4-ba4f02ac6fde",
+      "name": "Busca Cliente1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>\n  <link rel=\"icon\" type=\"image/x-icon\" href=\"{{ $json.Favicon }}\">\n  <title>{{ $json['NOME BASE'] }} - Pedido</title>\n  <style>\n    :root { --brand: #ff6f20; --bg: #f3f4f6; --text: #1f2937; --border: #d1d5db; --success: #10b981; --danger: #ef4444; --radius: 6px; }\n    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }\n    body { background-color: var(--bg); color: var(--text); padding: 10px; padding-bottom: 80px; min-height: 100vh; }\n    .container { width: 100%; max-width: 700px; background: #fff; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; padding: 20px; }\n    .operador-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 700; font-size: 14px; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3); }\n    .section-title { font-size: 14px; font-weight: 800; color: var(--brand); margin: 30px 0 10px 0; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }\n    .section-title:first-child { margin-top: 0; }\n    .row { display: flex; gap: 10px; margin-bottom: 10px; }\n    .col { flex: 1; min-width: 0; }\n    .form-group { margin-bottom: 12px; }\n    label { display: block; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }\n    input, select, textarea { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; background: #fff; color: #111; transition: all 0.2s; }\n    input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(255, 111, 32, 0.15); }\n    input[readonly] { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; cursor: not-allowed; }\n    input:disabled, select:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.7; }\n    textarea { height: auto; padding: 10px; resize: vertical; }\n    .doc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }\n    .doc-options { display: flex; gap: 12px; align-items: center; }\n    .doc-options label { font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; color: #555; }\n    .doc-options input { width: 14px; height: 14px; margin: 0; cursor: pointer; }\n    .input-error { border-color: var(--danger) !important; background-color: #fef2f2 !important; }\n    .msg-error { color: var(--danger); font-size: 10px; font-weight: bold; margin-top: 2px; display: none; text-align: right; }\n    .card-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; border-left: 4px solid var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n    .pay-card { border-left-color: #3b82f6; background: #eff6ff; }\n    .item-grid { display: grid; grid-template-columns: 1fr 0.6fr 1fr; gap: 8px; margin-top: 10px; }\n    .item-col { display: flex; flex-direction: column; }\n    .item-col label { font-size: 10px; color: #6b7280; margin-bottom: 2px; }\n    .input-total { background-color: #fff7ed !important; font-weight: bold; color: #c2410c; border: 1px solid #ffedd5; }\n    .btn-edit { font-size: 11px; color: #2563eb; cursor: pointer; text-decoration: none; font-weight: bold; background: #dbeafe; padding: 4px 10px; border-radius: 4px; }\n    .badge-novo { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-left: 5px; display: none; }\n    .btn-remove { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; padding: 6px 12px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; width: auto; display: inline-block; }\n    .btn-add { background: #eff6ff; color: #1d4ed8; border: 1px dashed #3b82f6; border-radius: var(--radius); width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: background 0.2s; }\n    .btn-add:hover { background: #dbeafe; }\n    .btn-add-pay { background: #ecfdf5; color: #047857; border-color: #10b981; }\n    .status-panel { background: #111827; color: #fff; padding: 20px; border-radius: 8px; margin-top: 30px; }\n    .status-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #d1d5db; }\n    .status-main { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #374151; padding-top: 15px; margin-top: 15px; }\n    .total-big-label { font-size: 18px; font-weight: bold; color: var(--brand); text-transform: uppercase; }\n    .total-big-value { font-size: 24px; font-weight: 800; color: #fff; }\n    .status-badge { padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 14px; display: inline-block; min-width: 120px; text-align: center; }\n    .badge-falta { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }\n    .badge-ok { background: #dcfce7; color: #15803d; border: 1px solid #4ade80; }\n    .btn-submit { width: 100%; height: 55px; background: var(--brand); color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(255, 111, 32, 0.3); transition: transform 0.1s; }\n    .btn-submit:active { transform: scale(0.98); }\n    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(3px); }\n    .modal-box { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }\n    .modal-actions { display: flex; gap: 10px; margin-top: 25px; }\n    .btn-modal { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }\n    .btn-cancel { background: #e5e7eb; color: #374151; }\n    .btn-confirm { background: var(--brand); color: white; }\n    .btn-retry { background: var(--danger); color: white; width: 100%; padding: 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }\n    .btn-print { background: #333; color: white; width: 100%; padding: 15px; margin-top: 10px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }\n    #print-area { display: none; font-family: 'Courier New', Courier, monospace; width: 80mm; background: #fff; padding: 5px; color: #000; font-size: 12px; line-height: 1.2; }\n    .cupom-header { text-align: center; margin-bottom: 10px; }\n    .cupom-title { font-weight: bold; font-size: 14px; margin-bottom: 2px; }\n    .cupom-box-pedido { background-color: #ddd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center; font-weight: bold; font-size: 14px; padding: 5px; margin: 10px 0; border: 1px solid #999; }\n    .cupom-line { margin: 3px 0; }\n    .cupom-bold { font-weight: bold; }\n    .cupom-divider { border-top: 1px dashed #000; margin: 8px 0; }\n    .cupom-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: fixed; }\n    .cupom-table th { text-align: left; border-bottom: 1px solid #000; font-size: 11px; padding: 2px 4px; }\n    .cupom-table td { font-size: 11px; padding: 2px 4px; vertical-align: top; }\n    .cupom-table th:nth-child(2),\n    .cupom-table th:nth-child(3),\n    .cupom-table th:nth-child(4) { text-align: center; }\n    .text-right { text-align: right; }\n    .cupom-total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 4px; }\n    .cupom-complemento { text-align: center; font-weight: bold; background-color: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 4px; margin: 6px 0; border: 1px solid #999; font-size: 11px; }\n    @media print {\n        body * { visibility: hidden; }\n        #print-area, #print-area * { visibility: visible; }\n        #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block; }\n        .container, .modal-overlay { display: none !important; }\n        @page { margin: 0; }\n    }\n    @media (max-width: 480px) {\n        .container { border-radius: 0; padding: 15px; max-width: 100%; }\n        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; }\n        .item-col { flex: 1; min-width: 70px; }\n        .item-col:first-child { min-width: 100%; }\n        .status-main { flex-direction: column; align-items: flex-start; gap: 10px; }\n        .doc-header { flex-direction: row; align-items: center; } \n    }\n    @media (max-width: 320px) {\n        body { padding: 8px; padding-bottom: 70px; }\n        .row { flex-direction: column; gap: 6px; }\n        .section-title { border-top: 1px solid #e5e7eb; padding-top: 10px; }\n        .section-title:first-child { border-top: 0; padding-top: 0; }\n        .doc-header { flex-direction: column; align-items: flex-start; gap: 6px; }\n        .doc-options { flex-wrap: wrap; }\n        .item-grid { flex-direction: column; }\n        .item-col { min-width: 100%; }\n        .status-row { flex-direction: column; align-items: flex-start; gap: 2px; }\n    }\n  </style>\n</head>\n<body>\n\n  <div class=\"modal-overlay\" id=\"loader\"><div class=\"modal-box\"><h3 style=\"color:var(--brand)\">Processando...</h3></div></div>\n  <div class=\"modal-overlay\" id=\"error-modal\">\n      <div class=\"modal-box\">\n          <h2 style=\"color:var(--danger)\">⚠️ Atenção</h2>\n          <p id=\"error-msg\" style=\"margin-top:10px; color:#555;\">Erro.</p>\n          <button class=\"btn-retry\" onclick=\"closeError()\">OK, CORRIGIR</button>\n      </div>\n  </div>\n  <div class=\"modal-overlay\" id=\"confirm-modal\">\n      <div class=\"modal-box\">\n          <h2>Finalizar Venda?</h2>\n          <div style=\"background:#f3f4f6; padding:15px; border-radius:8px; margin: 15px 0; text-align:left;\">\n              <div style=\"display:flex; justify-content:space-between; margin-bottom:5px;\"><span>Total Pedido:</span><span style=\"font-weight:bold\" id=\"modal-total\"></span></div>\n              <div style=\"display:flex; justify-content:space-between; margin-bottom:5px;\"><span>Total Pago:</span><span style=\"font-weight:bold; color:#2563eb\" id=\"modal-pago\"></span></div>\n              <div style=\"border-top:1px solid #ddd; margin:5px 0;\"></div>\n              <div style=\"display:flex; justify-content:space-between; font-size:16px;\">\n                  <span id=\"modal-status-label\">Troco/Falta:</span><span style=\"font-weight:800;\" id=\"modal-status-val\"></span>\n              </div>\n          </div>\n          <div class=\"modal-actions\">\n              <button class=\"btn-modal btn-cancel\" onclick=\"closeModal()\">Voltar</button>\n              <button class=\"btn-modal btn-confirm\" onclick=\"submitFinal()\">CONFIRMAR (F10)</button>\n          </div>\n      </div>\n  </div>\n  <div id=\"print-area\"></div>\n  <div class=\"container\" id=\"success-screen\" style=\"display:none; text-align:center; padding-top:40px;\">\n      <div style=\"font-size:60px; margin-bottom:15px\">✅</div>\n      <h1 style=\"color:var(--success); font-size:24px;\">Pedido Enviado!</h1>\n      <div style=\"font-size:14px; color:#666; margin-top:10px;\">Número do Pedido</div>\n      <div style=\"font-size:36px; font-weight:800; color:#333; margin: 5px 0 25px 0;\">#<span id=\"order-id-display\">...</span></div>\n      <button class=\"btn-print\" onclick=\"printReceipt()\">🖨️ IMPRIMIR CUPOM</button>\n      <button class=\"btn-submit\" onclick=\"startNewOrder()\" style=\"background:#555; margin-top:10px;\">NOVO PEDIDO</button>\n  </div>\n\n  <div class=\"container\" id=\"main-ui\">\n    <div class=\"operador-badge\">\n      👤 Operador: <span id=\"nome-operador\">Sem Operador</span>\n    </div>\n\n    <form id=\"form-pedido\" onsubmit=\"return false;\">\n      \n      <div class=\"section-title\" style=\"margin-top:0;\">\n         <span><span class=\"section-icon\">👤</span> CLIENTE <span id=\"tag-novo\" class=\"badge-novo\">NOVO</span></span>\n         <span class=\"btn-edit\" id=\"btn-edit\" onclick=\"enableEdit()\">EDITAR</span>\n      </div>\n      \n      <div class=\"form-group\">\n        <label>Buscar Cliente (Nome, Rua, Telefone...)*</label>\n        <input type=\"text\" id=\"busca-cliente\" list=\"dl-clientes\" placeholder=\"Digite Nome, Telefone ou Endereço...\" autocomplete=\"off\">\n        <datalist id=\"dl-clientes\"></datalist>\n        <input type=\"hidden\" id=\"cli-id\"><input type=\"hidden\" id=\"cli-tipo\"><input type=\"hidden\" id=\"cli-tipoPessoa\">\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col\" style=\"flex:2\">\n            <label>Nome / Razão Social</label>\n            <input type=\"text\" id=\"cli-razao\" readonly>\n        </div>\n        <div class=\"col\">\n            <div class=\"doc-header\">\n                <label>Documento</label>\n                <div class=\"doc-options\">\n                    <label><input type=\"radio\" name=\"docType\" value=\"cpf\" checked onclick=\"docTypeChanged()\"> CPF</label>\n                    <label><input type=\"radio\" name=\"docType\" value=\"cnpj\" onclick=\"docTypeChanged()\"> CNPJ</label>\n                </div>\n            </div>\n            <input type=\"text\" id=\"cli-doc\" placeholder=\"000.000.000-00\" readonly oninput=\"validateDocUI()\">\n            <div id=\"doc-error-msg\" class=\"msg-error\">Documento Inválido</div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n         <div class=\"col\"><label>WhatsApp</label><input type=\"text\" id=\"cli-zap\" readonly></div>\n         <div class=\"col\"><label>Bairro</label><input type=\"text\" id=\"cli-bairro\" readonly></div>\n      </div>\n      <div class=\"row\">\n         <div class=\"col\" style=\"flex:3\"><label>Rua</label><input type=\"text\" id=\"cli-rua\" readonly></div>\n         <div class=\"col\"><label>Nº</label><input type=\"text\" id=\"cli-num\" readonly></div>\n      </div>\n      \n      <div class=\"row\">\n         <div class=\"col\" style=\"flex:2\"><label>Complemento</label><input type=\"text\" id=\"cli-comp\" placeholder=\"Apto, Bloco...\" readonly></div>\n         \n         <div class=\"col\" style=\"flex:0 0 70px\">\n             <label>UF</label>\n             <select id=\"cli-uf\" onchange=\"filterCities()\" readonly disabled>\n                 <option value=\"\">--</option>\n             </select>\n         </div>\n\n         <div class=\"col\">\n             <label>Cidade</label>\n             <input type=\"text\" id=\"cli-cidade\" list=\"dl-cidades\" placeholder=\"Selecione UF...\" readonly onchange=\"validateCity()\">\n             <datalist id=\"dl-cidades\"></datalist>\n             <div id=\"city-error-msg\" class=\"msg-error\">Cidade não pertence ao UF</div>\n         </div>\n      </div>\n\n      <div class=\"section-title\"><span><span class=\"section-icon\">🛒</span> ITENS</span></div>\n      <datalist id=\"dl-produtos\"></datalist>\n      <div id=\"cart-container\"></div>\n      <button class=\"btn-add\" onclick=\"addItem()\">+ Adicionar Item (F9)</button>\n\n      <div class=\"section-title\" style=\"margin-top:10px;\"><span><span class=\"section-icon\">🚚</span> ENTREGADOR</span></div>\n      <div class=\"form-group\">\n          <select id=\"sel-entregador\">\n              </select>\n      </div>\n\n      <div class=\"form-group\" style=\"margin-top:15px;\">\n          <label>Observações</label>\n          <textarea id=\"obs-pedido\" rows=\"2\"></textarea>\n      </div>\n\n      <div class=\"section-title\"><span><span class=\"section-icon\">💳</span> PAGAMENTOS</span></div>\n      <div class=\"form-group\" style=\"background:#fff7ed; padding:10px; border:1px solid #ffedd5; border-radius:6px; margin-bottom:15px;\">\n          <label style=\"color:#c2410c;\">Troco Para (Opcional)</label>\n          <input type=\"number\" id=\"fin-troco-para\" placeholder=\"Ex: 50,00 ou 100,00\" step=\"0.01\">\n          <div style=\"font-size:10px; color:#9a3412; margin-top:2px\">Informe se o cliente pediu troco para um valor específico.</div>\n      </div>\n\n      <div id=\"payment-container\"></div>\n      <button class=\"btn-add btn-add-pay\" onclick=\"addPayment()\">+ Adicionar Pagamento</button>\n\n      <div class=\"status-panel\">\n         <div class=\"status-row\"><span>Subtotal Itens:</span><span id=\"disp-subtotal\">R$ 0,00</span></div>\n         <div class=\"status-row\"><span>Total Pago:</span><span id=\"disp-pago\">R$ 0,00</span></div>\n         <div class=\"status-row\"><span>Status:</span><span id=\"disp-status-badge\" class=\"status-badge badge-falta\">Falta: R$ 0,00</span></div>\n         <div class=\"status-main\">\n             <span class=\"total-big-label\">TOTAL PEDIDO</span>\n             <span class=\"total-big-value\" id=\"res-total\">R$ 0,00</span>\n         </div>\n         <div style=\"text-align:right; font-size:11px; margin-top:5px; color:#6b7280;\">F9: Item | F10: Finalizar</div>\n      </div>\n\n      <button class=\"btn-submit\" onclick=\"openModal()\">CONFIRMAR (F10)</button>\n    </form>\n  </div>\n\n  <script>\n    function unwrapData(input) {\n        if (input === undefined || input === null) return null;\n        let current = input;\n        for (let i = 0; i < 4; i++) {\n            if (typeof current === 'string') {\n                try { let parsed = JSON.parse(current); current = parsed; } catch (e) { break; }\n            } else { break; }\n        }\n        if (Array.isArray(current) && current.length === 1 && typeof current[0] === 'string') {\n             try { return JSON.parse(current[0]); } catch(e) {}\n        }\n        return current;\n    }\n\n    const RAW_PROD = {{ JSON.stringify($json.PRODUTOS) }};\n    const DB_PRODUTOS = Array.isArray(unwrapData(RAW_PROD)) ? unwrapData(RAW_PROD) : [];\n\n    const RAW_CLI = {{ JSON.stringify($json.CLIENTES) }};\n    const DB_CLIENTES = Array.isArray(unwrapData(RAW_CLI)) ? unwrapData(RAW_CLI) : [];\n\n    const RAW_VEND = {{ JSON.stringify($json.VENDEDORES) }};\n    let parsedVend = unwrapData(RAW_VEND);\n    if (parsedVend && !Array.isArray(parsedVend) && parsedVend.data) parsedVend = parsedVend.data;\n    const DB_VENDEDORES = Array.isArray(parsedVend) ? parsedVend : [];\n\n    const RAW_CIDADES = {{ JSON.stringify($json[\"Cidades e Estados\"]) }};\n    const DB_CIDADES_ESTADOS = Array.isArray(unwrapData(RAW_CIDADES)) ? unwrapData(RAW_CIDADES) : [];\n\n    const WEBHOOK_URL = \"{{ $json['Webhook Envio Pedido'] }}\";\n    \n    const RAW_USUARIO = {{ JSON.stringify($json[\"Usuário\"]) }};\n    const NOME_USUARIO = (typeof RAW_USUARIO === 'string' && RAW_USUARIO.trim() !== '') ? RAW_USUARIO.trim() : \"Sem Operador\";\n    \n    let tipoCliente = \"NOVO\";\n    let isEditando = false;\n    let lastOrderId = \"---\";\n    let globalTotal = 0;\n    let globalPago = 0;\n\n    function getValue(obj, keys) {\n        if (!obj) return '';\n        for (let k of keys) {\n            if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') return obj[k];\n        }\n        if (obj.endereco && typeof obj.endereco === 'object') {\n            for (let k of keys) {\n                if (obj.endereco[k] !== undefined && obj.endereco[k] !== null && String(obj.endereco[k]).trim() !== '') return obj.endereco[k];\n            }\n        }\n        return '';\n    }\n\n    function normalizeText(value) {\n        return String(value || '')\n            .toLowerCase()\n            .normalize('NFD')\n            .replace(/[\\u0300-\\u036f]/g, '');\n    }\n\n    function parseNumber(value) {\n        if (value === null || value === undefined) return 0;\n        const normalized = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');\n        const parsed = parseFloat(normalized);\n        return Number.isFinite(parsed) ? parsed : 0;\n    }\n    function asText(value) {\n        if (value === null || value === undefined) return '';\n        if (typeof value === 'object') return '';\n        return String(value).trim();\n    }\n\n    function buildClientOption(c) {\n        const opt = document.createElement('option');\n        const nome = asText(getValue(c, ['nome', 'razaoSocial']));\n        const codigo = asText(getValue(c, ['codigo', 'id', 'cliente']));\n        const doc = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj']));\n        const telefone = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp']));\n        const rua = asText(getValue(c, ['endereco', 'rua', 'logradouro']));\n        const numero = asText(getValue(c, ['numeroEndereco', 'numero']));\n        const bairro = asText(getValue(c, ['bairro']));\n        const cidade = asText(getValue(c, ['cidade', 'municipio']));\n        const uf = asText(getValue(c, ['estado', 'uf']));\n        const textoEndereco = [rua, numero, bairro, cidade, uf].filter(Boolean).join(', ');\n        const partes = [\n            codigo ? `[${codigo}]` : '',\n            nome || 'Sem nome',\n            telefone || '',\n            doc || '',\n            textoEndereco || ''\n        ].filter(Boolean);\n        opt.value = nome || codigo || telefone || '';\n        opt.label = partes.join(' | ');\n        opt.textContent = opt.label;\n        return opt;\n    }\n\n    function renderClientOptions(list) {\n        const dlCli = document.getElementById('dl-clientes');\n        dlCli.innerHTML = '';\n        list.forEach(c => dlCli.appendChild(buildClientOption(c)));\n    }\n\n    function filterClients(query) {\n        const q = normalizeText(query);\n        const qDigits = String(query || '').replace(/\\D/g, '');\n        if (!q) return DB_CLIENTES;\n        return DB_CLIENTES.filter(c => {\n            const nome = asText(getValue(c, ['nome', 'razaoSocial']));\n            const doc = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj']));\n            const telefone = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp']));\n            const rua = asText(getValue(c, ['endereco', 'rua', 'logradouro']));\n            const numero = asText(getValue(c, ['numeroEndereco', 'numero']));\n            const bairro = asText(getValue(c, ['bairro']));\n            const cidade = asText(getValue(c, ['cidade', 'municipio']));\n            const uf = asText(getValue(c, ['estado', 'uf']));\n            const complemento = asText(getValue(c, ['complemento']));\n            const textoEndereco = [rua, numero, bairro, cidade, uf, complemento].filter(Boolean).join(' ');\n            const hay = normalizeText([nome, doc, telefone, textoEndereco].join(' '));\n            if (hay.includes(q)) return true;\n            if (!qDigits) return false;\n            const digitsHay = [doc, telefone].map(v => String(v || '').replace(/\\D/g, '')).join(' ');\n            return digitsHay.includes(qDigits);\n        });\n    }\n\n    function updateClientDatalist(query) {\n        renderClientOptions(filterClients(query));\n    }\n\n    function buildProductOption(p) {\n        const opt = document.createElement('option');\n        opt.value = p.nome;\n        opt.dataset.id = p.codigo;\n        opt.dataset.price = p.preco;\n        opt.label = `Ref: ${p.referencia||p.codigo} - ${p.nome}`;\n        return opt;\n    }\n\n    function renderProductOptions(list) {\n        const dlProd = document.getElementById('dl-produtos');\n        dlProd.innerHTML = '';\n        list.forEach(p => dlProd.appendChild(buildProductOption(p)));\n    }\n\n    function filterProducts(query) {\n        const q = normalizeText(query);\n        if (!q) return DB_PRODUTOS;\n        return DB_PRODUTOS.filter(p => {\n            const codigo = p.codigo || '';\n            const ref = p.referencia || '';\n            const nome = p.nome || '';\n            const hay = normalizeText([codigo, ref, nome].join(' '));\n            return hay.includes(q);\n        });\n    }\n\n    function updateProductDatalist(query) {\n        renderProductOptions(filterProducts(query));\n    }\n\n    function findExactClient(inputValue) {\n        const val = normalizeText(inputValue);\n        const digits = String(inputValue || '').replace(/\\D/g, '');\n        if (!val && !digits) return null;\n        return DB_CLIENTES.find(c => {\n            const nome = normalizeText(asText(getValue(c, ['nome', 'razaoSocial'])));\n            const docDigits = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj'])).replace(/\\D/g, '');\n            const celDigits = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp'])).replace(/\\D/g, '');\n            return (val && nome === val) || \n                   (digits && (docDigits === digits || (celDigits && celDigits === digits)));\n        });\n    }\n\n    function init() {\n        document.getElementById('nome-operador').textContent = NOME_USUARIO;\n        \n        const selVend = document.getElementById('sel-entregador');\n        selVend.innerHTML = '';\n        const defaultOpt = document.createElement('option');\n        defaultOpt.value = \"\";\n        defaultOpt.textContent = \"SEM ENTREGADOR\";\n        selVend.appendChild(defaultOpt);\n\n        if(DB_VENDEDORES.length > 0) {\n            DB_VENDEDORES.forEach(v => {\n                const opt = document.createElement('option');\n                opt.value = v.codigo;\n                opt.textContent = v.nome;\n                selVend.appendChild(opt);\n            });\n        }\n\n        renderClientOptions(DB_CLIENTES);\n        renderProductOptions(DB_PRODUTOS);\n\n        const selUF = document.getElementById('cli-uf');\n        const estadosMap = new Map();\n        DB_CIDADES_ESTADOS.forEach(i => {\n            if(i && i.estado_sigla && !estadosMap.has(i.estado_sigla)) {\n                estadosMap.set(i.estado_sigla, i.estado_nome);\n            }\n        });\n        const estadosOrdenados = Array.from(estadosMap.keys()).sort();\n        estadosOrdenados.forEach(sigla => {\n            const opt = document.createElement('option');\n            opt.value = sigla;\n            opt.textContent = sigla;\n            selUF.appendChild(opt);\n        });\n\n        addItem();\n    }\n\n    function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }\n    function fmtMoney(n) { return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }\n\n    function filterCities() {\n        const uf = document.getElementById('cli-uf').value;\n        const dl = document.getElementById('dl-cidades');\n        const inputCid = document.getElementById('cli-cidade');\n        \n        dl.innerHTML = ''; \n        inputCid.value = '';\n        inputCid.placeholder = uf ? \"Selecione...\" : \"Selecione UF primeiro...\";\n        inputCid.disabled = !uf;\n        \n        if(!uf) return;\n\n        const cidadesDoEstado = DB_CIDADES_ESTADOS.filter(c => c.estado_sigla === uf);\n        cidadesDoEstado.sort((a,b) => a.cidade.localeCompare(b.cidade));\n\n        cidadesDoEstado.forEach(c => {\n            const opt = document.createElement('option');\n            opt.value = c.cidade;\n            dl.appendChild(opt);\n        });\n        validateCity();\n    }\n\n    function validateCity() {\n        const uf = document.getElementById('cli-uf').value;\n        const cityVal = document.getElementById('cli-cidade').value.trim();\n        const err = document.getElementById('city-error-msg');\n        const input = document.getElementById('cli-cidade');\n\n        if(!cityVal || !uf) {\n            input.classList.remove('input-error');\n            err.style.display = 'none';\n            return;\n        }\n        const exists = DB_CIDADES_ESTADOS.some(c => c.estado_sigla === uf && c.cidade.toLowerCase() === cityVal.toLowerCase());\n        \n        if(!exists) {\n            input.classList.add('input-error');\n            err.style.display = 'block';\n        } else {\n            input.classList.remove('input-error');\n            err.style.display = 'none';\n        }\n    }\n\n    function docTypeChanged() { applyMask(); validateDocUI(); }\n    function applyMask() {\n        const input = document.getElementById('cli-doc');\n        const isCpf = document.querySelector('input[name=\"docType\"]:checked').value === 'cpf';\n        let v = input.value.replace(/\\D/g, '');\n        if (isCpf) {\n            if (v.length > 11) v = v.substring(0, 11);\n            v = v.replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d{1,2})$/, '$1-$2');\n        } else {\n            if (v.length > 14) v = v.substring(0, 14);\n            v = v.replace(/^(\\d{2})(\\d)/, '$1.$2').replace(/^(\\d{2})\\.(\\d{3})(\\d)/, '$1.$2.$3').replace(/\\.(\\d{3})(\\d)/, '.$1/$2').replace(/(\\d{4})(\\d)/, '$1-$2');\n        }\n        input.value = v;\n    }\n    function validateDocUI() {\n        applyMask();\n        const input = document.getElementById('cli-doc');\n        const errorMsg = document.getElementById('doc-error-msg');\n        const isCpf = document.querySelector('input[name=\"docType\"]:checked').value === 'cpf';\n        const rawVal = input.value.replace(/\\D/g, '');\n        if(rawVal.length === 0) { input.classList.remove('input-error'); errorMsg.style.display = 'none'; return; }\n        let isValid = false, msg = \"\";\n        if (isCpf) {\n            if (rawVal.length < 11) { isValid = false; msg = \"CPF Incompleto\"; }\n            else { isValid = validarCPF(rawVal); msg = isValid ? \"\" : \"CPF Inválido\"; }\n        } else {\n            if (rawVal.length < 14) { isValid = false; msg = \"CNPJ Incompleto\"; }\n            else { isValid = validarCNPJ(rawVal); msg = isValid ? \"\" : \"CNPJ Inválido\"; }\n        }\n        if (!isValid) { input.classList.add('input-error'); errorMsg.textContent = msg; errorMsg.style.display = 'block'; } \n        else { input.classList.remove('input-error'); errorMsg.style.display = 'none'; }\n    }\n\n    document.getElementById('busca-cliente').addEventListener('input', (e) => {\n        const val = e.target.value || '';\n        updateClientDatalist(val);\n        const cli = findExactClient(val);\n        if(cli) fillClient(cli); else setNewClientMode();\n    });\n    document.getElementById('busca-cliente').addEventListener('focus', (e) => {\n        updateClientDatalist(e.target.value || '');\n    });\n\n    document.addEventListener('input', (e) => {\n        if (e.target && e.target.classList.contains('p-search')) {\n            updateProductDatalist(e.target.value || '');\n        }\n    });\n\n    document.addEventListener('focusin', (e) => {\n        if (e.target && e.target.classList.contains('p-search')) {\n            updateProductDatalist(e.target.value || '');\n        }\n    });\n\n    function fillClient(c) {\n        tipoCliente = \"CADASTRADO\"; isEditando = false;\n        document.getElementById('tag-novo').style.display = 'none';\n        document.getElementById('btn-edit').style.display = 'inline-block';\n        document.getElementById('busca-cliente').value = c.nome || c.razaoSocial || '';\n        \n        const map = {\n            'cli-id': c.codigo || c.id || c.cliente, \n            'cli-tipo': c.tipo,\n            'cli-tipoPessoa': c.tipoPessoa,\n            'cli-razao': c.razaoSocial || c.nome,\n            'cli-doc': c.cnpjCpf,\n            'cli-zap': c.celular,\n            'cli-rua': c.endereco,\n            'cli-num': c.numeroEndereco,\n            'cli-bairro': c.bairro,\n            'cli-cidade': c.cidade,\n            'cli-uf': c.estado,\n            'cli-comp': c.complemento\n        };\n\n        const selUF = document.getElementById('cli-uf');\n        selUF.disabled = true; \n        if(map['cli-uf']) {\n            selUF.value = map['cli-uf'];\n            filterCities(); \n        }\n\n        for(let id in map) { \n            const el = document.getElementById(id); \n            if(el){ \n                el.value = map[id] || ''; \n                el.readOnly = true; \n            } \n        }\n        \n        const radios = document.getElementsByName('docType');\n        const docClean = (c.cnpjCpf || '').replace(/\\D/g, '');\n        if(docClean.length > 11) radios[1].checked = true; else radios[0].checked = true;\n        radios.forEach(r => r.disabled = true);\n        validateDocUI();\n    }\n\n    function setNewClientMode() {\n        tipoCliente = \"NOVO\";\n        document.getElementById('tag-novo').style.display = 'inline-block';\n        document.getElementById('btn-edit').style.display = 'none';\n        document.getElementById('cli-id').value = \"\";\n        document.getElementById('cli-uf').value = \"\";\n        document.getElementById('cli-cidade').value = \"\";\n        enableEdit();\n    }\n\n    function enableEdit() {\n        isEditando = true;\n        const fields = ['cli-razao','cli-doc','cli-zap','cli-rua','cli-num','cli-bairro','cli-cidade','cli-uf','cli-comp'];\n        fields.forEach(id => { \n            const el = document.getElementById(id); el.readOnly = false; el.disabled = false; \n        });\n        document.getElementsByName('docType').forEach(r => r.disabled = false);\n    }\n\n    function addItem() {\n        const div = document.createElement('div');\n        div.className = 'card-box';\n        div.innerHTML = `\n            <div class=\"form-group\" style=\"margin-bottom:6px\">\n                <input type=\"text\" class=\"p-search\" list=\"dl-produtos\" placeholder=\"Buscar Produto...\" onchange=\"prodSelected(this)\">\n                <input type=\"hidden\" class=\"p-id\">\n            </div>\n            <div class=\"item-grid\">\n                <div class=\"item-col\"><label>Preço Unit.</label><input type=\"number\" class=\"p-price\" step=\"0.01\" oninput=\"calc()\" onkeydown=\"handleEnter(event, this)\"></div>\n                <div class=\"item-col\"><label>Qtd</label><input type=\"number\" class=\"p-qtd\" value=\"1\" min=\"1\" oninput=\"calc()\" onkeydown=\"handleEnter(event, this)\"></div>\n                <div class=\"item-col\"><label>Total Item</label><input type=\"text\" class=\"p-total input-total\" readonly value=\"R$ 0,00\"></div>\n            </div>\n            <button type=\"button\" class=\"btn-remove\" onclick=\"this.closest('.card-box').remove(); calc()\">Remover Item</button>\n        `;\n        document.getElementById('cart-container').appendChild(div);\n        const inputs = document.querySelectorAll('.p-search'); inputs[inputs.length-1].focus();\n    }\n\n    function prodSelected(input) {\n        const val = input.value;\n        const opts = document.getElementById('dl-produtos').options;\n        let found = null;\n        const valNorm = normalizeText(val);\n        for(let opt of opts) { if(normalizeText(opt.value) === valNorm) { found = opt; break; } }\n        if(found) {\n            const card = input.closest('.card-box');\n            card.querySelector('.p-id').value = found.dataset.id || '';\n            const price = parseNumber(found.dataset.price);\n            card.querySelector('.p-price').value = price.toFixed(2);\n            calc();\n            card.querySelector('.p-qtd').focus(); card.querySelector('.p-qtd').select();\n        }\n    }\n    function handleEnter(e, el) { if(e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); focusNextSection(); } }\n\n    function addPayment() {\n        calc();\n        let restante = globalTotal - globalPago;\n        if(restante < 0) restante = 0;\n        const div = document.createElement('div');\n        div.className = 'card-box pay-card';\n        div.innerHTML = `\n            <div class=\"row\" style=\"margin-bottom:0\">\n                <div class=\"col\" style=\"flex:2\">\n                    <label>Forma</label>\n                    <select class=\"pay-method\">\n                        <option value=\"DINHEIRO\">DINHEIRO</option>\n                        <option value=\"PIX\" ${globalPago === 0 ? '' : 'selected'}>PIX</option>\n                        <option value=\"CREDITO\">CREDITO</option>\n                        <option value=\"DEBITO\">DEBITO</option>\n                        <option value=\"CREDIARIO\">CREDIARIO</option>\n                    </select>\n                </div>\n                <div class=\"col\">\n                    <label>Valor</label>\n                    <input type=\"number\" class=\"pay-value\" value=\"${restante.toFixed(2)}\" step=\"0.01\" oninput=\"calc()\">\n                </div>\n            </div>\n            <button type=\"button\" class=\"btn-remove\" onclick=\"this.closest('.card-box').remove(); calc()\">Remover</button>\n        `;\n        document.getElementById('payment-container').appendChild(div);\n        calc();\n    }\n\n    function calc() {\n        let totalProd = 0;\n        document.querySelectorAll('#cart-container .card-box').forEach(row => {\n            const p = parseNumber(row.querySelector('.p-price').value)||0;\n            const q = parseNumber(row.querySelector('.p-qtd').value)||0;\n            const t = round2(p * q);\n            row.querySelector('.p-total').value = fmtMoney(t);\n            totalProd += t;\n        });\n        globalTotal = round2(totalProd);\n\n        let totalPay = 0;\n        document.querySelectorAll('.pay-card').forEach(row => {\n            const v = parseNumber(row.querySelector('.pay-value').value)||0;\n            totalPay += v;\n        });\n        globalPago = round2(totalPay);\n\n        document.getElementById('res-total').textContent = fmtMoney(globalTotal);\n        document.getElementById('disp-subtotal').textContent = fmtMoney(globalTotal);\n        document.getElementById('disp-pago').textContent = fmtMoney(globalPago);\n        document.getElementById('modal-total').textContent = fmtMoney(globalTotal);\n        document.getElementById('modal-pago').textContent = fmtMoney(globalPago);\n\n        const diff = round2(globalPago - globalTotal);\n        const badge = document.getElementById('disp-status-badge');\n        const modalStatusLabel = document.getElementById('modal-status-label');\n        const modalStatusVal = document.getElementById('modal-status-val');\n\n        if (diff >= 0) {\n            badge.className = 'status-badge badge-ok';\n            badge.textContent = `Troco: ${fmtMoney(diff)}`;\n            modalStatusLabel.textContent = \"Troco:\";\n            modalStatusVal.textContent = fmtMoney(diff);\n            modalStatusVal.style.color = \"#16a34a\";\n        } else {\n            badge.className = 'status-badge badge-falta';\n            badge.textContent = `Falta: ${fmtMoney(Math.abs(diff))}`;\n            modalStatusLabel.textContent = \"Falta:\";\n            modalStatusVal.textContent = fmtMoney(Math.abs(diff));\n            modalStatusVal.style.color = \"#dc2626\";\n        }\n    }\n\n    function validarCPF(cpf) {\n        if (/^(\\d)\\1+$/.test(cpf)) return false;\n        let soma = 0, resto;\n        for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);\n        resto = (soma * 10) % 11;\n        if ((resto === 10) || (resto === 11)) resto = 0;\n        if (resto !== parseInt(cpf.substring(9, 10))) return false;\n        soma = 0;\n        for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);\n        resto = (soma * 10) % 11;\n        if ((resto === 10) || (resto === 11)) resto = 0;\n        if (resto !== parseInt(cpf.substring(10, 11))) return false;\n        return true;\n    }\n    function validarCNPJ(cnpj) {\n        if (/^(\\d)\\1+$/.test(cnpj)) return false;\n        let tamanho = cnpj.length - 2;\n        let numeros = cnpj.substring(0,tamanho);\n        let digitos = cnpj.substring(tamanho);\n        let soma = 0;\n        let pos = tamanho - 7;\n        for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }\n        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;\n        if (resultado != digitos.charAt(0)) return false;\n        tamanho = tamanho + 1;\n        numeros = cnpj.substring(0,tamanho);\n        soma = 0;\n        pos = tamanho - 7;\n        for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }\n        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;\n        if (resultado != digitos.charAt(1)) return false;\n        return true;\n    }\n\n    function getSectionAnchors() {\n        return [\n            document.getElementById('busca-cliente'),\n            document.querySelector('#cart-container .p-search'),\n            document.getElementById('sel-entregador'),\n            document.getElementById('fin-troco-para'),\n            document.querySelector('#main-ui .btn-submit')\n        ].filter(Boolean);\n    }\n\n    function isModalOpen() {\n        const confirmModal = document.getElementById('confirm-modal');\n        const errorModal = document.getElementById('error-modal');\n        return (confirmModal && confirmModal.style.display === 'flex') || (errorModal && errorModal.style.display === 'flex');\n    }\n\n    function isMainUiVisible() {\n        const main = document.getElementById('main-ui');\n        return main && window.getComputedStyle(main).display !== 'none';\n    }\n\n    function focusNextSection() {\n        if (!isMainUiVisible()) return;\n        const anchors = getSectionAnchors();\n        if (!anchors.length) return;\n        const active = document.activeElement;\n        let next = null;\n        if (active) {\n            for (const anchor of anchors) {\n                if (anchor === active) continue;\n                if (active.compareDocumentPosition(anchor) & Node.DOCUMENT_POSITION_FOLLOWING) {\n                    next = anchor;\n                    break;\n                }\n            }\n        }\n        if (!next) next = anchors[0];\n        next.focus();\n        if (typeof next.select === 'function') next.select();\n    }\n\n    function shouldHandleEnter(e) {\n        if (isModalOpen() || !isMainUiVisible()) return false;\n        const target = e.target;\n        if (!target) return false;\n        const tag = target.tagName;\n        if (tag === 'TEXTAREA' || tag === 'BUTTON') return false;\n        if (target.isContentEditable) return false;\n        return true;\n    }\n\n    function showError(msg) {\n        const el = document.getElementById('error-msg');\n        if (el) el.textContent = msg || \"Erro.\";\n        document.getElementById('error-modal').style.display = 'flex';\n    }\n\n    function validateBeforeConfirm() {\n        calc();\n\n        const cliente = document.getElementById('busca-cliente').value.trim();\n        if (!cliente) { showError(\"Informe o cliente.\"); return false; }\n\n        if (document.getElementById('cli-doc').classList.contains('input-error')) {\n            showError(\"Corrija o documento.\");\n            return false;\n        }\n        if (document.getElementById('cli-cidade').classList.contains('input-error')) {\n            showError(\"Corrija a Cidade/UF.\");\n            return false;\n        }\n\n        const itensValidos = Array.from(document.querySelectorAll('#cart-container .card-box'))\n            .some(row => row.querySelector('.p-id').value);\n        if (!itensValidos) { showError(\"Adicione pelo menos um item.\"); return false; }\n\n        const pagamentos = Array.from(document.querySelectorAll('.pay-card'));\n        if (pagamentos.length === 0) { showError(\"Adicione uma forma de pagamento.\"); return false; }\n\n        const pagamentoInvalido = pagamentos.some(row => parseNumber(row.querySelector('.pay-value').value) <= 0);\n        if (pagamentoInvalido) { showError(\"Informe o valor de cada pagamento.\"); return false; }\n\n        if (round2(globalPago) <= 0) { showError(\"Total pago precisa ser maior que zero.\"); return false; }\n        if (round2(globalPago) < round2(globalTotal)) { showError(\"Valor pago insuficiente.\"); return false; }\n\n        return true;\n    }\n\n    document.addEventListener('keydown', (e) => { \n        if(e.key === 'Enter' && shouldHandleEnter(e)) { \n            e.preventDefault(); \n            focusNextSection(); \n            return; \n        } \n        if(e.key === 'F10') { e.preventDefault(); openModal(); } \n        if(e.key === 'F9') { e.preventDefault(); addItem(); } \n    });\n    function openModal() {\n        if (!validateBeforeConfirm()) return;\n        document.getElementById('confirm-modal').style.display = 'flex';\n    }\n    function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }\n    function closeError() { document.getElementById('error-modal').style.display = 'none'; }\n    function startNewOrder() {\n        document.getElementById('loader').style.display = 'flex';\n        setTimeout(() => location.reload(), 50);\n    }\n\n    async function submitFinal() {\n        closeModal();\n        if (!document.getElementById('busca-cliente').value.trim()) { alert(\"⚠️ Identifique o CLIENTE.\"); return; }\n        if (document.getElementById('cli-doc').classList.contains('input-error')) { document.getElementById('error-msg').textContent = \"Corrija o Documento.\"; document.getElementById('error-modal').style.display = 'flex'; return; }\n        if (document.getElementById('cli-cidade').classList.contains('input-error')) { document.getElementById('error-msg').textContent = \"Corrija a Cidade/UF.\"; document.getElementById('error-modal').style.display = 'flex'; return; }\n\n        const selEntregador = document.getElementById('sel-entregador');\n        let entId = selEntregador.value;\n        let entNome = selEntregador.options[selEntregador.selectedIndex]?.text || \"\";\n        \n        if (!entId || entNome === \"SEM ENTREGADOR\") {\n             entId = \"\";\n             entNome = \"\";\n        }\n        \n        const entregadorObj = { id: entId, nome: entNome };\n\n        const isCnpj = document.querySelector('input[name=\"docType\"][value=\"cnpj\"]').checked;\n        const cliTipo = document.getElementById('cli-tipo').value;\n        const cliTipoPessoa = document.getElementById('cli-tipoPessoa').value;\n        const tipoCadastroFinal = Number.isFinite(parseInt(cliTipo, 10)) ? parseInt(cliTipo, 10) : (isCnpj ? 1 : 0);\n        const tipoPessoaFinal = Number.isFinite(parseInt(cliTipoPessoa, 10)) ? parseInt(cliTipoPessoa, 10) : (isCnpj ? 1 : 0);\n\n        const itens = [];\n        document.querySelectorAll('#cart-container .card-box').forEach(row => {\n            const id = row.querySelector('.p-id').value;\n            if(id) {\n                const p = parseNumber(row.querySelector('.p-price').value)||0;\n                const q = parseNumber(row.querySelector('.p-qtd').value)||0;\n                const totalItem = round2(p * q);\n                itens.push({ id_produto: id, descricao: row.querySelector('.p-search').value, preco_base: p, quantidade: q, acrescimo: 0, desconto: 0, total_item: totalItem });\n            }\n        });\n        if(itens.length === 0) return alert(\"⚠️ Adicione produtos.\");\n        if (round2(globalPago) < round2(globalTotal)) { alert(`⚠️ Valor pago insuficiente!`); return; }\n\n        const mapPagamentos = { \"DINHEIRO\": 0, \"PIX\": 0, \"CREDITO\": 0, \"DEBITO\": 0, \"CREDIARIO\": 0 };\n        document.querySelectorAll('.pay-card').forEach(row => {\n            const m = row.querySelector('.pay-method').value;\n            const v = parseNumber(row.querySelector('.pay-value').value)||0;\n            if(mapPagamentos[m] !== undefined) mapPagamentos[m] += v;\n        });\n        const pagamentosFinal = Object.keys(mapPagamentos).map(key => ({\n            metodo: key,\n            valor: round2(mapPagamentos[key])\n        }));\n\n        const payload = {\n            tipo_cliente: tipoCliente, \n            cadastro_editado: isEditando,\n            entregador: entregadorObj,\n            operador: NOME_USUARIO,\n            cliente: {\n                id_cliente: document.getElementById('cli-id').value || \"0\",\n                tipo_cadastro: tipoCadastroFinal,\n                tipo_pessoa: tipoPessoaFinal,\n                nome: document.getElementById('busca-cliente').value || \"\",\n                razao_social: document.getElementById('cli-razao').value || \"\",\n                cpf_cnpj: document.getElementById('cli-doc').value || \"\",\n                celular_whats: document.getElementById('cli-zap').value || \"\",\n                endereco: { \n                    rua: document.getElementById('cli-rua').value || \"\", \n                    numero: document.getElementById('cli-num').value || \"\", \n                    bairro: document.getElementById('cli-bairro').value || \"\", \n                    complemento: document.getElementById('cli-comp').value || \"\",\n                    cidade: document.getElementById('cli-cidade').value || \"\", \n                    uf: document.getElementById('cli-uf').value || \"\" \n                }\n            },\n            itens: itens,\n            obs: document.getElementById('obs-pedido').value || \"\",\n            financeiro: {\n                total_pedido: globalTotal,\n                total_pago: globalPago,\n                troco_gerado: round2(globalPago - globalTotal),\n                troco_para: parseNumber(document.getElementById('fin-troco-para').value) || 0,\n                detalhe_pagamentos: pagamentosFinal \n            }\n        };\n\n        document.getElementById('loader').style.display = 'flex';\n        try {\n            const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });\n            if(res.ok) {\n                let jsonRes = {}; try { jsonRes = await res.json(); } catch(e) { }\n                let orderId = (jsonRes && jsonRes.dados && jsonRes.dados.pedido) ? jsonRes.dados.pedido : \"WEB-\" + Math.floor(Math.random() * 10000);\n                lastOrderId = String(orderId).replace(/,\\s*$/, '');\n                prepareReceipt(payload, lastOrderId);\n                document.getElementById('order-id-display').textContent = lastOrderId;\n                document.getElementById('loader').style.display = 'none';\n                document.getElementById('main-ui').style.display = 'none';\n                document.getElementById('success-screen').style.display = 'block';\n                window.scrollTo(0,0);\n            } else { document.getElementById('loader').style.display = 'none'; alert(\"Erro Servidor\"); }\n        } catch(e) { document.getElementById('loader').style.display = 'none'; alert(\"Erro Conexão\"); }\n    }\n\n    function prepareReceipt(data, orderId) {\n        const area = document.getElementById('print-area');\n        const c = data.cliente;\n        const fin = data.financeiro;\n        const now = new Date().toLocaleString('pt-BR');\n        const cleanOrderId = String(orderId || '')\n            .replace(/pedido\\s*[:#]?\\s*/ig, '')\n            .replace(/n[oº]\\s*/ig, '')\n            .trim();\n        \n        let html = `\n            <div class=\"cupom-header\">\n                <div class=\"cupom-title\">GALEGO DA AGUA E GAS</div>\n                <div style=\"font-size:10px\">CNPJ: 13.356.436/0001-60</div>\n                <div style=\"font-size:10px\">Rua dos Médicos, 160 - Timbí</div>\n                <div style=\"font-size:10px\">CAMARAGIBE - PE</div>\n                <div style=\"font-size:10px\">Telefone: (81) 8652-7555</div>\n            </div>\n            <div class=\"cupom-box-pedido\">Pedido Nº: ${cleanOrderId || orderId}</div>\n            <div class=\"cupom-line\">Data: ${now}</div>\n            ${data.operador ? `<div class=\"cupom-line\">Operador: ${data.operador}</div>` : ''}\n            ${data.entregador.nome ? `<div class=\"cupom-line\">Entregador: ${data.entregador.nome}</div>` : ''}\n            <div class=\"cupom-divider\"></div>\n            <div class=\"cupom-bold\">CLIENTE</div>\n            <div class=\"cupom-line\">Nome: ${c.nome}</div>\n            ${c.celular_whats ? `<div class=\"cupom-line\">Telefone: ${c.celular_whats}</div>` : ''}\n            <div class=\"cupom-line\">Rua: ${c.endereco.rua}, ${c.endereco.numero}</div>\n            <div class=\"cupom-line\">Bairro: ${c.endereco.bairro}</div>\n        `;\n        \n        if (c.endereco.complemento && c.endereco.complemento.trim() !== '') {\n            html += `<div class=\"cupom-complemento\">${c.endereco.complemento}</div>`;\n        }\n        \n        html += `\n            <div class=\"cupom-line\">${c.endereco.cidade} / ${c.endereco.uf}</div>\n            <div class=\"cupom-divider\"></div>\n            <table class=\"cupom-table\"><thead><tr><th style=\"width:45%\">Item</th><th style=\"width:15%\">Qtd</th><th style=\"width:20%\" class=\"text-right\">Un</th><th style=\"width:20%\" class=\"text-right\">Tl</th></tr></thead><tbody>\n        `;\n        \n        data.itens.forEach(i => {\n            html += `<tr><td colspan=\"4\" style=\"padding-top:4px; font-weight:bold\">${i.descricao}</td></tr><tr><td></td><td>${i.quantidade}</td><td class=\"text-right\">${fmtMoney(i.preco_base).replace('R$','').trim()}</td><td class=\"text-right\">${fmtMoney(i.total_item).replace('R$','').trim()}</td></tr>`;\n        });\n        \n        html += `</tbody></table><div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\" style=\"font-size:16px\"><span>TOTAL PRODUTOS:</span><span>${fmtMoney(fin.total_pedido)}</span></div>\n            <div class=\"cupom-divider\"></div><div class=\"cupom-bold\" style=\"margin-bottom:5px\">PAGAMENTO</div>`;\n        \n        fin.detalhe_pagamentos.forEach(pg => {\n            if(pg.valor > 0) {\n                html += `<div class=\"cupom-total-row\" style=\"font-size:12px; font-weight:normal\"><span>${pg.metodo}:</span><span>${fmtMoney(pg.valor)}</span></div>`;\n            }\n        });\n\n        if(fin.troco_gerado > 0) { html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TROCO:</span><span>${fmtMoney(fin.troco_gerado)}</span></div>`; }\n        if(fin.troco_para > 0) { html += `<div class=\"cupom-line\" style=\"margin-top:5px; font-size:11px;\">(Troco para: ${fmtMoney(fin.troco_para)})</div>`; }\n\n        const totalPagamentos = round2(fin.detalhe_pagamentos.reduce((sum, pg) => sum + parseNumber(pg.valor), 0));\n        html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TOTAL PAGO:</span><span>${fmtMoney(totalPagamentos)}</span></div>`;\n\n        if(data.obs) html += `<div class=\"cupom-divider\"></div><div class=\"cupom-bold\">OBS:</div><div>${data.obs}</div>`;\n        html += `<div class=\"cupom-divider\"></div><div style=\"text-align:center; margin-top:10px\">Obrigado pela preferência!</div>`;\n        area.innerHTML = html;\n    }\n    \n    function printReceipt() { window.print(); }\n    \n    init();\n  </script>\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        112
+      ],
+      "id": "5c2c36f6-bfec-45fe-9f49-4c1311f45c6b",
+      "name": "Inframe Pedido"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "50627fe2-ca95-4162-bd3d-b4197715cfab",
+              "leftValue": "={{ $json.tipo_cliente }}",
+              "rightValue": "NOVO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1200,
+        528
+      ],
+      "id": "196d45f1-c736-43cf-8576-9d72abae530f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entidade\": {\n    \"codigo\": \"{{ $json['cliente']['id_cliente'] }}\",\n    \"nome\": \"{{ $json['cliente']['nome'] }}\",\n    \"razaoSocial\": \"{{ $node['Dados Confirmação'].json['cliente']['razao_social'] }}\",\n    \"tipo\": \"{{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"tipo_cadastro\"] }}\",\n    \"tipoPessoa\": \"{{ $json['cliente']['tipo_pessoa'] }}\",\n    \"endereco\": \"{{ $node['Dados Confirmação'].json['endereco']['logradouro'] }}\",\n    \"numeroEndereco\": \"{{ $json['endereco']['numero'] }}\",\n    \"complemento\": \"{{ $json['endereco']['complemento'] }}\",\n    \"bairro\": \"{{ $json['endereco']['bairro'] }}\",\n    \"cidade\": \"{{ $json['endereco']['cidade'] }}\",\n    \"estado\": \"{{ $json['endereco']['uf'] }}\",\n    \"celular\": \"{{ $node['Dados Confirmação'].json['cliente']['telefone'] }}\",\n    \"cnpjCpf\": \"{{ $json['cliente']['cpf_cnpj'] }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -752,
+        528
+      ],
+      "id": "579c7c24-866d-4695-8761-a8d410a95a41",
+      "name": "Atualizar Cliente",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acessa o valor do nó anterior. \n// O operador '?.' e '||' garantem que não quebre se o campo for nulo/undefined\nconst rawValue = $('Dados Confirmação').first().json.cliente?.cpf_cnpj || '';\n\n// Remove tudo que não for número (pontos, traços, barras) para checar o tamanho real\nconst apenasNumeros = rawValue.toString().replace(/\\D/g, '');\n\nlet resultado = 0; // O padrão é 0 (para CPF ou Nada)\n\n// Se tiver mais de 11 dígitos numéricos, consideramos CNPJ -> 1\nif (apenasNumeros.length > 11) {\n  resultado = 1;\n}\n\n// Retorna o objeto no formato padrão do n8n\nreturn {\n  json: {\n    tipo_cadastro: resultado,\n    tipo_pessoa: resultado\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        336
+      ],
+      "id": "6f8a233b-f85f-42ec-a32e-ff497c3a4142",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba186032-30f7-4245-a800-ee22607adbd7",
+              "name": "codigo",
+              "value": "={{ $json.data.codigoGerado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        336
+      ],
+      "id": "d500c621-9c80-4de7-a69e-91748e244ba7",
+      "name": "Código Cliente"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba186032-30f7-4245-a800-ee22607adbd7",
+              "name": "codigo",
+              "value": "={{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"id_cliente\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        528
+      ],
+      "id": "db4577d6-dc95-4a96-9594-221ab4b64b56",
+      "name": "Código Cliente1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba186032-30f7-4245-a800-ee22607adbd7",
+              "name": "código cliente",
+              "value": "={{ $json.codigo }}",
+              "type": "string"
+            },
+            {
+              "id": "3bc4df25-372b-47c7-aa1e-c4e26914943d",
+              "name": "produtos",
+              "value": "={{ $node[\"Dados Confirmação\"].json[\"itens\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cc3d18cf-0aba-4f3d-8b15-a915b8e2b51b",
+              "name": "observação",
+              "value": "=Observação:{{ $('Dados Confirmação').item.json.obs }}\n* Total Pedido: R$ {{ $('Dados Confirmação').item.json.financeiro.total_pedido }}\n* Total Pago: R$ {{ $('Dados Confirmação').item.json.financeiro.total_pago }}\n* Total Troco: R$ {{ $('Dados Confirmação').item.json.financeiro.troco_para }}",
+              "type": "string"
+            },
+            {
+              "id": "788b2d6b-2b0b-488a-8f88-cf81ba893685",
+              "name": "entregador",
+              "value": "={{ $('Dados Confirmação').item.json.entregador }}",
+              "type": "string"
+            },
+            {
+              "id": "4fde2902-0a89-42db-a020-03e3ae5d79e0",
+              "name": "detalhe_pagamentos",
+              "value": "={{ $('Dados Confirmação').item.json.financeiro.detalhe_pagamentos }}",
+              "type": "array"
+            },
+            {
+              "id": "98b1df22-ed29-4064-8ffe-1148ba030048",
+              "name": "total_pedido",
+              "value": "={{ $('Dados Confirmação').item.json.financeiro.total_pedido }}",
+              "type": "number"
+            },
+            {
+              "id": "ec0ff7d0-306b-4b16-a961-ebf40a487314",
+              "name": "total_pago",
+              "value": "={{ $('Dados Confirmação').item.json.financeiro.total_pago }}",
+              "type": "number"
+            },
+            {
+              "id": "5e76de49-14ed-44b4-ad34-23434caef1f7",
+              "name": "troco_gerado",
+              "value": "={{ $('Dados Confirmação').item.json.financeiro.troco_gerado }}",
+              "type": "number"
+            },
+            {
+              "id": "d0ee326c-73bb-4328-8bff-0bab5576b3c1",
+              "name": "troco_para",
+              "value": "={{ $('Dados Confirmação').item.json.financeiro.troco_para }}",
+              "type": "number"
+            },
+            {
+              "id": "51d56fc2-b3d6-4128-b187-53dff6cd346c",
+              "name": "operador",
+              "value": "={{ $('Dados Confirmação').item.json.operador }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        528
+      ],
+      "id": "d157e8cb-4123-4449-aabb-767959e18483",
+      "name": "Código Cliente2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o item de entrada\nconst entrada = $input.first().json;\n\n// Converte a string de produtos em array\nconst produtos = JSON.parse(entrada.produtos);\n\n// Data atual no formato YYYY-MM-DD\nconst hoje = new Date().toISOString().split('T')[0];\n\n// --- FUNÇÃO AJUDANTE ---\n// Formata número para: 2 casas decimais e troca ponto por vírgula\nconst formatarDinheiro = (valor) => {\n  const numero = parseFloat(valor || 0);\n  return numero.toFixed(2).replace('.', ',');\n};\n\n// --- MONTAGEM DO RESUMO PARA OBSERVAÇÃO ---\n\nconst textoProdutos = produtos.map(item => {\n  return `- ${item.quantidade}x ${item.descricao} | Total: R$ ${formatarDinheiro(item.total_item)}`;\n}).join('\\n');\n\nconst textoPagamentos = entrada.detalhe_pagamentos\n  .filter(pg => pg.valor > 0)\n  .map(pg => `- ${pg.metodo}: R$ ${formatarDinheiro(pg.valor)}`)\n  .join('\\n');\n\nconst novaObservacao = `${entrada[\"observação\"]}\n\n--------------------------------\nTOTAL DO PEDIDO: R$ ${formatarDinheiro(entrada.total_pedido)}\nTOTAL PAGO: R$ ${formatarDinheiro(entrada.total_pago)}\nTOTAL TROCO: R$ ${formatarDinheiro(entrada.troco_gerado)}\n\n--------------------------------\nRESUMO DOS ITENS:\n${textoProdutos}\n\n--------------------------------\nDETALHE PAGAMENTOS:\n${textoPagamentos}\nTroco para: R$ ${formatarDinheiro(entrada.troco_para)}\nOperador: ${entrada.operador || 'Não informado'}`;\n\n// --- MONTAGEM DO JSON DE SAÍDA ---\n\nconst itens = produtos.map(item => ({\n  produto: item.id_produto,\n  quantidade: item.quantidade,\n  precoUnitario: item.total_item \n}));\n\nconst resultado = {\n  dav: {\n    cliente: entrada[\"código cliente\"],\n    filial: \"1\",\n    tipoDocumento: 4,\n    condicaoPagamento: \"1\",\n    data: hoje,\n    \n    extra1: entrada.operador || \"\",\n    extra2: \"\", \n    extra3: \"\", \n    extra4: \"\", \n    extra5: \"\",\n    extra6: \"\", \n    extra8: \"\",\n    \n    observacao: novaObservacao, \n    vendedor: entrada.entregador,\n    itens\n  }\n};\n\nreturn [{ json: resultado }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        528
+      ],
+      "id": "771d521e-fe89-4f6c-a994-4b9886c3690d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8a053dad-ab93-41f5-a47f-00c5a9e2f3d6",
+              "leftValue": "={{ $json.cadastro_editado }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        624
+      ],
+      "id": "2540c5d3-5c59-4f34-a559-805f7f5da58a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba186032-30f7-4245-a800-ee22607adbd7",
+              "name": "codigo",
+              "value": "={{ $node[\"Dados Confirmação\"].json[\"cliente\"][\"id_cliente\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        720
+      ],
+      "id": "5a7b8fd2-32dc-49b6-8b5f-201c67a2bb0f",
+      "name": "Código Cliente3"
+    },
+    {
+      "parameters": {
+        "url": "https://localhost/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            },
+            {
+              "name": "vendedores",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -976,
+        112
+      ],
+      "id": "edd13643-3a0e-40a4-a3d9-37fd95b937e1",
+      "name": "Busca Vendedor/Entregador",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=listacidadesbrasil001",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        112
+      ],
+      "id": "e26103d9-e788-4152-aee6-6888a16d984f",
+      "name": "Lista Cidades1",
+      "credentials": {
+        "redis": {
+          "id": "GIMqrwTj2AXDCq7b",
+          "name": "Redis - CeriOn Geral"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a268b072-d811-4977-a597-5c68096981ab",
+              "name": "json",
+              "value": "={{ $json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        528
+      ],
+      "id": "4a979900-b2bf-4117-a433-ccdadb3b6f19",
+      "name": "json"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>\n  <link rel=\"icon\" type=\"image/x-icon\" href=\"{{ $json.Favicon }}\">\n  <title>{{ $json['NOME BASE'] }} - Pedido</title>\n  <style>\n    :root { --brand: #ff6f20; --bg: #f3f4f6; --text: #1f2937; --border: #d1d5db; --success: #10b981; --danger: #ef4444; --radius: 6px; }\n    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }\n    body { background-color: var(--bg); color: var(--text); padding: 10px; padding-bottom: 80px; min-height: 100vh; }\n    .container { width: 100%; max-width: 700px; background: #fff; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; padding: 20px; }\n    .operador-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 700; font-size: 14px; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3); }\n    .section-title { font-size: 14px; font-weight: 800; color: var(--brand); margin: 30px 0 10px 0; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }\n    .section-title:first-child { margin-top: 0; }\n    .row { display: flex; gap: 10px; margin-bottom: 10px; }\n    .col { flex: 1; min-width: 0; }\n    .form-group { margin-bottom: 12px; }\n    label { display: block; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }\n    input, select, textarea { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; background: #fff; color: #111; transition: all 0.2s; }\n    input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(255, 111, 32, 0.15); }\n    input[readonly] { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; cursor: not-allowed; }\n    input:disabled, select:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.7; }\n    textarea { height: auto; padding: 10px; resize: vertical; }\n    .doc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }\n    .doc-options { display: flex; gap: 12px; align-items: center; }\n    .doc-options label { font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; color: #555; }\n    .doc-options input { width: 14px; height: 14px; margin: 0; cursor: pointer; }\n    .input-error { border-color: var(--danger) !important; background-color: #fef2f2 !important; }\n    .msg-error { color: var(--danger); font-size: 10px; font-weight: bold; margin-top: 2px; display: none; text-align: right; }\n    .card-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; border-left: 4px solid var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n    .pay-card { border-left-color: #3b82f6; background: #eff6ff; }\n    .item-grid { display: grid; grid-template-columns: 1fr 0.6fr 1fr; gap: 8px; margin-top: 10px; }\n    .item-col { display: flex; flex-direction: column; }\n    .item-col label { font-size: 10px; color: #6b7280; margin-bottom: 2px; }\n    .input-total { background-color: #fff7ed !important; font-weight: bold; color: #c2410c; border: 1px solid #ffedd5; }\n    .btn-edit { font-size: 11px; color: #2563eb; cursor: pointer; text-decoration: none; font-weight: bold; background: #dbeafe; padding: 4px 10px; border-radius: 4px; }\n    .badge-novo { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-left: 5px; display: none; }\n    .btn-remove { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; padding: 6px 12px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; width: auto; display: inline-block; }\n    .btn-add { background: #eff6ff; color: #1d4ed8; border: 1px dashed #3b82f6; border-radius: var(--radius); width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: background 0.2s; }\n    .btn-add:hover { background: #dbeafe; }\n    .btn-add-pay { background: #ecfdf5; color: #047857; border-color: #10b981; }\n    .status-panel { background: #111827; color: #fff; padding: 20px; border-radius: 8px; margin-top: 30px; }\n    .status-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #d1d5db; }\n    .status-main { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #374151; padding-top: 15px; margin-top: 15px; }\n    .total-big-label { font-size: 18px; font-weight: bold; color: var(--brand); text-transform: uppercase; }\n    .total-big-value { font-size: 24px; font-weight: 800; color: #fff; }\n    .status-badge { padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 14px; display: inline-block; min-width: 120px; text-align: center; }\n    .badge-falta { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }\n    .badge-ok { background: #dcfce7; color: #15803d; border: 1px solid #4ade80; }\n    .btn-submit { width: 100%; height: 55px; background: var(--brand); color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(255, 111, 32, 0.3); transition: transform 0.1s; }\n    .btn-submit:active { transform: scale(0.98); }\n    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(3px); }\n    .modal-box { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }\n    .modal-actions { display: flex; gap: 10px; margin-top: 25px; }\n    .btn-modal { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }\n    .btn-cancel { background: #e5e7eb; color: #374151; }\n    .btn-confirm { background: var(--brand); color: white; }\n    .btn-retry { background: var(--danger); color: white; width: 100%; padding: 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }\n    .btn-print { background: #333; color: white; width: 100%; padding: 15px; margin-top: 10px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }\n    #print-area { display: none; font-family: 'Courier New', Courier, monospace; width: 80mm; background: #fff; padding: 5px; color: #000; font-size: 12px; line-height: 1.2; }\n    .cupom-header { text-align: center; margin-bottom: 10px; }\n    .cupom-title { font-weight: bold; font-size: 14px; margin-bottom: 2px; }\n    .cupom-box-pedido { background-color: #ddd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center; font-weight: bold; font-size: 14px; padding: 5px; margin: 10px 0; border: 1px solid #999; }\n    .cupom-line { margin: 3px 0; }\n    .cupom-bold { font-weight: bold; }\n    .cupom-divider { border-top: 1px dashed #000; margin: 8px 0; }\n    .cupom-table { width: 100%; border-collapse: collapse; margin-top: 5px; }\n    .cupom-table th { text-align: left; border-bottom: 1px solid #000; font-size: 11px; }\n    .cupom-table td { font-size: 11px; padding: 2px 0; vertical-align: top; }\n    .text-right { text-align: right; }\n    .cupom-total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 4px; }\n    .cupom-complemento { text-align: center; font-weight: bold; background-color: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 4px; margin: 6px 0; border: 1px solid #999; font-size: 11px; }\n    @media print {\n        body * { visibility: hidden; }\n        #print-area, #print-area * { visibility: visible; }\n        #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block; }\n        .container, .modal-overlay { display: none !important; }\n        @page { margin: 0; }\n    }\n    @media (max-width: 480px) {\n        .container { border-radius: 0; padding: 15px; max-width: 100%; }\n        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; }\n        .item-col { flex: 1; min-width: 70px; }\n        .item-col:first-child { min-width: 100%; }\n        .status-main { flex-direction: column; align-items: flex-start; gap: 10px; }\n        .doc-header { flex-direction: row; align-items: center; } \n    }\n    @media (max-width: 320px) {\n        body { padding: 8px; padding-bottom: 70px; }\n        .row { flex-direction: column; gap: 6px; }\n        .section-title { border-top: 1px solid #e5e7eb; padding-top: 10px; }\n        .section-title:first-child { border-top: 0; padding-top: 0; }\n        .doc-header { flex-direction: column; align-items: flex-start; gap: 6px; }\n        .doc-options { flex-wrap: wrap; }\n        .item-grid { flex-direction: column; }\n        .item-col { min-width: 100%; }\n        .status-row { flex-direction: column; align-items: flex-start; gap: 2px; }\n    }\n  </style>\n</head>\n<body>\n\n  <div class=\"modal-overlay\" id=\"loader\"><div class=\"modal-box\"><h3 style=\"color:var(--brand)\">Processando...</h3></div></div>\n  <div class=\"modal-overlay\" id=\"error-modal\">\n      <div class=\"modal-box\">\n          <h2 style=\"color:var(--danger)\">⚠️ Atenção</h2>\n          <p id=\"error-msg\" style=\"margin-top:10px; color:#555;\">Erro.</p>\n          <button class=\"btn-retry\" onclick=\"closeError()\">OK, CORRIGIR</button>\n      </div>\n  </div>\n  <div class=\"modal-overlay\" id=\"confirm-modal\">\n      <div class=\"modal-box\">\n          <h2>Finalizar Venda?</h2>\n          <div style=\"background:#f3f4f6; padding:15px; border-radius:8px; margin: 15px 0; text-align:left;\">\n              <div style=\"display:flex; justify-content:space-between; margin-bottom:5px;\"><span>Total Pedido:</span><span style=\"font-weight:bold\" id=\"modal-total\"></span></div>\n              <div style=\"display:flex; justify-content:space-between; margin-bottom:5px;\"><span>Total Pago:</span><span style=\"font-weight:bold; color:#2563eb\" id=\"modal-pago\"></span></div>\n              <div style=\"border-top:1px solid #ddd; margin:5px 0;\"></div>\n              <div style=\"display:flex; justify-content:space-between; font-size:16px;\">\n                  <span id=\"modal-status-label\">Troco/Falta:</span><span style=\"font-weight:800;\" id=\"modal-status-val\"></span>\n              </div>\n          </div>\n          <div class=\"modal-actions\">\n              <button class=\"btn-modal btn-cancel\" onclick=\"closeModal()\">Voltar</button>\n              <button class=\"btn-modal btn-confirm\" onclick=\"submitFinal()\">CONFIRMAR (F10)</button>\n          </div>\n      </div>\n  </div>\n  <div id=\"print-area\"></div>\n  <div class=\"container\" id=\"success-screen\" style=\"display:none; text-align:center; padding-top:40px;\">\n      <div style=\"font-size:60px; margin-bottom:15px\">✅</div>\n      <h1 style=\"color:var(--success); font-size:24px;\">Pedido Enviado!</h1>\n      <div style=\"font-size:14px; color:#666; margin-top:10px;\">Número do Pedido</div>\n      <div style=\"font-size:36px; font-weight:800; color:#333; margin: 5px 0 25px 0;\">#<span id=\"order-id-display\">...</span></div>\n      <button class=\"btn-print\" onclick=\"printReceipt()\">🖨️ IMPRIMIR CUPOM</button>\n      <button class=\"btn-submit\" onclick=\"startNewOrder()\" style=\"background:#555; margin-top:10px;\">NOVO PEDIDO</button>\n  </div>\n\n  <div class=\"container\" id=\"main-ui\">\n    <div class=\"operador-badge\">\n      👤 Operador: <span id=\"nome-operador\">Sem Operador</span>\n    </div>\n\n    <form id=\"form-pedido\" onsubmit=\"return false;\">\n      \n      <div class=\"section-title\" style=\"margin-top:0;\">\n         <span><span class=\"section-icon\">👤</span> CLIENTE <span id=\"tag-novo\" class=\"badge-novo\">NOVO</span></span>\n         <span class=\"btn-edit\" id=\"btn-edit\" onclick=\"enableEdit()\">EDITAR</span>\n      </div>\n      \n      <div class=\"form-group\">\n        <label>Buscar Cliente (Nome, Rua, Telefone...)*</label>\n        <input type=\"text\" id=\"busca-cliente\" list=\"dl-clientes\" placeholder=\"Digite Nome, Telefone ou Endereço...\" autocomplete=\"off\">\n        <datalist id=\"dl-clientes\"></datalist>\n        <input type=\"hidden\" id=\"cli-id\"><input type=\"hidden\" id=\"cli-tipo\"><input type=\"hidden\" id=\"cli-tipoPessoa\">\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col\" style=\"flex:2\">\n            <label>Nome / Razão Social</label>\n            <input type=\"text\" id=\"cli-razao\" readonly>\n        </div>\n        <div class=\"col\">\n            <div class=\"doc-header\">\n                <label>Documento</label>\n                <div class=\"doc-options\">\n                    <label><input type=\"radio\" name=\"docType\" value=\"cpf\" checked onclick=\"docTypeChanged()\"> CPF</label>\n                    <label><input type=\"radio\" name=\"docType\" value=\"cnpj\" onclick=\"docTypeChanged()\"> CNPJ</label>\n                </div>\n            </div>\n            <input type=\"text\" id=\"cli-doc\" placeholder=\"000.000.000-00\" readonly oninput=\"validateDocUI()\">\n            <div id=\"doc-error-msg\" class=\"msg-error\">Documento Inválido</div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n         <div class=\"col\"><label>WhatsApp</label><input type=\"text\" id=\"cli-zap\" readonly></div>\n         <div class=\"col\"><label>Bairro</label><input type=\"text\" id=\"cli-bairro\" readonly></div>\n      </div>\n      <div class=\"row\">\n         <div class=\"col\" style=\"flex:3\"><label>Rua</label><input type=\"text\" id=\"cli-rua\" readonly></div>\n         <div class=\"col\"><label>Nº</label><input type=\"text\" id=\"cli-num\" readonly></div>\n      </div>\n      \n      <div class=\"row\">\n         <div class=\"col\" style=\"flex:2\"><label>Complemento</label><input type=\"text\" id=\"cli-comp\" placeholder=\"Apto, Bloco...\" readonly></div>\n         \n         <div class=\"col\" style=\"flex:0 0 70px\">\n             <label>UF</label>\n             <select id=\"cli-uf\" onchange=\"filterCities()\" readonly disabled>\n                 <option value=\"\">--</option>\n             </select>\n         </div>\n\n         <div class=\"col\">\n             <label>Cidade</label>\n             <input type=\"text\" id=\"cli-cidade\" list=\"dl-cidades\" placeholder=\"Selecione UF...\" readonly onchange=\"validateCity()\">\n             <datalist id=\"dl-cidades\"></datalist>\n             <div id=\"city-error-msg\" class=\"msg-error\">Cidade não pertence ao UF</div>\n         </div>\n      </div>\n\n      <div class=\"section-title\"><span><span class=\"section-icon\">🛒</span> ITENS</span></div>\n      <datalist id=\"dl-produtos\"></datalist>\n      <div id=\"cart-container\"></div>\n      <button class=\"btn-add\" onclick=\"addItem()\">+ Adicionar Item (F9)</button>\n\n      <div class=\"section-title\" style=\"margin-top:10px;\"><span><span class=\"section-icon\">🚚</span> ENTREGADOR</span></div>\n      <div class=\"form-group\">\n          <select id=\"sel-entregador\">\n              </select>\n      </div>\n\n      <div class=\"form-group\" style=\"margin-top:15px;\">\n          <label>Observações</label>\n          <textarea id=\"obs-pedido\" rows=\"2\"></textarea>\n      </div>\n\n      <div class=\"section-title\"><span><span class=\"section-icon\">💳</span> PAGAMENTOS</span></div>\n      <div class=\"form-group\" style=\"background:#fff7ed; padding:10px; border:1px solid #ffedd5; border-radius:6px; margin-bottom:15px;\">\n          <label style=\"color:#c2410c;\">Troco Para (Opcional)</label>\n          <input type=\"number\" id=\"fin-troco-para\" placeholder=\"Ex: 50,00 ou 100,00\" step=\"0.01\">\n          <div style=\"font-size:10px; color:#9a3412; margin-top:2px\">Informe se o cliente pediu troco para um valor específico.</div>\n      </div>\n\n      <div id=\"payment-container\"></div>\n      <button class=\"btn-add btn-add-pay\" onclick=\"addPayment()\">+ Adicionar Pagamento</button>\n\n      <div class=\"status-panel\">\n         <div class=\"status-row\"><span>Subtotal Itens:</span><span id=\"disp-subtotal\">R$ 0,00</span></div>\n         <div class=\"status-row\"><span>Total Pago:</span><span id=\"disp-pago\">R$ 0,00</span></div>\n         <div class=\"status-row\"><span>Status:</span><span id=\"disp-status-badge\" class=\"status-badge badge-falta\">Falta: R$ 0,00</span></div>\n         <div class=\"status-main\">\n             <span class=\"total-big-label\">TOTAL PEDIDO</span>\n             <span class=\"total-big-value\" id=\"res-total\">R$ 0,00</span>\n         </div>\n         <div style=\"text-align:right; font-size:11px; margin-top:5px; color:#6b7280;\">F9: Item | F10: Finalizar</div>\n      </div>\n\n      <button class=\"btn-submit\" onclick=\"openModal()\">CONFIRMAR (F10)</button>\n    </form>\n  </div>\n\n  <script>\n    function unwrapData(input) {\n        if (input === undefined || input === null) return null;\n        let current = input;\n        for (let i = 0; i < 4; i++) {\n            if (typeof current === 'string') {\n                try { let parsed = JSON.parse(current); current = parsed; } catch (e) { break; }\n            } else { break; }\n        }\n        if (Array.isArray(current) && current.length === 1 && typeof current[0] === 'string') {\n             try { return JSON.parse(current[0]); } catch(e) {}\n        }\n        return current;\n    }\n\n    const RAW_PROD = {{ JSON.stringify($json.PRODUTOS) }};\n    const DB_PRODUTOS = Array.isArray(unwrapData(RAW_PROD)) ? unwrapData(RAW_PROD) : [];\n\n    const RAW_CLI = {{ JSON.stringify($json.CLIENTES) }};\n    const DB_CLIENTES = Array.isArray(unwrapData(RAW_CLI)) ? unwrapData(RAW_CLI) : [];\n\n    const RAW_VEND = {{ JSON.stringify($json.VENDEDORES) }};\n    let parsedVend = unwrapData(RAW_VEND);\n    if (parsedVend && !Array.isArray(parsedVend) && parsedVend.data) parsedVend = parsedVend.data;\n    const DB_VENDEDORES = Array.isArray(parsedVend) ? parsedVend : [];\n\n    const RAW_CIDADES = {{ JSON.stringify($json[\"Cidades e Estados\"]) }};\n    const DB_CIDADES_ESTADOS = Array.isArray(unwrapData(RAW_CIDADES)) ? unwrapData(RAW_CIDADES) : [];\n\n    const WEBHOOK_URL = \"{{ $json['Webhook Envio Pedido'] }}\";\n    \n    const RAW_USUARIO = {{ JSON.stringify($json[\"Usuário\"]) }};\n    const NOME_USUARIO = (typeof RAW_USUARIO === 'string' && RAW_USUARIO.trim() !== '') ? RAW_USUARIO.trim() : \"Sem Operador\";\n    \n    let tipoCliente = \"NOVO\";\n    let isEditando = false;\n    let lastOrderId = \"---\";\n    let globalTotal = 0;\n    let globalPago = 0;\n\n    function getValue(obj, keys) {\n        if (!obj) return '';\n        for (let k of keys) {\n            if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') return obj[k];\n        }\n        if (obj.endereco && typeof obj.endereco === 'object') {\n            for (let k of keys) {\n                if (obj.endereco[k] !== undefined && obj.endereco[k] !== null && String(obj.endereco[k]).trim() !== '') return obj.endereco[k];\n            }\n        }\n        return '';\n    }\n\n    function normalizeText(value) {\n        return String(value || '')\n            .toLowerCase()\n            .normalize('NFD')\n            .replace(/[\\u0300-\\u036f]/g, '');\n    }\n\n    function parseNumber(value) {\n        if (value === null || value === undefined) return 0;\n        const normalized = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');\n        const parsed = parseFloat(normalized);\n        return Number.isFinite(parsed) ? parsed : 0;\n    }\n    function asText(value) {\n        if (value === null || value === undefined) return '';\n        if (typeof value === 'object') return '';\n        return String(value).trim();\n    }\n\n    function buildClientOption(c) {\n        const opt = document.createElement('option');\n        const nome = asText(getValue(c, ['nome', 'razaoSocial']));\n        const codigo = asText(getValue(c, ['codigo', 'id', 'cliente']));\n        const doc = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj']));\n        const telefone = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp']));\n        const rua = asText(getValue(c, ['endereco', 'rua', 'logradouro']));\n        const numero = asText(getValue(c, ['numeroEndereco', 'numero']));\n        const bairro = asText(getValue(c, ['bairro']));\n        const cidade = asText(getValue(c, ['cidade', 'municipio']));\n        const uf = asText(getValue(c, ['estado', 'uf']));\n        const textoEndereco = [rua, numero, bairro, cidade, uf].filter(Boolean).join(', ');\n        const partes = [\n            codigo ? `[${codigo}]` : '',\n            nome || 'Sem nome',\n            telefone || '',\n            doc || '',\n            textoEndereco || ''\n        ].filter(Boolean);\n        opt.value = nome || codigo || telefone || '';\n        opt.label = partes.join(' | ');\n        opt.textContent = opt.label;\n        return opt;\n    }\n\n    function renderClientOptions(list) {\n        const dlCli = document.getElementById('dl-clientes');\n        dlCli.innerHTML = '';\n        list.forEach(c => dlCli.appendChild(buildClientOption(c)));\n    }\n\n    function filterClients(query) {\n        const q = normalizeText(query);\n        const qDigits = String(query || '').replace(/\\D/g, '');\n        if (!q) return DB_CLIENTES;\n        return DB_CLIENTES.filter(c => {\n            const nome = asText(getValue(c, ['nome', 'razaoSocial']));\n            const doc = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj']));\n            const telefone = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp']));\n            const rua = asText(getValue(c, ['endereco', 'rua', 'logradouro']));\n            const numero = asText(getValue(c, ['numeroEndereco', 'numero']));\n            const bairro = asText(getValue(c, ['bairro']));\n            const cidade = asText(getValue(c, ['cidade', 'municipio']));\n            const uf = asText(getValue(c, ['estado', 'uf']));\n            const complemento = asText(getValue(c, ['complemento']));\n            const textoEndereco = [rua, numero, bairro, cidade, uf, complemento].filter(Boolean).join(' ');\n            const hay = normalizeText([nome, doc, telefone, textoEndereco].join(' '));\n            if (hay.includes(q)) return true;\n            if (!qDigits) return false;\n            const digitsHay = [doc, telefone].map(v => String(v || '').replace(/\\D/g, '')).join(' ');\n            return digitsHay.includes(qDigits);\n        });\n    }\n\n    function updateClientDatalist(query) {\n        renderClientOptions(filterClients(query));\n    }\n\n    function buildProductOption(p) {\n        const opt = document.createElement('option');\n        opt.value = p.nome;\n        opt.dataset.id = p.codigo;\n        opt.dataset.price = p.preco;\n        opt.label = `Ref: ${p.referencia||p.codigo} - ${p.nome}`;\n        return opt;\n    }\n\n    function renderProductOptions(list) {\n        const dlProd = document.getElementById('dl-produtos');\n        dlProd.innerHTML = '';\n        list.forEach(p => dlProd.appendChild(buildProductOption(p)));\n    }\n\n    function filterProducts(query) {\n        const q = normalizeText(query);\n        if (!q) return DB_PRODUTOS;\n        return DB_PRODUTOS.filter(p => {\n            const codigo = p.codigo || '';\n            const ref = p.referencia || '';\n            const nome = p.nome || '';\n            const hay = normalizeText([codigo, ref, nome].join(' '));\n            return hay.includes(q);\n        });\n    }\n\n    function updateProductDatalist(query) {\n        renderProductOptions(filterProducts(query));\n    }\n\n    function findExactClient(inputValue) {\n        const val = normalizeText(inputValue);\n        const digits = String(inputValue || '').replace(/\\D/g, '');\n        if (!val && !digits) return null;\n        return DB_CLIENTES.find(c => {\n            const nome = normalizeText(asText(getValue(c, ['nome', 'razaoSocial'])));\n            const docDigits = asText(getValue(c, ['cnpjCpf', 'cpf_cnpj'])).replace(/\\D/g, '');\n            const celDigits = asText(getValue(c, ['celular', 'telefone', 'celular_whats', 'whatsapp'])).replace(/\\D/g, '');\n            return (val && nome === val) || \n                   (digits && (docDigits === digits || (celDigits && celDigits === digits)));\n        });\n    }\n\n    function init() {\n        document.getElementById('nome-operador').textContent = NOME_USUARIO;\n        \n        const selVend = document.getElementById('sel-entregador');\n        selVend.innerHTML = '';\n        const defaultOpt = document.createElement('option');\n        defaultOpt.value = \"\";\n        defaultOpt.textContent = \"SEM ENTREGADOR\";\n        selVend.appendChild(defaultOpt);\n\n        if(DB_VENDEDORES.length > 0) {\n            DB_VENDEDORES.forEach(v => {\n                const opt = document.createElement('option');\n                opt.value = v.codigo;\n                opt.textContent = v.nome;\n                selVend.appendChild(opt);\n            });\n        }\n\n        renderClientOptions(DB_CLIENTES);\n        renderProductOptions(DB_PRODUTOS);\n\n        const selUF = document.getElementById('cli-uf');\n        const estadosMap = new Map();\n        DB_CIDADES_ESTADOS.forEach(i => {\n            if(i && i.estado_sigla && !estadosMap.has(i.estado_sigla)) {\n                estadosMap.set(i.estado_sigla, i.estado_nome);\n            }\n        });\n        const estadosOrdenados = Array.from(estadosMap.keys()).sort();\n        estadosOrdenados.forEach(sigla => {\n            const opt = document.createElement('option');\n            opt.value = sigla;\n            opt.textContent = sigla;\n            selUF.appendChild(opt);\n        });\n\n        addItem();\n    }\n\n    function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }\n    function fmtMoney(n) { return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }\n\n    function filterCities() {\n        const uf = document.getElementById('cli-uf').value;\n        const dl = document.getElementById('dl-cidades');\n        const inputCid = document.getElementById('cli-cidade');\n        \n        dl.innerHTML = ''; \n        inputCid.value = '';\n        inputCid.placeholder = uf ? \"Selecione...\" : \"Selecione UF primeiro...\";\n        inputCid.disabled = !uf;\n        \n        if(!uf) return;\n\n        const cidadesDoEstado = DB_CIDADES_ESTADOS.filter(c => c.estado_sigla === uf);\n        cidadesDoEstado.sort((a,b) => a.cidade.localeCompare(b.cidade));\n\n        cidadesDoEstado.forEach(c => {\n            const opt = document.createElement('option');\n            opt.value = c.cidade;\n            dl.appendChild(opt);\n        });\n        validateCity();\n    }\n\n    function validateCity() {\n        const uf = document.getElementById('cli-uf').value;\n        const cityVal = document.getElementById('cli-cidade').value.trim();\n        const err = document.getElementById('city-error-msg');\n        const input = document.getElementById('cli-cidade');\n\n        if(!cityVal || !uf) {\n            input.classList.remove('input-error');\n            err.style.display = 'none';\n            return;\n        }\n        const exists = DB_CIDADES_ESTADOS.some(c => c.estado_sigla === uf && c.cidade.toLowerCase() === cityVal.toLowerCase());\n        \n        if(!exists) {\n            input.classList.add('input-error');\n            err.style.display = 'block';\n        } else {\n            input.classList.remove('input-error');\n            err.style.display = 'none';\n        }\n    }\n\n    function docTypeChanged() { applyMask(); validateDocUI(); }\n    function applyMask() {\n        const input = document.getElementById('cli-doc');\n        const isCpf = document.querySelector('input[name=\"docType\"]:checked').value === 'cpf';\n        let v = input.value.replace(/\\D/g, '');\n        if (isCpf) {\n            if (v.length > 11) v = v.substring(0, 11);\n            v = v.replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d{1,2})$/, '$1-$2');\n        } else {\n            if (v.length > 14) v = v.substring(0, 14);\n            v = v.replace(/^(\\d{2})(\\d)/, '$1.$2').replace(/^(\\d{2})\\.(\\d{3})(\\d)/, '$1.$2.$3').replace(/\\.(\\d{3})(\\d)/, '.$1/$2').replace(/(\\d{4})(\\d)/, '$1-$2');\n        }\n        input.value = v;\n    }\n    function validateDocUI() {\n        applyMask();\n        const input = document.getElementById('cli-doc');\n        const errorMsg = document.getElementById('doc-error-msg');\n        const isCpf = document.querySelector('input[name=\"docType\"]:checked').value === 'cpf';\n        const rawVal = input.value.replace(/\\D/g, '');\n        if(rawVal.length === 0) { input.classList.remove('input-error'); errorMsg.style.display = 'none'; return; }\n        let isValid = false, msg = \"\";\n        if (isCpf) {\n            if (rawVal.length < 11) { isValid = false; msg = \"CPF Incompleto\"; }\n            else { isValid = validarCPF(rawVal); msg = isValid ? \"\" : \"CPF Inválido\"; }\n        } else {\n            if (rawVal.length < 14) { isValid = false; msg = \"CNPJ Incompleto\"; }\n            else { isValid = validarCNPJ(rawVal); msg = isValid ? \"\" : \"CNPJ Inválido\"; }\n        }\n        if (!isValid) { input.classList.add('input-error'); errorMsg.textContent = msg; errorMsg.style.display = 'block'; } \n        else { input.classList.remove('input-error'); errorMsg.style.display = 'none'; }\n    }\n\n    document.getElementById('busca-cliente').addEventListener('input', (e) => {\n        const val = e.target.value || '';\n        updateClientDatalist(val);\n        const cli = findExactClient(val);\n        if(cli) fillClient(cli); else setNewClientMode();\n    });\n    document.getElementById('busca-cliente').addEventListener('focus', (e) => {\n        updateClientDatalist(e.target.value || '');\n    });\n\n    document.addEventListener('input', (e) => {\n        if (e.target && e.target.classList.contains('p-search')) {\n            updateProductDatalist(e.target.value || '');\n        }\n    });\n\n    document.addEventListener('focusin', (e) => {\n        if (e.target && e.target.classList.contains('p-search')) {\n            updateProductDatalist(e.target.value || '');\n        }\n    });\n\n    function fillClient(c) {\n        tipoCliente = \"CADASTRADO\"; isEditando = false;\n        document.getElementById('tag-novo').style.display = 'none';\n        document.getElementById('btn-edit').style.display = 'inline-block';\n        document.getElementById('busca-cliente').value = c.nome || c.razaoSocial || '';\n        \n        const map = {\n            'cli-id': c.codigo || c.id || c.cliente, \n            'cli-tipo': c.tipo,\n            'cli-tipoPessoa': c.tipoPessoa,\n            'cli-razao': c.razaoSocial || c.nome,\n            'cli-doc': c.cnpjCpf,\n            'cli-zap': c.celular,\n            'cli-rua': c.endereco,\n            'cli-num': c.numeroEndereco,\n            'cli-bairro': c.bairro,\n            'cli-cidade': c.cidade,\n            'cli-uf': c.estado,\n            'cli-comp': c.complemento\n        };\n\n        const selUF = document.getElementById('cli-uf');\n        selUF.disabled = true; \n        if(map['cli-uf']) {\n            selUF.value = map['cli-uf'];\n            filterCities(); \n        }\n\n        for(let id in map) { \n            const el = document.getElementById(id); \n            if(el){ \n                el.value = map[id] || ''; \n                el.readOnly = true; \n            } \n        }\n        \n        const radios = document.getElementsByName('docType');\n        const docClean = (c.cnpjCpf || '').replace(/\\D/g, '');\n        if(docClean.length > 11) radios[1].checked = true; else radios[0].checked = true;\n        radios.forEach(r => r.disabled = true);\n        validateDocUI();\n    }\n\n    function setNewClientMode() {\n        tipoCliente = \"NOVO\";\n        document.getElementById('tag-novo').style.display = 'inline-block';\n        document.getElementById('btn-edit').style.display = 'none';\n        document.getElementById('cli-id').value = \"\";\n        document.getElementById('cli-uf').value = \"\";\n        document.getElementById('cli-cidade').value = \"\";\n        enableEdit();\n    }\n\n    function enableEdit() {\n        isEditando = true;\n        const fields = ['cli-razao','cli-doc','cli-zap','cli-rua','cli-num','cli-bairro','cli-cidade','cli-uf','cli-comp'];\n        fields.forEach(id => { \n            const el = document.getElementById(id); el.readOnly = false; el.disabled = false; \n        });\n        document.getElementsByName('docType').forEach(r => r.disabled = false);\n    }\n\n    function addItem() {\n        const div = document.createElement('div');\n        div.className = 'card-box';\n        div.innerHTML = `\n            <div class=\"form-group\" style=\"margin-bottom:6px\">\n                <input type=\"text\" class=\"p-search\" list=\"dl-produtos\" placeholder=\"Buscar Produto...\" onchange=\"prodSelected(this)\">\n                <input type=\"hidden\" class=\"p-id\">\n            </div>\n            <div class=\"item-grid\">\n                <div class=\"item-col\"><label>Preço Unit.</label><input type=\"number\" class=\"p-price\" step=\"0.01\" oninput=\"calc()\" onkeydown=\"handleEnter(event, this)\"></div>\n                <div class=\"item-col\"><label>Qtd</label><input type=\"number\" class=\"p-qtd\" value=\"1\" min=\"1\" oninput=\"calc()\" onkeydown=\"handleEnter(event, this)\"></div>\n                <div class=\"item-col\"><label>Total Item</label><input type=\"text\" class=\"p-total input-total\" readonly value=\"R$ 0,00\"></div>\n            </div>\n            <button type=\"button\" class=\"btn-remove\" onclick=\"this.closest('.card-box').remove(); calc()\">Remover Item</button>\n        `;\n        document.getElementById('cart-container').appendChild(div);\n        const inputs = document.querySelectorAll('.p-search'); inputs[inputs.length-1].focus();\n    }\n\n    function prodSelected(input) {\n        const val = input.value;\n        const opts = document.getElementById('dl-produtos').options;\n        let found = null;\n        const valNorm = normalizeText(val);\n        for(let opt of opts) { if(normalizeText(opt.value) === valNorm) { found = opt; break; } }\n        if(found) {\n            const card = input.closest('.card-box');\n            card.querySelector('.p-id').value = found.dataset.id || '';\n            const price = parseNumber(found.dataset.price);\n            card.querySelector('.p-price').value = price.toFixed(2);\n            calc();\n            card.querySelector('.p-qtd').focus(); card.querySelector('.p-qtd').select();\n        }\n    }\n    function handleEnter(e, el) { if(e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); focusNextSection(); } }\n\n    function addPayment() {\n        calc();\n        let restante = globalTotal - globalPago;\n        if(restante < 0) restante = 0;\n        const div = document.createElement('div');\n        div.className = 'card-box pay-card';\n        div.innerHTML = `\n            <div class=\"row\" style=\"margin-bottom:0\">\n                <div class=\"col\" style=\"flex:2\">\n                    <label>Forma</label>\n                    <select class=\"pay-method\">\n                        <option value=\"DINHEIRO\">DINHEIRO</option>\n                        <option value=\"PIX\" ${globalPago === 0 ? '' : 'selected'}>PIX</option>\n                        <option value=\"CREDITO\">CREDITO</option>\n                        <option value=\"DEBITO\">DEBITO</option>\n                        <option value=\"CREDIARIO\">CREDIARIO</option>\n                    </select>\n                </div>\n                <div class=\"col\">\n                    <label>Valor</label>\n                    <input type=\"number\" class=\"pay-value\" value=\"${restante.toFixed(2)}\" step=\"0.01\" oninput=\"calc()\">\n                </div>\n            </div>\n            <button type=\"button\" class=\"btn-remove\" onclick=\"this.closest('.card-box').remove(); calc()\">Remover</button>\n        `;\n        document.getElementById('payment-container').appendChild(div);\n        calc();\n    }\n\n    function calc() {\n        let totalProd = 0;\n        document.querySelectorAll('#cart-container .card-box').forEach(row => {\n            const p = parseNumber(row.querySelector('.p-price').value)||0;\n            const q = parseNumber(row.querySelector('.p-qtd').value)||0;\n            const t = round2(p * q);\n            row.querySelector('.p-total').value = fmtMoney(t);\n            totalProd += t;\n        });\n        globalTotal = round2(totalProd);\n\n        let totalPay = 0;\n        document.querySelectorAll('.pay-card').forEach(row => {\n            const v = parseNumber(row.querySelector('.pay-value').value)||0;\n            totalPay += v;\n        });\n        globalPago = round2(totalPay);\n\n        document.getElementById('res-total').textContent = fmtMoney(globalTotal);\n        document.getElementById('disp-subtotal').textContent = fmtMoney(globalTotal);\n        document.getElementById('disp-pago').textContent = fmtMoney(globalPago);\n        document.getElementById('modal-total').textContent = fmtMoney(globalTotal);\n        document.getElementById('modal-pago').textContent = fmtMoney(globalPago);\n\n        const diff = round2(globalPago - globalTotal);\n        const badge = document.getElementById('disp-status-badge');\n        const modalStatusLabel = document.getElementById('modal-status-label');\n        const modalStatusVal = document.getElementById('modal-status-val');\n\n        if (diff >= 0) {\n            badge.className = 'status-badge badge-ok';\n            badge.textContent = `Troco: ${fmtMoney(diff)}`;\n            modalStatusLabel.textContent = \"Troco:\";\n            modalStatusVal.textContent = fmtMoney(diff);\n            modalStatusVal.style.color = \"#16a34a\";\n        } else {\n            badge.className = 'status-badge badge-falta';\n            badge.textContent = `Falta: ${fmtMoney(Math.abs(diff))}`;\n            modalStatusLabel.textContent = \"Falta:\";\n            modalStatusVal.textContent = fmtMoney(Math.abs(diff));\n            modalStatusVal.style.color = \"#dc2626\";\n        }\n    }\n\n    function validarCPF(cpf) {\n        if (/^(\\d)\\1+$/.test(cpf)) return false;\n        let soma = 0, resto;\n        for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);\n        resto = (soma * 10) % 11;\n        if ((resto === 10) || (resto === 11)) resto = 0;\n        if (resto !== parseInt(cpf.substring(9, 10))) return false;\n        soma = 0;\n        for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);\n        resto = (soma * 10) % 11;\n        if ((resto === 10) || (resto === 11)) resto = 0;\n        if (resto !== parseInt(cpf.substring(10, 11))) return false;\n        return true;\n    }\n    function validarCNPJ(cnpj) {\n        if (/^(\\d)\\1+$/.test(cnpj)) return false;\n        let tamanho = cnpj.length - 2;\n        let numeros = cnpj.substring(0,tamanho);\n        let digitos = cnpj.substring(tamanho);\n        let soma = 0;\n        let pos = tamanho - 7;\n        for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }\n        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;\n        if (resultado != digitos.charAt(0)) return false;\n        tamanho = tamanho + 1;\n        numeros = cnpj.substring(0,tamanho);\n        soma = 0;\n        pos = tamanho - 7;\n        for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }\n        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;\n        if (resultado != digitos.charAt(1)) return false;\n        return true;\n    }\n\n    function getSectionAnchors() {\n        return [\n            document.getElementById('busca-cliente'),\n            document.querySelector('#cart-container .p-search'),\n            document.getElementById('sel-entregador'),\n            document.getElementById('fin-troco-para'),\n            document.querySelector('#main-ui .btn-submit')\n        ].filter(Boolean);\n    }\n\n    function isModalOpen() {\n        const confirmModal = document.getElementById('confirm-modal');\n        const errorModal = document.getElementById('error-modal');\n        return (confirmModal && confirmModal.style.display === 'flex') || (errorModal && errorModal.style.display === 'flex');\n    }\n\n    function isMainUiVisible() {\n        const main = document.getElementById('main-ui');\n        return main && window.getComputedStyle(main).display !== 'none';\n    }\n\n    function focusNextSection() {\n        if (!isMainUiVisible()) return;\n        const anchors = getSectionAnchors();\n        if (!anchors.length) return;\n        const active = document.activeElement;\n        let next = null;\n        if (active) {\n            for (const anchor of anchors) {\n                if (anchor === active) continue;\n                if (active.compareDocumentPosition(anchor) & Node.DOCUMENT_POSITION_FOLLOWING) {\n                    next = anchor;\n                    break;\n                }\n            }\n        }\n        if (!next) next = anchors[0];\n        next.focus();\n        if (typeof next.select === 'function') next.select();\n    }\n\n    function shouldHandleEnter(e) {\n        if (isModalOpen() || !isMainUiVisible()) return false;\n        const target = e.target;\n        if (!target) return false;\n        const tag = target.tagName;\n        if (tag === 'TEXTAREA' || tag === 'BUTTON') return false;\n        if (target.isContentEditable) return false;\n        return true;\n    }\n\n    function showError(msg) {\n        const el = document.getElementById('error-msg');\n        if (el) el.textContent = msg || \"Erro.\";\n        document.getElementById('error-modal').style.display = 'flex';\n    }\n\n    function validateBeforeConfirm() {\n        calc();\n\n        const cliente = document.getElementById('busca-cliente').value.trim();\n        if (!cliente) { showError(\"Informe o cliente.\"); return false; }\n\n        if (document.getElementById('cli-doc').classList.contains('input-error')) {\n            showError(\"Corrija o documento.\");\n            return false;\n        }\n        if (document.getElementById('cli-cidade').classList.contains('input-error')) {\n            showError(\"Corrija a Cidade/UF.\");\n            return false;\n        }\n\n        const itensValidos = Array.from(document.querySelectorAll('#cart-container .card-box'))\n            .some(row => row.querySelector('.p-id').value);\n        if (!itensValidos) { showError(\"Adicione pelo menos um item.\"); return false; }\n\n        const pagamentos = Array.from(document.querySelectorAll('.pay-card'));\n        if (pagamentos.length === 0) { showError(\"Adicione uma forma de pagamento.\"); return false; }\n\n        const pagamentoInvalido = pagamentos.some(row => parseNumber(row.querySelector('.pay-value').value) <= 0);\n        if (pagamentoInvalido) { showError(\"Informe o valor de cada pagamento.\"); return false; }\n\n        if (round2(globalPago) <= 0) { showError(\"Total pago precisa ser maior que zero.\"); return false; }\n        if (round2(globalPago) < round2(globalTotal)) { showError(\"Valor pago insuficiente.\"); return false; }\n\n        return true;\n    }\n\n    document.addEventListener('keydown', (e) => { \n        if(e.key === 'Enter' && shouldHandleEnter(e)) { \n            e.preventDefault(); \n            focusNextSection(); \n            return; \n        } \n        if(e.key === 'F10') { e.preventDefault(); openModal(); } \n        if(e.key === 'F9') { e.preventDefault(); addItem(); } \n    });\n    function openModal() {\n        if (!validateBeforeConfirm()) return;\n        document.getElementById('confirm-modal').style.display = 'flex';\n    }\n    function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }\n    function closeError() { document.getElementById('error-modal').style.display = 'none'; }\n    function startNewOrder() {\n        document.getElementById('loader').style.display = 'flex';\n        setTimeout(() => location.reload(), 50);\n    }\n\n    async function submitFinal() {\n        closeModal();\n        if (!document.getElementById('busca-cliente').value.trim()) { alert(\"⚠️ Identifique o CLIENTE.\"); return; }\n        if (document.getElementById('cli-doc').classList.contains('input-error')) { document.getElementById('error-msg').textContent = \"Corrija o Documento.\"; document.getElementById('error-modal').style.display = 'flex'; return; }\n        if (document.getElementById('cli-cidade').classList.contains('input-error')) { document.getElementById('error-msg').textContent = \"Corrija a Cidade/UF.\"; document.getElementById('error-modal').style.display = 'flex'; return; }\n\n        const selEntregador = document.getElementById('sel-entregador');\n        let entId = selEntregador.value;\n        let entNome = selEntregador.options[selEntregador.selectedIndex]?.text || \"\";\n        \n        if (!entId || entNome === \"SEM ENTREGADOR\") {\n             entId = \"\";\n             entNome = \"\";\n        }\n        \n        const entregadorObj = { id: entId, nome: entNome };\n\n        const isCnpj = document.querySelector('input[name=\"docType\"][value=\"cnpj\"]').checked;\n        const cliTipo = document.getElementById('cli-tipo').value;\n        const cliTipoPessoa = document.getElementById('cli-tipoPessoa').value;\n        const tipoCadastroFinal = Number.isFinite(parseInt(cliTipo, 10)) ? parseInt(cliTipo, 10) : (isCnpj ? 1 : 0);\n        const tipoPessoaFinal = Number.isFinite(parseInt(cliTipoPessoa, 10)) ? parseInt(cliTipoPessoa, 10) : (isCnpj ? 1 : 0);\n\n        const itens = [];\n        document.querySelectorAll('#cart-container .card-box').forEach(row => {\n            const id = row.querySelector('.p-id').value;\n            if(id) {\n                const p = parseNumber(row.querySelector('.p-price').value)||0;\n                const q = parseNumber(row.querySelector('.p-qtd').value)||0;\n                const totalItem = round2(p * q);\n                itens.push({ id_produto: id, descricao: row.querySelector('.p-search').value, preco_base: p, quantidade: q, acrescimo: 0, desconto: 0, total_item: totalItem });\n            }\n        });\n        if(itens.length === 0) return alert(\"⚠️ Adicione produtos.\");\n        if (round2(globalPago) < round2(globalTotal)) { alert(`⚠️ Valor pago insuficiente!`); return; }\n\n        const mapPagamentos = { \"DINHEIRO\": 0, \"PIX\": 0, \"CREDITO\": 0, \"DEBITO\": 0, \"CREDIARIO\": 0 };\n        document.querySelectorAll('.pay-card').forEach(row => {\n            const m = row.querySelector('.pay-method').value;\n            const v = parseNumber(row.querySelector('.pay-value').value)||0;\n            if(mapPagamentos[m] !== undefined) mapPagamentos[m] += v;\n        });\n        const pagamentosFinal = Object.keys(mapPagamentos).map(key => ({\n            metodo: key,\n            valor: round2(mapPagamentos[key])\n        }));\n\n        const payload = {\n            tipo_cliente: tipoCliente, \n            cadastro_editado: isEditando,\n            entregador: entregadorObj,\n            operador: NOME_USUARIO,\n            cliente: {\n                id_cliente: document.getElementById('cli-id').value || \"0\",\n                tipo_cadastro: tipoCadastroFinal,\n                tipo_pessoa: tipoPessoaFinal,\n                nome: document.getElementById('busca-cliente').value || \"\",\n                razao_social: document.getElementById('cli-razao').value || \"\",\n                cpf_cnpj: document.getElementById('cli-doc').value || \"\",\n                celular_whats: document.getElementById('cli-zap').value || \"\",\n                endereco: { \n                    rua: document.getElementById('cli-rua').value || \"\", \n                    numero: document.getElementById('cli-num').value || \"\", \n                    bairro: document.getElementById('cli-bairro').value || \"\", \n                    complemento: document.getElementById('cli-comp').value || \"\",\n                    cidade: document.getElementById('cli-cidade').value || \"\", \n                    uf: document.getElementById('cli-uf').value || \"\" \n                }\n            },\n            itens: itens,\n            obs: document.getElementById('obs-pedido').value || \"\",\n            financeiro: {\n                total_pedido: globalTotal,\n                total_pago: globalPago,\n                troco_gerado: round2(globalPago - globalTotal),\n                troco_para: parseNumber(document.getElementById('fin-troco-para').value) || 0,\n                detalhe_pagamentos: pagamentosFinal \n            }\n        };\n\n        document.getElementById('loader').style.display = 'flex';\n        try {\n            const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });\n            if(res.ok) {\n                let jsonRes = {}; try { jsonRes = await res.json(); } catch(e) { }\n                let orderId = (jsonRes && jsonRes.dados && jsonRes.dados.pedido) ? jsonRes.dados.pedido : \"WEB-\" + Math.floor(Math.random() * 10000);\n                lastOrderId = String(orderId).replace(/,\\s*$/, '');\n                prepareReceipt(payload, lastOrderId);\n                document.getElementById('order-id-display').textContent = lastOrderId;\n                document.getElementById('loader').style.display = 'none';\n                document.getElementById('main-ui').style.display = 'none';\n                document.getElementById('success-screen').style.display = 'block';\n                window.scrollTo(0,0);\n            } else { document.getElementById('loader').style.display = 'none'; alert(\"Erro Servidor\"); }\n        } catch(e) { document.getElementById('loader').style.display = 'none'; alert(\"Erro Conexão\"); }\n    }\n\n    function prepareReceipt(data, orderId) {\n        const area = document.getElementById('print-area');\n        const c = data.cliente;\n        const fin = data.financeiro;\n        const now = new Date().toLocaleString('pt-BR');\n        \n        let html = `\n            <div class=\"cupom-header\">\n                <div class=\"cupom-title\">GALEGO DA AGUA E GAS</div>\n                <div style=\"font-size:10px\">CNPJ: 13.356.436/0001-60</div>\n                <div style=\"font-size:10px\">Rua dos Médicos, 160 - Timbí</div>\n                <div style=\"font-size:10px\">CAMARAGIBE - PE</div>\n                <div style=\"font-size:10px\">Telefone: (81) 8652-7555</div>\n            </div>\n            <div class=\"cupom-box-pedido\">Venda Nº ${orderId}</div>\n            <div class=\"cupom-line\">Data: ${now}</div>\n            ${data.operador ? `<div class=\"cupom-line\">Operador: ${data.operador}</div>` : ''}\n            ${data.entregador.nome ? `<div class=\"cupom-line\">Entregador: ${data.entregador.nome}</div>` : ''}\n            <div class=\"cupom-divider\"></div>\n            <div class=\"cupom-bold\">CLIENTE</div>\n            <div class=\"cupom-line\">Nome: ${c.nome}</div>\n            ${c.celular_whats ? `<div class=\"cupom-line\">Telefone: ${c.celular_whats}</div>` : ''}\n            <div class=\"cupom-line\">Rua: ${c.endereco.rua}, ${c.endereco.numero}</div>\n            <div class=\"cupom-line\">Bairro: ${c.endereco.bairro}</div>\n        `;\n        \n        if (c.endereco.complemento && c.endereco.complemento.trim() !== '') {\n            html += `<div class=\"cupom-complemento\">${c.endereco.complemento}</div>`;\n        }\n        \n        html += `\n            <div class=\"cupom-line\">${c.endereco.cidade} / ${c.endereco.uf}</div>\n            <div class=\"cupom-divider\"></div>\n            <table class=\"cupom-table\"><thead><tr><th style=\"width:50%\">Item</th><th style=\"width:10%\">Qtd</th><th style=\"width:20%\" class=\"text-right\">Un</th><th style=\"width:20%\" class=\"text-right\">Tl</th></tr></thead><tbody>\n        `;\n        \n        data.itens.forEach(i => {\n            html += `<tr><td colspan=\"4\" style=\"padding-top:4px; font-weight:bold\">${i.descricao}</td></tr><tr><td></td><td>${i.quantidade}</td><td class=\"text-right\">${fmtMoney(i.preco_base).replace('R$','').trim()}</td><td class=\"text-right\">${fmtMoney(i.total_item).replace('R$','').trim()}</td></tr>`;\n        });\n        \n        html += `</tbody></table><div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\" style=\"font-size:16px\"><span>TOTAL PRODUTOS:</span><span>${fmtMoney(fin.total_pedido)}</span></div>\n            <div class=\"cupom-divider\"></div><div class=\"cupom-bold\" style=\"margin-bottom:5px\">PAGAMENTO</div>`;\n        \n        fin.detalhe_pagamentos.forEach(pg => {\n            if(pg.valor > 0) {\n                html += `<div class=\"cupom-total-row\" style=\"font-size:12px; font-weight:normal\"><span>${pg.metodo}:</span><span>${fmtMoney(pg.valor)}</span></div>`;\n            }\n        });\n\n        if(fin.troco_gerado > 0) { html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TROCO:</span><span>${fmtMoney(fin.troco_gerado)}</span></div>`; }\n        if(fin.troco_para > 0) { html += `<div class=\"cupom-line\" style=\"margin-top:5px; font-size:11px;\">(Troco para: ${fmtMoney(fin.troco_para)})</div>`; }\n\n        const totalPagamentos = round2(fin.detalhe_pagamentos.reduce((sum, pg) => sum + parseNumber(pg.valor), 0));\n        html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TOTAL PAGO:</span><span>${fmtMoney(totalPagamentos)}</span></div>`;\n\n        if(data.obs) html += `<div class=\"cupom-divider\"></div><div class=\"cupom-bold\">OBS:</div><div>${data.obs}</div>`;\n        html += `<div class=\"cupom-divider\"></div><div style=\"text-align:center; margin-top:10px\">Obrigado pela preferência!</div>`;\n        area.innerHTML = html;\n    }\n    \n    function printReceipt() { window.print(); }\n    \n    init();\n  </script>\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -1648,
+        -112
+      ],
+      "id": "0dbbbd56-c93a-4e4a-9d48-eae78aa640b7",
+      "name": "Inframe Pedido1"
+    }
+  ],
+  "pinData": {
+    "NOVO PEDIDO": [
+      {
+        "json": {
+          "headers": {
+            "host": "webhook.cerion.com.br",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "max-age=0",
+            "dnt": "1",
+            "if-none-match": "W/\"a3e42-4s5Vnag9dmqDDvn8nQtgbhCVIEA\"",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "iframe",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-storage-access": "active",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "170.79.199.169",
+            "x-forwarded-host": "webhook.cerion.com.br",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "bc196fd6d36f",
+            "x-real-ip": "170.79.199.169"
+          },
+          "params": {},
+          "query": {
+            "contactNumber": "559481121124",
+            "contactName": "Nayara NR-Farma",
+            "contactEmail": "",
+            "contactCPFCNPJ": "",
+            "contactId": "425257",
+            "ticketId": "383644",
+            "companyId": "1",
+            "backendURL": "https://atendimentoapi4.wichat.com.br",
+            "userId": "350",
+            "ticket_userName": "Luiz",
+            "ticket_userLevel": "admin",
+            "ticket_connectionId": "323",
+            "t": "04CT3y6OkH8OszFYHGU81EcOXwl22X",
+            "ticket_UUID": "c53cae36-a7b4-4e8e-909b-a2d9d58ab094",
+            "user_LoggedIn": "353",
+            "user_LoggedName": "David Silva",
+            "user_LoggedLevel": "admin"
+          },
+          "body": {},
+          "webhookUrl": "https://webhook.cerion.com.br/webhook/uniplus/pedido/inframe/teste",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "webhook.cerion.com.br",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+            "content-length": "871",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "content-type": "application/json",
+            "dnt": "1",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "170.79.199.171",
+            "x-forwarded-host": "webhook.cerion.com.br",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "bc196fd6d36f",
+            "x-real-ip": "170.79.199.171"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "tipo_cliente": "CADASTRADO",
+            "cadastro_editado": true,
+            "entregador": {
+              "id": "15",
+              "nome": "Liliane Gouveia"
+            },
+            "operador": "Sem Operador",
+            "cliente": {
+              "id_cliente": "2",
+              "tipo_cadastro": 1,
+              "tipo_pessoa": 0,
+              "nome": "Liliane Gouveia",
+              "razao_social": "Liliane Gouveia",
+              "cpf_cnpj": "825.238.920-14",
+              "celular_whats": "(0xx81)98612-6149",
+              "endereco": {
+                "rua": "Rua Lucia Alves Pascoal",
+                "numero": "99",
+                "bairro": "Timbí",
+                "complemento": "Casa A",
+                "cidade": "CAMARAGIBE",
+                "uf": "PE"
+              }
+            },
+            "itens": [
+              {
+                "id_produto": "16",
+                "descricao": "AGUA SANITARIA OLIMPO 6X2L",
+                "preco_base": 15.28,
+                "quantidade": 1,
+                "acrescimo": 0,
+                "desconto": 0,
+                "total_item": 15.28
+              }
+            ],
+            "obs": "",
+            "financeiro": {
+              "total_pedido": 15.28,
+              "total_pago": 20,
+              "troco_gerado": 4.72,
+              "troco_para": 20,
+              "detalhe_pagamentos": [
+                {
+                  "metodo": "DINHEIRO",
+                  "valor": 20
+                },
+                {
+                  "metodo": "PIX",
+                  "valor": 0
+                },
+                {
+                  "metodo": "CREDITO",
+                  "valor": 0
+                },
+                {
+                  "metodo": "DEBITO",
+                  "valor": 0
+                },
+                {
+                  "metodo": "CREDIARIO",
+                  "valor": 0
+                }
+              ]
+            }
+          },
+          "webhookUrl": "https://webhook.cerion.com.br/webhook/uniplus/pedido/adicionar-pedido/teste",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Cadastrar Cliente": {
+      "main": [
+        [
+          {
+            "node": "Código Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Novo Pedido": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOVO PEDIDO": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Lista Cidades1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados Confirmação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Confirmação": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Itens1": {
+      "main": [
+        [
+          {
+            "node": "Busca Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INFORMAÇÕES": {
+      "main": [
+        [
+          {
+            "node": "Inframe Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Cliente1": {
+      "main": [
+        [
+          {
+            "node": "INFORMAÇÕES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inframe Pedido": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Cliente": {
+      "main": [
+        [
+          {
+            "node": "Código Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Cadastrar Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Código Cliente": {
+      "main": [
+        [
+          {
+            "node": "Código Cliente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Código Cliente1": {
+      "main": [
+        [
+          {
+            "node": "Código Cliente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Código Cliente2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Código Cliente3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Código Cliente3": {
+      "main": [
+        [
+          {
+            "node": "Código Cliente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Vendedor/Entregador": {
+      "main": [
+        [
+          {
+            "node": "Busca Itens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista Cidades1": {
+      "main": [
+        [
+          {
+            "node": "Busca Vendedor/Entregador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "json": {
+      "main": [
+        [
+          {
+            "node": "Novo Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e9ce9e87-ec76-46a8-9c18-cd9a816edf31",
+  "meta": {
+    "instanceId": "f9628a5cdb1c747f4a8e5a0ecde91854ad155978851f75142b2e0e228d1f71a4"
+  },
+  "id": "8aHwMZ4rDPEhyAo6",
+  "tags": []
+}

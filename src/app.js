@@ -9,52 +9,27 @@ const tipoDocumentoRoutes = require("./routes/tipo-documento-financeiro.routes")
 const gourmetRoutes = require("./routes/gourmet.routes");
 const portalRoutes = require("./routes/portal-comercial.routes");
 const healthRoutes = require("./routes/health.routes");
+const mockRoutes = require("./routes/mock.routes");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
+const { authenticate } = require("./middleware/auth.middleware");
 
 const app = express();
-
-const basicAuthUser = process.env.BASIC_AUTH_USER;
-const basicAuthPass = process.env.BASIC_AUTH_PASS;
 
 // Parse JSON bodies.
 app.use(express.json());
 
-// Optional Basic Auth protection for all routes.
+// Request logging middleware
 app.use((req, res, next) => {
-  if (!basicAuthUser || !basicAuthPass) {
-    return next();
-  }
-
-  const authHeader = req.headers.authorization || "";
-  const [scheme, token] = authHeader.split(" ");
-  if (scheme !== "Basic" || !token) {
-    res.set("WWW-Authenticate", 'Basic realm="UniPlus API"');
-    return res
-      .status(401)
-      .json({ success: false, error: "Autenticacao requerida." });
-  }
-
-  const decoded = Buffer.from(token, "base64").toString("utf8");
-  const separatorIndex = decoded.indexOf(":");
-  if (separatorIndex === -1) {
-    res.set("WWW-Authenticate", 'Basic realm="UniPlus API"');
-    return res
-      .status(401)
-      .json({ success: false, error: "Autenticacao invalida." });
-  }
-
-  const user = decoded.slice(0, separatorIndex);
-  const pass = decoded.slice(separatorIndex + 1);
-  if (user !== basicAuthUser || pass !== basicAuthPass) {
-    res.set("WWW-Authenticate", 'Basic realm="UniPlus API"');
-    return res
-      .status(401)
-      .json({ success: false, error: "Credenciais invalidas." });
-  }
-
-  return next();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
 });
+
+// Mock routes (no authentication required)
+app.use(mockRoutes);
+
+// Optional authentication protection for all other routes.
+app.use(authenticate);
 
 // API routes.
 app.use(healthRoutes);

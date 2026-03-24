@@ -1,0 +1,753 @@
+{
+  "name": "GALEGO - Inframe Pagina Imprimir Pedidos",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        192
+      ],
+      "id": "967b60e0-d5ea-48ca-9ea0-1c0429fe6a8f",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/produtos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2384,
+        192
+      ],
+      "id": "6af3eecd-9040-4bc4-b566-9816282e54fe",
+      "name": "Busca Itens1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "hcts9jB9OvsQULmR",
+          "name": "Uniplus - Galego Agua e Gas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f1b346c-9ab5-40c7-8613-5262cdc05bb7",
+              "name": "Favicon",
+              "value": "https://i.ibb.co/tpqxTbWx/favicom-ceri-On.png",
+              "type": "string"
+            },
+            {
+              "id": "2974f565-9a53-444e-b95f-6d7c2dbcf208",
+              "name": "Logo",
+              "value": "https://i.ibb.co/dwY1dhX2/ceriOn.png",
+              "type": "string"
+            },
+            {
+              "id": "44b60099-2c14-4fa1-8537-97b00c0ed5e0",
+              "name": "Webhook Listar Pedidos",
+              "value": "https://webhook.cerion.com.br/webhook/uniplus/listar/pedidos/inframe/teste",
+              "type": "string"
+            },
+            {
+              "id": "25318ff6-5c1d-48c3-8724-60e2e72d071e",
+              "name": "NOME BASE",
+              "value": "▪️ Uniplus - Pedidos",
+              "type": "string"
+            },
+            {
+              "id": "d6d656a6-59a6-4fea-85cc-7b803b3330c0",
+              "name": "LISTA PEDIDOS",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "95b7e0ee-21e8-45a7-bce7-e554aac5c62c",
+              "name": "LISTA CLIENTE",
+              "value": "={{ $('Aggregate1').item.json.clientes }}",
+              "type": "array"
+            },
+            {
+              "id": "d07dace3-8cc2-4892-8cf4-3302e845a40e",
+              "name": "LISTA ITENS",
+              "value": "={{ $('Aggregate').item.json.itens }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -368,
+        192
+      ],
+      "id": "a3035357-1d7e-496c-ab94-9324fac98576",
+      "name": "INFORMAÇÕES"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1488,
+        192
+      ],
+      "id": "822b57f2-0ca2-4123-b811-b90a12485850",
+      "name": "Busca Cliente1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "hcts9jB9OvsQULmR",
+          "name": "Uniplus - Galego Agua e Gas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "uniplus/pedidos/inframe/galego",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2608,
+        192
+      ],
+      "id": "1703bcb5-dc40-440f-88b4-ac434e17c9dc",
+      "name": "PEDIDOS",
+      "webhookId": "84707c9d-4e3b-44d9-b8a6-bd62e023991f"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/pedidos?single=false",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -592,
+        192
+      ],
+      "id": "896bfd50-01b9-41f0-b91c-c4b2b56f47f0",
+      "name": "Lista Pedidos",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2160,
+        192
+      ],
+      "id": "6d4736c1-d4a3-4985-bd60-900e08e8ca29",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7355883-a39b-4dc9-a89d-8ff99b18d4de",
+              "name": "itens.codigo",
+              "value": "={{ $json.codigo }}",
+              "type": "string"
+            },
+            {
+              "id": "f8d202a2-6197-46c2-8a4e-68f6556e3536",
+              "name": "itens.nome",
+              "value": "={{ $json.nome }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1936,
+        192
+      ],
+      "id": "0c0847ac-9637-44c7-934d-85bba943dfa4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "itens"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        192
+      ],
+      "id": "e43cabd3-06dc-4cba-b106-b0df1883a194",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13885191-0741-4e5a-a014-73bed3179cb9",
+              "name": "clientes.codigo",
+              "value": "={{ $json.codigo }}",
+              "type": "string"
+            },
+            {
+              "id": "04301c70-58da-4ec6-8d7b-386b670f891c",
+              "name": "clientes.nome",
+              "value": "={{ $json.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "61adcd92-9fb4-4259-8b0a-2b63c46546ea",
+              "name": "clientes.razaoSocial",
+              "value": "={{ $json.razaoSocial }}",
+              "type": "string"
+            },
+            {
+              "id": "97112042-9bac-4067-9815-b3529b56ba95",
+              "name": "clientes.endereco",
+              "value": "={{ $json.endereco }}",
+              "type": "string"
+            },
+            {
+              "id": "dc8cb5cd-f08a-4364-97c4-8005e680915c",
+              "name": "clientes.numeroEndereco",
+              "value": "={{ $json.numeroEndereco }}",
+              "type": "string"
+            },
+            {
+              "id": "ea2005c4-7a98-477d-806e-cbb75ebdaac5",
+              "name": "clientes.complemento",
+              "value": "={{ $json.complemento }}",
+              "type": "string"
+            },
+            {
+              "id": "5f04a8c8-f459-4468-b0e2-fcda0d42fd2b",
+              "name": "clientes.bairro",
+              "value": "={{ $json.bairro }}",
+              "type": "string"
+            },
+            {
+              "id": "2a5acae5-a1c4-43a0-8f87-ac7e061b8a83",
+              "name": "clientes.celular",
+              "value": "={{ $json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "c9ba575e-f1b4-4884-aca1-6c8215ae617c",
+              "name": "clientes.cidade",
+              "value": "={{ $json.cidade }}",
+              "type": "string"
+            },
+            {
+              "id": "48cb41cb-35e2-4735-9150-66ad96ddb55f",
+              "name": "clientes.estado",
+              "value": "={{ $json.estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        192
+      ],
+      "id": "49c2beaf-4573-4331-9391-e26e4de4216c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "clientes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        192
+      ],
+      "id": "ebcc6339-490d-462e-b18d-aa07331e3bbb",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        192
+      ],
+      "id": "d596bffc-4e47-4df2-8ecc-ddd952adfb98",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>\n  <link rel=\"icon\" type=\"image/x-icon\" href=\"{{ $json.Favicon }}\">\n  <title>{{ $json['NOME BASE'] }} - Listagem de Pedidos</title>\n  <style>\n    :root { --brand: #ff6f20; --bg: #f3f4f6; --text: #1f2937; --border: #d1d5db; --success: #10b981; --danger: #ef4444; --radius: 6px; }\n    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }\n    body { background-color: var(--bg); color: var(--text); padding: 10px; padding-bottom: 80px; min-height: 100vh; }\n    .container { width: 100%; max-width: 900px; background: #fff; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; padding: 20px; }\n    .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; }\n    .logo-wrap { display: flex; align-items: center; gap: 12px; }\n    .logo { width: 46px; height: 46px; border-radius: 8px; object-fit: contain; background: #fff; border: 1px solid #e5e7eb; padding: 4px; }\n    .title { display: flex; flex-direction: column; }\n    .title-top { font-size: 16px; font-weight: 800; color: var(--brand); text-transform: uppercase; }\n    .title-sub { font-size: 12px; color: #6b7280; font-weight: 600; }\n\n    .section-title { font-size: 13px; font-weight: 800; color: var(--brand); margin: 18px 0 10px 0; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }\n    .row { display: flex; gap: 10px; margin-bottom: 10px; }\n    .filters-row { flex-wrap: nowrap; }\n    .filters-row .col { min-width: 160px; }\n    .col { flex: 1; min-width: 0; }\n    .form-group { margin-bottom: 12px; }\n    label { display: block; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }\n    input, select { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; background: #fff; color: #111; transition: all 0.2s; }\n    input:focus, select:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(255, 111, 32, 0.15); }\n\n    .card-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; border-left: 4px solid var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n    .order-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }\n    .order-id { font-weight: 800; font-size: 14px; }\n    .order-summary { display: grid; grid-template-columns: 1.2fr 1fr 0.7fr 0.7fr auto; gap: 8px; font-size: 13px; color: #374151; align-items: center; }\n    .order-summary span { color: #6b7280; }\n    .order-actions-inline { display: flex; gap: 6px; justify-content: flex-end; }\n    .icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; cursor: pointer; font-size: 14px; line-height: 1; }\n    .icon-btn.detail { background: #f3f4f6; color: #111827; }\n    .icon-btn.print { background: #111827; color: #fff; border-color: #111827; }\n    .order-details { display: none; margin-top: 10px; border-top: 1px dashed #e5e7eb; padding-top: 10px; }\n    .order-items { margin-top: 6px; }\n    .order-obs { white-space: pre-wrap; font-size: 12px; color: #374151; }\n    .items-title { font-size: 11px; font-weight: 800; color: #6b7280; text-transform: uppercase; margin-bottom: 6px; }\n    .items-row { display: grid; grid-template-columns: 1.6fr 0.6fr 0.6fr; gap: 6px; font-size: 12px; padding: 4px 0; border-bottom: 1px dashed #f3f4f6; }\n    .items-row:last-child { border-bottom: 0; }\n    .items-row .muted { color: #6b7280; }\n\n    .btn-refresh { background: #111827; color: #fff; border: none; border-radius: 6px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-size: 12px; }\n    .btn-clear { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-size: 12px; }\n    .btn-print { background: #333; color: white; flex: 1; padding: 10px 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }\n\n    .status-panel { background: #111827; color: #fff; padding: 10px 12px; border-radius: 8px; margin-top: 12px; }\n    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }\n    .stat-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 6px 8px; }\n    .stat-label { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.4px; }\n    .stat-value { font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px; }\n\n    .pagination { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; }\n    .page-btn { background: #fff; border: 1px solid #e5e7eb; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }\n    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }\n    .page-info { font-size: 12px; color: #6b7280; font-weight: 700; }\n\n    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(3px); }\n    .modal-box { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }\n    .btn-retry { background: var(--danger); color: white; width: 100%; padding: 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }\n\n    #print-area { display: none; font-family: 'Segoe UI', Arial, sans-serif; width: 100%; background: #fff; padding: 8px 10px; color: #000; font-size: 12px; line-height: 1.3; }\n    .cupom-header { text-align: center; margin-bottom: 6px; }\n    .cupom-title { font-weight: 800; font-size: 14px; margin-bottom: 2px; }\n    .cupom-sub { font-size: 11px; }\n    .cupom-company-line { font-size: 11px; }\n    .cupom-box-pedido { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center; font-weight: 700; font-size: 12px; padding: 6px; margin: 8px 0; border: 1px solid #999; }\n    .cupom-line { margin: 2px 0; }\n    .cupom-bold { font-weight: 800; }\n    .cupom-divider { border-top: 1px dashed #000; margin: 8px 0; }\n    .cupom-section { margin: 6px 0; }\n    .cupom-section-title { font-weight: 800; font-size: 12px; margin-bottom: 4px; }\n    .cupom-table { width: 100%; border-collapse: collapse; margin-top: 4px; table-layout: fixed; }\n    .cupom-table th { text-align: left; border-bottom: 1px solid #000; font-size: 11px; padding: 2px 4px; }\n    .cupom-table td { font-size: 11px; padding: 2px 4px; vertical-align: top; }\n    .cupom-table th:nth-child(2),\n    .cupom-table th:nth-child(3),\n    .cupom-table th:nth-child(4) { text-align: center; }\n    .text-right { text-align: right; }\n    .cupom-total-row { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-top: 4px; }\n    .cupom-total-row.light { font-weight: 600; font-size: 11px; }\n    .cupom-complemento { text-align: center; font-weight: 700; background-color: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 4px; margin: 6px 0; border: 1px solid #999; font-size: 11px; }\n\n    @media print {\n        body * { visibility: hidden; }\n        #print-area, #print-area * { visibility: visible; }\n        #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block; }\n        .container, .modal-overlay { display: none !important; }\n        @page { margin: 0; }\n    }\n\n    @media (max-width: 600px) {\n        .container { border-radius: 0; padding: 15px; max-width: 100%; }\n        .header { flex-direction: column; align-items: flex-start; }\n        .order-summary { grid-template-columns: 1fr; }\n        .items-row { grid-template-columns: 1fr 0.5fr 0.7fr; }\n        .stats-grid { grid-template-columns: 1fr; }\n        .filters-row { flex-direction: column; }\n        .filters-row .col { min-width: 100%; }\n        .order-actions-inline { justify-content: flex-start; }\n    }\n  </style>\n</head>\n<body>\n  <div class=\"modal-overlay\" id=\"loader\"><div class=\"modal-box\"><h3 style=\"color:var(--brand)\">Carregando pedidos...</h3></div></div>\n  <div class=\"modal-overlay\" id=\"error-modal\">\n      <div class=\"modal-box\">\n          <h2 style=\"color:var(--danger)\">Atenção</h2>\n          <p id=\"error-msg\" style=\"margin-top:10px; color:#555;\">Erro.</p>\n          <button class=\"btn-retry\" onclick=\"closeError()\">OK</button>\n      </div>\n  </div>\n  <div id=\"print-area\"></div>\n\n  <div class=\"container\">\n    <div class=\"header\">\n      <div class=\"logo-wrap\">\n        <img class=\"logo\" id=\"logo-img\" src=\"{{ $json.Logo }}\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n        <div class=\"title\">\n          <div class=\"title-top\">{{ $json['NOME BASE'] }}</div>\n          <div class=\"title-sub\">Listagem de Pedidos</div>\n        </div>\n      </div>\n      <div style=\"display:flex; gap:8px;\">\n        <button class=\"btn-clear\" onclick=\"clearFilters()\">Limpar</button>\n        <button class=\"btn-refresh\" onclick=\"refreshPage()\">Atualizar</button>\n      </div>\n    </div>\n\n    <div class=\"status-panel\">\n      <div class=\"stats-grid\">\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Total Pedidos</div>\n          <div class=\"stat-value\" id=\"total-count\">0</div>\n        </div>\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Valor Total</div>\n          <div class=\"stat-value\" id=\"total-value\">R$ 0,00</div>\n        </div>\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Mostrando</div>\n          <div class=\"stat-value\" id=\"visible-count\">0</div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"section-title\"><span>Filtros</span></div>\n    <div class=\"row filters-row\">\n      <div class=\"col\" style=\"flex:2\">\n        <label>Buscar (cliente, pedido, CPF/CNPJ)</label>\n        <input type=\"text\" id=\"filter-text\" placeholder=\"Digite para filtrar...\" autocomplete=\"off\">\n      </div>\n      <div class=\"col\">\n        <label>Data Inicial</label>\n        <input type=\"date\" id=\"filter-date-start\">\n      </div>\n      <div class=\"col\">\n        <label>Data Final</label>\n        <input type=\"date\" id=\"filter-date-end\">\n      </div>\n    </div>\n\n    <div class=\"section-title\"><span>Pedidos</span></div>\n    <div id=\"orders-list\"></div>\n    <div id=\"empty-state\" class=\"card-box\" style=\"display:none; text-align:center; color:#6b7280;\">Nenhum pedido encontrado.</div>\n\n    <div class=\"pagination\">\n      <button class=\"page-btn\" id=\"btn-prev\" onclick=\"changePage(-1)\">Anterior</button>\n      <div class=\"page-info\" id=\"page-info\">Página 1 de 1</div>\n      <button class=\"page-btn\" id=\"btn-next\" onclick=\"changePage(1)\">Próxima</button>\n    </div>\n  </div>\n\n  <script>\n    const NOME_BASE = \"{{ $json['NOME BASE'] }}\";\n    const PAGE_SIZE = 15;\n\n    const RAW_LISTA_CLIENTE = {{ JSON.stringify($json[\"LISTA CLIENTE\"]) }};\n    const RAW_LISTA_ITENS = {{ JSON.stringify($json[\"LISTA ITENS\"]) }};\n\n    let allOrders = [];\n    let filteredOrders = [];\n    let currentPage = 1;\n\n    function unwrapData(input) {\n        if (input === undefined || input === null) return null;\n        let current = input;\n        for (let i = 0; i < 4; i++) {\n            if (typeof current === 'string') {\n                try { current = JSON.parse(current); } catch (e) { break; }\n            } else { break; }\n        }\n        if (Array.isArray(current) && current.length === 1 && typeof current[0] === 'string') {\n            try { return JSON.parse(current[0]); } catch(e) {}\n        }\n        return current;\n    }\n\n    const DB_CLIENTES = Array.isArray(unwrapData(RAW_LISTA_CLIENTE)) ? unwrapData(RAW_LISTA_CLIENTE) : [];\n    const DB_ITENS = Array.isArray(unwrapData(RAW_LISTA_ITENS)) ? unwrapData(RAW_LISTA_ITENS) : [];\n    const MAP_CLIENTES = new Map(DB_CLIENTES.map(c => [String(c.codigo || '').trim(), c]));\n    const MAP_ITENS = new Map(DB_ITENS.map(i => [String(i.codigo || '').trim(), i]));\n\n    function normalizeText(value) {\n        return String(value || '')\n            .toLowerCase()\n            .normalize('NFD')\n            .replace(/[\\u0300-\\u036f]/g, '');\n    }\n\n    function parseNumber(value) {\n        if (value === null || value === undefined) return 0;\n        const normalized = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');\n        const parsed = parseFloat(normalized);\n        return Number.isFinite(parsed) ? parsed : 0;\n    }\n\n    function escapeHtml(value) {\n        return String(value || '')\n            .replace(/&/g, '&amp;')\n            .replace(/</g, '&lt;')\n            .replace(/>/g, '&gt;')\n            .replace(/\\\"/g, '&quot;')\n            .replace(/'/g, '&#39;');\n    }\n\n    function fmtMoney(value) {\n        const num = parseNumber(value);\n        return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });\n    }\n\n    function toDateKey(value) {\n        if (!value) return '';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);\n        const match = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        return match ? `${match[1]}-${match[2]}-${match[3]}` : '';\n    }\n\n    function formatDate(value) {\n        if (!value) return '--';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');\n        const match = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        return match ? `${match[3]}/${match[2]}/${match[1]}` : String(value);\n    }\n\n    function formatDateTime(value) {\n        if (!value) return '--';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toLocaleString('pt-BR');\n        return String(value);\n    }\n\n    function getDateValue(value) {\n        if (!value) return 0;\n        const direct = new Date(value);\n        if (!Number.isNaN(direct.getTime())) return direct.getTime();\n        const iso = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        if (iso) return new Date(`${iso[1]}-${iso[2]}-${iso[3]}T00:00:00`).getTime();\n        const br = String(value).match(/(\\d{2})\\/(\\d{2})\\/(\\d{4})/);\n        if (br) return new Date(`${br[3]}-${br[2]}-${br[1]}T00:00:00`).getTime();\n        return 0;\n    }\n\n    function extractObservation(raw) {\n        if (!raw) return '';\n        const text = String(raw);\n        const match = text.match(/Observa(?:ç|c)ão\\s*:\\s*/i);\n        if (match && match.index !== undefined) {\n            const rest = text.slice(match.index + match[0].length);\n            const line = rest.split(/\\r?\\n/).map(s => s.trim()).find(s => s.length > 0);\n            return line || '';\n        }\n        return '';\n    }\n\n    function extractOperator(raw) {\n        if (!raw) return '';\n        const text = String(raw);\n        const match = text.match(/Operador\\s*:\\s*([^\\r\\n]+)/i);\n        return match ? match[1].trim() : '';\n    }\n\n    function parseObsPayments(raw) {\n        const result = { pagamentos: [], troco: null, trocoPara: null, totalPago: null, totalPedido: null, totalTroco: null };\n        if (!raw) return result;\n        const text = String(raw);\n        const payMap = {};\n        const payRegex = /(DINHEIRO|PIX|CREDITO|CR[ÉE]DITO|DEBITO|D[ÉE]BITO|CREDIARIO|CREDI[AÁ]RIO)\\s*:\\s*R?\\$?\\s*([0-9.,]+)/gi;\n        let m;\n        while ((m = payRegex.exec(text)) !== null) {\n            let metodo = m[1].toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\n            if (metodo.includes('CREDIARIO')) metodo = 'CREDIARIO';\n            if (metodo.includes('CREDITO')) metodo = 'CREDITO';\n            if (metodo.includes('DEBITO')) metodo = 'DEBITO';\n            if (metodo.includes('DINHEIRO')) metodo = 'DINHEIRO';\n            if (metodo.includes('PIX')) metodo = 'PIX';\n            const valor = parseNumber(m[2]);\n            if (valor > 0) payMap[metodo] = (payMap[metodo] || 0) + valor;\n        }\n        result.pagamentos = Object.keys(payMap).map(k => ({ metodo: k, valor: payMap[k] }));\n\n        const totalTrocoMatch = text.match(/TOTAL\\s*TROCO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (totalTrocoMatch) result.totalTroco = parseNumber(totalTrocoMatch[1]);\n\n        const trocoLineMatch = text.match(/(?:^|\\n)\\s*TROCO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (trocoLineMatch) result.troco = parseNumber(trocoLineMatch[1]);\n\n        const trocoParaMatch = text.match(/Troco\\s*para\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (trocoParaMatch) result.trocoPara = parseNumber(trocoParaMatch[1]);\n\n        const totalPagoMatch = text.match(/TOTAL\\s*PAGO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (totalPagoMatch) result.totalPago = parseNumber(totalPagoMatch[1]);\n\n        const totalPedidoMatch = text.match(/TOTAL\\s*(?:DO\\s*)?PEDIDO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (totalPedidoMatch) result.totalPedido = parseNumber(totalPedidoMatch[1]);\n\n        return result;\n    }\n\n    function formatDateInput(dateObj) {\n        const y = dateObj.getFullYear();\n        const m = String(dateObj.getMonth() + 1).padStart(2, '0');\n        const d = String(dateObj.getDate()).padStart(2, '0');\n        return `${y}-${m}-${d}`;\n    }\n\n    function setDefaultDates() {\n        const now = new Date();\n        const start = new Date(now.getFullYear(), now.getMonth(), 1);\n        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);\n        document.getElementById('filter-date-start').value = formatDateInput(start);\n        document.getElementById('filter-date-end').value = formatDateInput(end);\n    }\n\n    function refreshPage() { location.reload(); }\n\n    function showError(msg) {\n        const el = document.getElementById('error-msg');\n        if (el) el.textContent = msg || 'Erro.';\n        document.getElementById('error-modal').style.display = 'flex';\n    }\n\n    function closeError() { document.getElementById('error-modal').style.display = 'none'; }\n\n    function mapOrders(rawList) {\n        return rawList.map((order, idx) => {\n            const base = (order && typeof order === 'object') ? order : {};\n            const items = unwrapData(base.itens);\n            const clienteCodigo = String(base.cliente || base.codigoCliente || '').trim();\n            const clienteObj = MAP_CLIENTES.get(clienteCodigo) || null;\n            const itensNorm = (Array.isArray(items) ? items : []).map(it => {\n                const item = { ...it };\n                const itemCode = String(it.produto || it.codigo || it.id || '').trim();\n                const itemRef = MAP_ITENS.get(itemCode);\n                if (itemRef && !item.descricao && !item.nomeProduto && !item.nome) item.__nome = itemRef.nome;\n                return item;\n            });\n            return {\n                ...base,\n                __idx: idx,\n                __cliente: clienteObj,\n                itens: itensNorm\n            };\n        });\n    }\n\n    async function loadOrders() {\n        document.getElementById('loader').style.display = 'flex';\n        try {\n            const RAW_LISTA = {{ JSON.stringify($json[\"LISTA PEDIDOS\"]) }};\n            const list = Array.isArray(unwrapData(RAW_LISTA)) ? unwrapData(RAW_LISTA) : [];\n            allOrders = mapOrders(list);\n            allOrders.sort((a, b) => {\n                const da = getDateValue(a.dataInclusao || a.data);\n                const db = getDateValue(b.dataInclusao || b.data);\n                return db - da;\n            });\n            setDefaultDates();\n            applyFilters();\n        } catch (e) {\n            showError('Erro ao carregar pedidos. Verifique a variável LISTA PEDIDOS.');\n        } finally {\n            document.getElementById('loader').style.display = 'none';\n        }\n    }\n\n    function clearFilters() {\n        document.getElementById('filter-text').value = '';\n        setDefaultDates();\n        applyFilters();\n    }\n\n    function applyFilters() {\n        const text = normalizeText(document.getElementById('filter-text').value);\n        let start = document.getElementById('filter-date-start').value;\n        let end = document.getElementById('filter-date-end').value;\n        if (!start || !end) {\n            setDefaultDates();\n            start = document.getElementById('filter-date-start').value;\n            end = document.getElementById('filter-date-end').value;\n        }\n\n        filteredOrders = allOrders.filter(order => {\n            const name = normalizeText(order.nomeCliente || order.cliente || '');\n            const doc = normalizeText(order.cnpjCpfCliente || '');\n            const code = normalizeText(order.codigo || order.codigoIdentificacao || '');\n            const matchesText = !text || name.includes(text) || doc.includes(text) || code.includes(text);\n\n            const dateKey = toDateKey(order.dataInclusao || order.data);\n            const matchesStart = !start || (dateKey && dateKey >= start);\n            const matchesEnd = !end || (dateKey && dateKey <= end);\n\n            return matchesText && matchesStart && matchesEnd;\n        });\n\n        currentPage = 1;\n        render();\n    }\n\n    function changePage(delta) {\n        const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));\n        currentPage = Math.min(totalPages, Math.max(1, currentPage + delta));\n        render();\n    }\n\n    function render() {\n        const listEl = document.getElementById('orders-list');\n        listEl.innerHTML = '';\n\n        const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));\n        const startIndex = (currentPage - 1) * PAGE_SIZE;\n        const pageItems = filteredOrders.slice(startIndex, startIndex + PAGE_SIZE);\n        const totalValue = filteredOrders.reduce((sum, o) => sum + parseNumber(o.valor || o.total || 0), 0);\n        document.getElementById('total-count').textContent = filteredOrders.length;\n        document.getElementById('total-value').textContent = fmtMoney(totalValue);\n        document.getElementById('visible-count').textContent = pageItems.length;\n\n        document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;\n        document.getElementById('btn-prev').disabled = currentPage <= 1;\n        document.getElementById('btn-next').disabled = currentPage >= totalPages;\n\n        if (pageItems.length === 0) {\n            document.getElementById('empty-state').style.display = 'block';\n            return;\n        }\n        document.getElementById('empty-state').style.display = 'none';\n\n        pageItems.forEach(order => {\n            const card = document.createElement('div');\n            card.className = 'card-box';\n\n            const itemsHtml = (order.itens || []).map(item => {\n                const desc = item.descricao || item.nomeProduto || item.nome || item.__nome || `Produto ${item.produto || item.id || ''}`;\n                const qtd = item.quantidade || item.qtd || 0;\n                const unit = fmtMoney(item.precoUnitario || item.preco || 0).replace('R$', '').trim();\n                return `\n                    <div class=\"items-row\">\n                        <div>${desc}</div>\n                        <div class=\"muted\">Qtd: ${qtd}</div>\n                        <div class=\"muted\">Un: ${unit}</div>\n                    </div>\n                `;\n            }).join('') || '<div class=\"items-row\"><div>Sem itens</div><div></div><div></div></div>';\n\n            const orderValue = fmtMoney(order.valor || order.total || 0);\n            const orderDate = formatDate(order.dataInclusao || order.data);\n            const orderCode = order.codigo || order.codigoIdentificacao || '---';\n            const orderKey = String(order.codigo || order.codigoIdentificacao || order.__idx);\n            const clienteObj = order.__cliente || {};\n            const cliente = order.nomeCliente || clienteObj.nome || clienteObj.razaoSocial || order.cliente || '---';\n            const doc = order.cnpjCpfCliente || '';\n            const obsHtml = order.observacao\n                ? `<div class=\"items-title\" style=\"margin-top:8px\">Observações</div><div class=\"order-obs\">${escapeHtml(order.observacao)}</div>`\n                : '';\n\n            const safeKey = orderKey.replace(/['\\\"]/g, '');\n            const detailId = `detail-${safeKey}`;\n            card.innerHTML = `\n                <div class=\"order-summary\">\n                    <div><span>Pedido:</span> #${orderCode}</div>\n                    <div><span>Cliente:</span> ${cliente}</div>\n                    <div><span>Data:</span> ${orderDate}</div>\n                    <div><span>Valor:</span> ${orderValue}</div>\n                    <div class=\"order-actions-inline\">\n                        <button class=\"icon-btn detail\" title=\"Mostrar detalhes\" onclick=\"toggleDetails('${detailId}', this)\">ℹ️</button>\n                        <button class=\"icon-btn print\" title=\"Imprimir pedido\" onclick=\"printOrder('${safeKey}')\">🖨️</button>\n                    </div>\n                </div>\n                <div class=\"order-details\" id=\"${detailId}\">\n                    <div class=\"order-items\">\n                        <div class=\"items-title\">Itens</div>\n                        ${itemsHtml}\n                    </div>\n                    ${obsHtml}\n                </div>\n            `;\n\n            listEl.appendChild(card);\n        });\n    }\n\n    function toggleDetails(id, btn) {\n        const el = document.getElementById(id);\n        if (!el) return;\n        const isOpen = el.style.display === 'block';\n        el.style.display = isOpen ? 'none' : 'block';\n        if (btn) {\n            btn.title = isOpen ? 'Mostrar detalhes' : 'Ocultar detalhes';\n            btn.textContent = isOpen ? 'ℹ️' : '🔽';\n        }\n    }\n\n    function findOrderByCode(code) {\n        return allOrders.find(o => String(o.codigo || o.codigoIdentificacao || o.__idx || '') === String(code));\n    }\n\n    function prepareReceipt(order) {\n        const area = document.getElementById('print-area');\n        const now = new Date().toLocaleString('pt-BR');\n        const dataPedido = formatDateTime(order.dataInclusao || order.data) || now;\n        const itens = Array.isArray(order.itens) ? order.itens : [];\n\n        const clienteObj = order.__cliente || {};\n        const clienteNome = order.nomeCliente || clienteObj.nome || clienteObj.razaoSocial || order.cliente || '';\n        const clienteDoc = order.cnpjCpfCliente || '';\n        const clienteTel = order.telefoneCliente || order.celularCliente || order.celular || clienteObj.celular || '';\n\n        const rua = order.enderecoEntrega || clienteObj.endereco || '';\n        const numero = order.numeroEntrega || clienteObj.numeroEndereco || '';\n        const bairro = order.bairroEntrega || clienteObj.bairro || '';\n        const cidade = order.cidadeEntrega || clienteObj.cidade || '';\n        const uf = order.estadoEntrega || clienteObj.estado || '';\n        const complemento = order.complementoEntrega || clienteObj.complemento || '';\n\n        const operador = order.operador || order.nomeOperador || extractOperator(order.observacao);\n        const entregador = order.nomeEntregador || order.entregador || order.nomeVendedor || '';\n\n        const pagamentosRaw = unwrapData(order.pagamentos || order.detalhe_pagamentos || order.financeiro?.detalhe_pagamentos || []);\n        const pagamentos = Array.isArray(pagamentosRaw) ? pagamentosRaw : [];\n        const obsInfo = parseObsPayments(order.observacao);\n\n        const pedidoCodigo = order.codigo || order.codigoIdentificacao || '---';\n        let html = `\n            <div class=\"cupom-header\">\n                <div class=\"cupom-title\">GALEGO DA AGUA E GAS</div>\n                <div class=\"cupom-company-line\">CNPJ: 13.356.436/0001-60</div>\n                <div class=\"cupom-company-line\">Rua dos Médicos, 160 - Timbí</div>\n                <div class=\"cupom-company-line\">CAMARAGIBE - PE</div>\n                <div class=\"cupom-company-line\">Telefone: (81) 8652-7555</div>\n            </div>\n            <div class=\"cupom-box-pedido\">Pedido Nº: ${pedidoCodigo}</div>\n            <div class=\"cupom-line\">Data: ${dataPedido}</div>\n            ${operador ? `<div class=\"cupom-line\">Operador: ${operador}</div>` : ''}\n            ${entregador ? `<div class=\"cupom-line\">Entregador: ${entregador}</div>` : ''}\n            <div class=\"cupom-divider\"></div>\n\n            <div class=\"cupom-section\">\n                <div class=\"cupom-section-title\">CLIENTE</div>\n                ${clienteNome ? `<div class=\"cupom-line\">Nome: ${clienteNome}</div>` : ''}\n                ${clienteDoc ? `<div class=\"cupom-line\">CPF/CNPJ: ${clienteDoc}</div>` : ''}\n                ${clienteTel ? `<div class=\"cupom-line\">Telefone: ${clienteTel}</div>` : ''}\n                ${(rua || numero) ? `<div class=\"cupom-line\">Rua: ${rua}${numero ? `, ${numero}` : ''}</div>` : ''}\n                ${bairro ? `<div class=\"cupom-line\">Bairro: ${bairro}</div>` : ''}\n                ${(cidade || uf) ? `<div class=\"cupom-line\">${cidade}${uf ? ` / ${uf}` : ''}</div>` : ''}\n            </div>\n            ${complemento ? `<div class=\"cupom-complemento\">${complemento}</div>` : ''}\n\n            <div class=\"cupom-divider\"></div>\n            <table class=\"cupom-table\">\n                <thead>\n                    <tr>\n                        <th style=\"width:45%\">Item</th>\n                        <th style=\"width:15%\">Qtd</th>\n                        <th style=\"width:20%\" class=\"text-right\">Un</th>\n                        <th style=\"width:20%\" class=\"text-right\">Tl</th>\n                    </tr>\n                </thead>\n                <tbody>\n        `;\n\n        itens.forEach(i => {\n            const desc = i.descricao || i.nomeProduto || i.nome || i.__nome || `Produto ${i.produto || i.id || ''}`;\n            const qtd = i.quantidade || i.qtd || 0;\n            const unit = fmtMoney(i.precoUnitario || i.preco || 0).replace('R$','').trim();\n            const total = fmtMoney(i.precoTotal || i.total || (parseNumber(qtd) * parseNumber(i.precoUnitario || i.preco || 0))).replace('R$','').trim();\n            html += `<tr><td colspan=\"4\" style=\"padding-top:4px; font-weight:bold\">${desc}</td></tr>`;\n            html += `<tr><td></td><td>${qtd}</td><td class=\"text-right\">${unit}</td><td class=\"text-right\">${total}</td></tr>`;\n        });\n\n        html += `</tbody></table>`;\n\n        const totalItens = itens.reduce((sum, i) => {\n            const qtd = i.quantidade || i.qtd || 0;\n            const unit = i.precoUnitario || i.preco || 0;\n            const line = parseNumber(i.precoTotal || i.total || (parseNumber(qtd) * parseNumber(unit)));\n            return sum + line;\n        }, 0);\n        const totalPedido = parseNumber(order.valor || order.total || obsInfo.totalPedido || totalItens);\n        html += `<div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\"><span>TOTAL PRODUTOS:</span><span>${fmtMoney(totalPedido)}</span></div>\n        `;\n\n        const pagamentosFinal = pagamentos.length ? pagamentos : obsInfo.pagamentos;\n        html += `<div class=\"cupom-divider\"></div><div class=\"cupom-section-title\">PAGAMENTO</div>`;\n        if (pagamentosFinal.length) {\n            pagamentosFinal.forEach(pg => {\n                const metodo = pg.metodo || pg.forma || pg.tipo || 'PAGAMENTO';\n                const valor = fmtMoney(pg.valor || pg.total || 0);\n                html += `<div class=\"cupom-total-row light\"><span>${metodo}:</span><span>${valor}</span></div>`;\n            });\n        } else if (order.condicaoPagamento) {\n            html += `<div class=\"cupom-total-row light\"><span>Condição:</span><span>${order.condicaoPagamento}</span></div>`;\n        }\n\n        if (obsInfo.totalTroco !== null) {\n            html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TROCO:</span><span>${fmtMoney(obsInfo.totalTroco)}</span></div>`;\n            if (obsInfo.trocoPara !== null) {\n                html += `<div class=\"cupom-total-row light\"><span>(Troco para: ${fmtMoney(obsInfo.trocoPara)})</span><span></span></div>`;\n            }\n        } else if (obsInfo.troco !== null) {\n            html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TROCO:</span><span>${fmtMoney(obsInfo.troco)}</span></div>`;\n            if (obsInfo.trocoPara !== null) {\n                html += `<div class=\"cupom-total-row light\"><span>(Troco para: ${fmtMoney(obsInfo.trocoPara)})</span><span></span></div>`;\n            }\n        }\n\n        const totalPago = obsInfo.totalPago !== null\n            ? obsInfo.totalPago\n            : (pagamentosFinal.length ? pagamentosFinal.reduce((sum, pg) => sum + parseNumber(pg.valor || pg.total || 0), 0) : totalPedido);\n        html += `<div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\"><span>TOTAL PAGO:</span><span>${fmtMoney(totalPago)}</span></div>\n        `;\n\n        const obsLine = extractObservation(order.observacao);\n        if (obsLine) {\n            html += `<div class=\"cupom-divider\"></div><div class=\"cupom-section-title\">OBS:</div><div>${obsLine}</div>`;\n        }\n\n        html += `<div class=\"cupom-divider\"></div><div style=\"text-align:center; margin-top:8px\">Obrigado pela preferência!</div>`;\n        area.innerHTML = html;\n    }\n\n    function printReceipt() { window.print(); }\n\n    function printOrder(code) {\n        const order = findOrderByCode(code);\n        if (!order) { showError('Pedido não encontrado para impressão.'); return; }\n        prepareReceipt(order);\n        printReceipt();\n    }\n\n    document.getElementById('filter-text').addEventListener('input', applyFilters);\n    document.getElementById('filter-date-start').addEventListener('change', applyFilters);\n    document.getElementById('filter-date-end').addEventListener('change', applyFilters);\n\n    loadOrders();\n  </script>\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        192
+      ],
+      "id": "67967319-106f-4fe1-81df-aac865c3010f",
+      "name": "Inframe Pedido"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>\n  <link rel=\"icon\" type=\"image/x-icon\" href=\"{{ $json.Favicon }}\">\n  <title>{{ $json['NOME BASE'] }} - Listagem de Pedidos</title>\n  <style>\n    :root { --brand: #ff6f20; --bg: #f3f4f6; --text: #1f2937; --border: #d1d5db; --success: #10b981; --danger: #ef4444; --radius: 6px; }\n    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }\n    body { background-color: var(--bg); color: var(--text); padding: 10px; padding-bottom: 80px; min-height: 100vh; }\n    .container { width: 100%; max-width: 900px; background: #fff; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; padding: 20px; }\n    .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; }\n    .logo-wrap { display: flex; align-items: center; gap: 12px; }\n    .logo { width: 46px; height: 46px; border-radius: 8px; object-fit: contain; background: #fff; border: 1px solid #e5e7eb; padding: 4px; }\n    .title { display: flex; flex-direction: column; }\n    .title-top { font-size: 16px; font-weight: 800; color: var(--brand); text-transform: uppercase; }\n    .title-sub { font-size: 12px; color: #6b7280; font-weight: 600; }\n\n    .section-title { font-size: 13px; font-weight: 800; color: var(--brand); margin: 18px 0 10px 0; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }\n    .row { display: flex; gap: 10px; margin-bottom: 10px; }\n    .filters-row { flex-wrap: nowrap; }\n    .filters-row .col { min-width: 160px; }\n    .col { flex: 1; min-width: 0; }\n    .form-group { margin-bottom: 12px; }\n    label { display: block; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }\n    input, select { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; background: #fff; color: #111; transition: all 0.2s; }\n    input:focus, select:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(255, 111, 32, 0.15); }\n\n    .card-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; border-left: 4px solid var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n    .order-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }\n    .order-id { font-weight: 800; font-size: 14px; }\n    .order-summary { display: grid; grid-template-columns: 1.2fr 1fr 0.7fr 0.7fr auto; gap: 8px; font-size: 13px; color: #374151; align-items: center; }\n    .order-summary span { color: #6b7280; }\n    .order-actions-inline { display: flex; gap: 6px; justify-content: flex-end; }\n    .icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; cursor: pointer; font-size: 14px; line-height: 1; }\n    .icon-btn.detail { background: #f3f4f6; color: #111827; }\n    .icon-btn.print { background: #111827; color: #fff; border-color: #111827; }\n    .order-details { display: none; margin-top: 10px; border-top: 1px dashed #e5e7eb; padding-top: 10px; }\n    .order-items { margin-top: 6px; }\n    .order-obs { white-space: pre-wrap; font-size: 12px; color: #374151; }\n    .items-title { font-size: 11px; font-weight: 800; color: #6b7280; text-transform: uppercase; margin-bottom: 6px; }\n    .items-row { display: grid; grid-template-columns: 1.6fr 0.6fr 0.6fr; gap: 6px; font-size: 12px; padding: 4px 0; border-bottom: 1px dashed #f3f4f6; }\n    .items-row:last-child { border-bottom: 0; }\n    .items-row .muted { color: #6b7280; }\n\n    .btn-refresh { background: #111827; color: #fff; border: none; border-radius: 6px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-size: 12px; }\n    .btn-clear { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-size: 12px; }\n    .btn-print { background: #333; color: white; flex: 1; padding: 10px 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }\n\n    .status-panel { background: #111827; color: #fff; padding: 10px 12px; border-radius: 8px; margin-top: 12px; }\n    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }\n    .stat-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 6px 8px; }\n    .stat-label { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.4px; }\n    .stat-value { font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px; }\n\n    .pagination { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; }\n    .page-btn { background: #fff; border: 1px solid #e5e7eb; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }\n    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }\n    .page-info { font-size: 12px; color: #6b7280; font-weight: 700; }\n\n    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(3px); }\n    .modal-box { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }\n    .btn-retry { background: var(--danger); color: white; width: 100%; padding: 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }\n\n    #print-area { display: none; font-family: 'Segoe UI', Arial, sans-serif; width: 100%; background: #fff; padding: 8px 10px; color: #000; font-size: 12px; line-height: 1.3; }\n    .cupom-header { text-align: center; margin-bottom: 6px; }\n    .cupom-title { font-weight: 800; font-size: 14px; margin-bottom: 2px; }\n    .cupom-sub { font-size: 11px; }\n    .cupom-company-line { font-size: 11px; }\n    .cupom-box-pedido { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center; font-weight: 700; font-size: 12px; padding: 6px; margin: 8px 0; border: 1px solid #999; }\n    .cupom-line { margin: 2px 0; }\n    .cupom-bold { font-weight: 800; }\n    .cupom-divider { border-top: 1px dashed #000; margin: 8px 0; }\n    .cupom-section { margin: 6px 0; }\n    .cupom-section-title { font-weight: 800; font-size: 12px; margin-bottom: 4px; }\n    .cupom-table { width: 100%; border-collapse: collapse; margin-top: 4px; }\n    .cupom-table th { text-align: left; border-bottom: 1px solid #000; font-size: 11px; padding-bottom: 2px; }\n    .cupom-table td { font-size: 11px; padding: 2px 0; vertical-align: top; }\n    .text-right { text-align: right; }\n    .cupom-total-row { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-top: 4px; }\n    .cupom-total-row.light { font-weight: 600; font-size: 11px; }\n    .cupom-complemento { text-align: center; font-weight: 700; background-color: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 4px; margin: 6px 0; border: 1px solid #999; font-size: 11px; }\n\n    @media print {\n        body * { visibility: hidden; }\n        #print-area, #print-area * { visibility: visible; }\n        #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block; }\n        .container, .modal-overlay { display: none !important; }\n        @page { margin: 0; }\n    }\n\n    @media (max-width: 600px) {\n        .container { border-radius: 0; padding: 15px; max-width: 100%; }\n        .header { flex-direction: column; align-items: flex-start; }\n        .order-summary { grid-template-columns: 1fr; }\n        .items-row { grid-template-columns: 1fr 0.5fr 0.7fr; }\n        .stats-grid { grid-template-columns: 1fr; }\n        .filters-row { flex-direction: column; }\n        .filters-row .col { min-width: 100%; }\n        .order-actions-inline { justify-content: flex-start; }\n    }\n  </style>\n</head>\n<body>\n  <div class=\"modal-overlay\" id=\"loader\"><div class=\"modal-box\"><h3 style=\"color:var(--brand)\">Carregando pedidos...</h3></div></div>\n  <div class=\"modal-overlay\" id=\"error-modal\">\n      <div class=\"modal-box\">\n          <h2 style=\"color:var(--danger)\">Atenção</h2>\n          <p id=\"error-msg\" style=\"margin-top:10px; color:#555;\">Erro.</p>\n          <button class=\"btn-retry\" onclick=\"closeError()\">OK</button>\n      </div>\n  </div>\n  <div id=\"print-area\"></div>\n\n  <div class=\"container\">\n    <div class=\"header\">\n      <div class=\"logo-wrap\">\n        <img class=\"logo\" id=\"logo-img\" src=\"{{ $json.Logo }}\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n        <div class=\"title\">\n          <div class=\"title-top\">{{ $json['NOME BASE'] }}</div>\n          <div class=\"title-sub\">Listagem de Pedidos</div>\n        </div>\n      </div>\n      <div style=\"display:flex; gap:8px;\">\n        <button class=\"btn-clear\" onclick=\"clearFilters()\">Limpar</button>\n        <button class=\"btn-refresh\" onclick=\"refreshPage()\">Atualizar</button>\n      </div>\n    </div>\n\n    <div class=\"status-panel\">\n      <div class=\"stats-grid\">\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Total Pedidos</div>\n          <div class=\"stat-value\" id=\"total-count\">0</div>\n        </div>\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Valor Total</div>\n          <div class=\"stat-value\" id=\"total-value\">R$ 0,00</div>\n        </div>\n        <div class=\"stat-box\">\n          <div class=\"stat-label\">Mostrando</div>\n          <div class=\"stat-value\" id=\"visible-count\">0</div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"section-title\"><span>Filtros</span></div>\n    <div class=\"row filters-row\">\n      <div class=\"col\" style=\"flex:2\">\n        <label>Buscar (cliente, pedido, CPF/CNPJ)</label>\n        <input type=\"text\" id=\"filter-text\" placeholder=\"Digite para filtrar...\" autocomplete=\"off\">\n      </div>\n      <div class=\"col\">\n        <label>Data Inicial</label>\n        <input type=\"date\" id=\"filter-date-start\">\n      </div>\n      <div class=\"col\">\n        <label>Data Final</label>\n        <input type=\"date\" id=\"filter-date-end\">\n      </div>\n    </div>\n\n    <div class=\"section-title\"><span>Pedidos</span></div>\n    <div id=\"orders-list\"></div>\n    <div id=\"empty-state\" class=\"card-box\" style=\"display:none; text-align:center; color:#6b7280;\">Nenhum pedido encontrado.</div>\n\n    <div class=\"pagination\">\n      <button class=\"page-btn\" id=\"btn-prev\" onclick=\"changePage(-1)\">Anterior</button>\n      <div class=\"page-info\" id=\"page-info\">Página 1 de 1</div>\n      <button class=\"page-btn\" id=\"btn-next\" onclick=\"changePage(1)\">Próxima</button>\n    </div>\n  </div>\n\n  <script>\n    const NOME_BASE = \"{{ $json['NOME BASE'] }}\";\n    const PAGE_SIZE = 15;\n\n    const RAW_LISTA_CLIENTE = {{ JSON.stringify($json[\"LISTA CLIENTE\"]) }};\n    const RAW_LISTA_ITENS = {{ JSON.stringify($json[\"LISTA ITENS\"]) }};\n\n    let allOrders = [];\n    let filteredOrders = [];\n    let currentPage = 1;\n\n    function unwrapData(input) {\n        if (input === undefined || input === null) return null;\n        let current = input;\n        for (let i = 0; i < 4; i++) {\n            if (typeof current === 'string') {\n                try { current = JSON.parse(current); } catch (e) { break; }\n            } else { break; }\n        }\n        if (Array.isArray(current) && current.length === 1 && typeof current[0] === 'string') {\n            try { return JSON.parse(current[0]); } catch(e) {}\n        }\n        return current;\n    }\n\n    const DB_CLIENTES = Array.isArray(unwrapData(RAW_LISTA_CLIENTE)) ? unwrapData(RAW_LISTA_CLIENTE) : [];\n    const DB_ITENS = Array.isArray(unwrapData(RAW_LISTA_ITENS)) ? unwrapData(RAW_LISTA_ITENS) : [];\n    const MAP_CLIENTES = new Map(DB_CLIENTES.map(c => [String(c.codigo || '').trim(), c]));\n    const MAP_ITENS = new Map(DB_ITENS.map(i => [String(i.codigo || '').trim(), i]));\n\n    function normalizeText(value) {\n        return String(value || '')\n            .toLowerCase()\n            .normalize('NFD')\n            .replace(/[\\u0300-\\u036f]/g, '');\n    }\n\n    function parseNumber(value) {\n        if (value === null || value === undefined) return 0;\n        const normalized = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');\n        const parsed = parseFloat(normalized);\n        return Number.isFinite(parsed) ? parsed : 0;\n    }\n\n    function escapeHtml(value) {\n        return String(value || '')\n            .replace(/&/g, '&amp;')\n            .replace(/</g, '&lt;')\n            .replace(/>/g, '&gt;')\n            .replace(/\\\"/g, '&quot;')\n            .replace(/'/g, '&#39;');\n    }\n\n    function fmtMoney(value) {\n        const num = parseNumber(value);\n        return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });\n    }\n\n    function toDateKey(value) {\n        if (!value) return '';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);\n        const match = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        return match ? `${match[1]}-${match[2]}-${match[3]}` : '';\n    }\n\n    function formatDate(value) {\n        if (!value) return '--';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');\n        const match = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        return match ? `${match[3]}/${match[2]}/${match[1]}` : String(value);\n    }\n\n    function formatDateTime(value) {\n        if (!value) return '--';\n        const d = new Date(value);\n        if (!Number.isNaN(d.getTime())) return d.toLocaleString('pt-BR');\n        return String(value);\n    }\n\n    function getDateValue(value) {\n        if (!value) return 0;\n        const direct = new Date(value);\n        if (!Number.isNaN(direct.getTime())) return direct.getTime();\n        const iso = String(value).match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n        if (iso) return new Date(`${iso[1]}-${iso[2]}-${iso[3]}T00:00:00`).getTime();\n        const br = String(value).match(/(\\d{2})\\/(\\d{2})\\/(\\d{4})/);\n        if (br) return new Date(`${br[3]}-${br[2]}-${br[1]}T00:00:00`).getTime();\n        return 0;\n    }\n\n    function extractObservation(raw) {\n        if (!raw) return '';\n        const text = String(raw);\n        const match = text.match(/Observa(?:ç|c)ão\\s*:\\s*/i);\n        if (match && match.index !== undefined) {\n            const rest = text.slice(match.index + match[0].length);\n            const line = rest.split(/\\r?\\n/).map(s => s.trim()).find(s => s.length > 0);\n            return line || '';\n        }\n        return '';\n    }\n\n    function extractOperator(raw) {\n        if (!raw) return '';\n        const text = String(raw);\n        const match = text.match(/Operador\\s*:\\s*([^\\r\\n]+)/i);\n        return match ? match[1].trim() : '';\n    }\n\n    function parseObsPayments(raw) {\n        const result = { pagamentos: [], troco: null, trocoPara: null, totalPago: null, totalPedido: null };\n        if (!raw) return result;\n        const text = String(raw);\n        const payMap = {};\n        const payRegex = /(DINHEIRO|PIX|CREDITO|CR[ÉE]DITO|DEBITO|D[ÉE]BITO|CREDIARIO|CREDI[AÁ]RIO)\\s*:\\s*R?\\$?\\s*([0-9.,]+)/gi;\n        let m;\n        while ((m = payRegex.exec(text)) !== null) {\n            let metodo = m[1].toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\n            if (metodo.includes('CREDIARIO')) metodo = 'CREDIARIO';\n            if (metodo.includes('CREDITO')) metodo = 'CREDITO';\n            if (metodo.includes('DEBITO')) metodo = 'DEBITO';\n            if (metodo.includes('DINHEIRO')) metodo = 'DINHEIRO';\n            if (metodo.includes('PIX')) metodo = 'PIX';\n            const valor = parseNumber(m[2]);\n            if (valor > 0) payMap[metodo] = (payMap[metodo] || 0) + valor;\n        }\n        result.pagamentos = Object.keys(payMap).map(k => ({ metodo: k, valor: payMap[k] }));\n\n        const trocoMatch = text.match(/TROCO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (trocoMatch) result.troco = parseNumber(trocoMatch[1]);\n\n        const trocoParaMatch = text.match(/Troco\\s*para\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (trocoParaMatch) result.trocoPara = parseNumber(trocoParaMatch[1]);\n\n        const totalPagoMatch = text.match(/TOTAL\\s*PAGO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (totalPagoMatch) result.totalPago = parseNumber(totalPagoMatch[1]);\n\n        const totalPedidoMatch = text.match(/TOTAL\\s*(?:DO\\s*)?PEDIDO\\s*:\\s*R?\\$?\\s*([0-9.,]+)/i);\n        if (totalPedidoMatch) result.totalPedido = parseNumber(totalPedidoMatch[1]);\n\n        return result;\n    }\n\n    function formatDateInput(dateObj) {\n        const y = dateObj.getFullYear();\n        const m = String(dateObj.getMonth() + 1).padStart(2, '0');\n        const d = String(dateObj.getDate()).padStart(2, '0');\n        return `${y}-${m}-${d}`;\n    }\n\n    function setDefaultDates() {\n        const now = new Date();\n        const start = new Date(now.getFullYear(), now.getMonth(), 1);\n        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);\n        document.getElementById('filter-date-start').value = formatDateInput(start);\n        document.getElementById('filter-date-end').value = formatDateInput(end);\n    }\n\n    function refreshPage() { location.reload(); }\n\n    function showError(msg) {\n        const el = document.getElementById('error-msg');\n        if (el) el.textContent = msg || 'Erro.';\n        document.getElementById('error-modal').style.display = 'flex';\n    }\n\n    function closeError() { document.getElementById('error-modal').style.display = 'none'; }\n\n    function mapOrders(rawList) {\n        return rawList.map((order, idx) => {\n            const base = (order && typeof order === 'object') ? order : {};\n            const items = unwrapData(base.itens);\n            const clienteCodigo = String(base.cliente || base.codigoCliente || '').trim();\n            const clienteObj = MAP_CLIENTES.get(clienteCodigo) || null;\n            const itensNorm = (Array.isArray(items) ? items : []).map(it => {\n                const item = { ...it };\n                const itemCode = String(it.produto || it.codigo || it.id || '').trim();\n                const itemRef = MAP_ITENS.get(itemCode);\n                if (itemRef && !item.descricao && !item.nomeProduto && !item.nome) item.__nome = itemRef.nome;\n                return item;\n            });\n            return {\n                ...base,\n                __idx: idx,\n                __cliente: clienteObj,\n                itens: itensNorm\n            };\n        });\n    }\n\n    async function loadOrders() {\n        document.getElementById('loader').style.display = 'flex';\n        try {\n            const RAW_LISTA = {{ JSON.stringify($json[\"LISTA PEDIDOS\"]) }};\n            const list = Array.isArray(unwrapData(RAW_LISTA)) ? unwrapData(RAW_LISTA) : [];\n            allOrders = mapOrders(list);\n            allOrders.sort((a, b) => {\n                const da = getDateValue(a.dataInclusao || a.data);\n                const db = getDateValue(b.dataInclusao || b.data);\n                return db - da;\n            });\n            setDefaultDates();\n            applyFilters();\n        } catch (e) {\n            showError('Erro ao carregar pedidos. Verifique a variável LISTA PEDIDOS.');\n        } finally {\n            document.getElementById('loader').style.display = 'none';\n        }\n    }\n\n    function clearFilters() {\n        document.getElementById('filter-text').value = '';\n        setDefaultDates();\n        applyFilters();\n    }\n\n    function applyFilters() {\n        const text = normalizeText(document.getElementById('filter-text').value);\n        let start = document.getElementById('filter-date-start').value;\n        let end = document.getElementById('filter-date-end').value;\n        if (!start || !end) {\n            setDefaultDates();\n            start = document.getElementById('filter-date-start').value;\n            end = document.getElementById('filter-date-end').value;\n        }\n\n        filteredOrders = allOrders.filter(order => {\n            const name = normalizeText(order.nomeCliente || order.cliente || '');\n            const doc = normalizeText(order.cnpjCpfCliente || '');\n            const code = normalizeText(order.codigo || order.codigoIdentificacao || '');\n            const matchesText = !text || name.includes(text) || doc.includes(text) || code.includes(text);\n\n            const dateKey = toDateKey(order.dataInclusao || order.data);\n            const matchesStart = !start || (dateKey && dateKey >= start);\n            const matchesEnd = !end || (dateKey && dateKey <= end);\n\n            return matchesText && matchesStart && matchesEnd;\n        });\n\n        currentPage = 1;\n        render();\n    }\n\n    function changePage(delta) {\n        const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));\n        currentPage = Math.min(totalPages, Math.max(1, currentPage + delta));\n        render();\n    }\n\n    function render() {\n        const listEl = document.getElementById('orders-list');\n        listEl.innerHTML = '';\n\n        const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));\n        const startIndex = (currentPage - 1) * PAGE_SIZE;\n        const pageItems = filteredOrders.slice(startIndex, startIndex + PAGE_SIZE);\n        const totalValue = filteredOrders.reduce((sum, o) => sum + parseNumber(o.valor || o.total || 0), 0);\n        document.getElementById('total-count').textContent = filteredOrders.length;\n        document.getElementById('total-value').textContent = fmtMoney(totalValue);\n        document.getElementById('visible-count').textContent = pageItems.length;\n\n        document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;\n        document.getElementById('btn-prev').disabled = currentPage <= 1;\n        document.getElementById('btn-next').disabled = currentPage >= totalPages;\n\n        if (pageItems.length === 0) {\n            document.getElementById('empty-state').style.display = 'block';\n            return;\n        }\n        document.getElementById('empty-state').style.display = 'none';\n\n        pageItems.forEach(order => {\n            const card = document.createElement('div');\n            card.className = 'card-box';\n\n            const itemsHtml = (order.itens || []).map(item => {\n                const desc = item.descricao || item.nomeProduto || item.nome || item.__nome || `Produto ${item.produto || item.id || ''}`;\n                const qtd = item.quantidade || item.qtd || 0;\n                const unit = fmtMoney(item.precoUnitario || item.preco || 0).replace('R$', '').trim();\n                return `\n                    <div class=\"items-row\">\n                        <div>${desc}</div>\n                        <div class=\"muted\">Qtd: ${qtd}</div>\n                        <div class=\"muted\">Un: ${unit}</div>\n                    </div>\n                `;\n            }).join('') || '<div class=\"items-row\"><div>Sem itens</div><div></div><div></div></div>';\n\n            const orderValue = fmtMoney(order.valor || order.total || 0);\n            const orderDate = formatDate(order.dataInclusao || order.data);\n            const orderCode = order.codigo || order.codigoIdentificacao || '---';\n            const orderKey = String(order.codigo || order.codigoIdentificacao || order.__idx);\n            const clienteObj = order.__cliente || {};\n            const cliente = order.nomeCliente || clienteObj.nome || clienteObj.razaoSocial || order.cliente || '---';\n            const doc = order.cnpjCpfCliente || '';\n            const obsHtml = order.observacao\n                ? `<div class=\"items-title\" style=\"margin-top:8px\">Observações</div><div class=\"order-obs\">${escapeHtml(order.observacao)}</div>`\n                : '';\n\n            const safeKey = orderKey.replace(/['\\\"]/g, '');\n            const detailId = `detail-${safeKey}`;\n            card.innerHTML = `\n                <div class=\"order-summary\">\n                    <div><span>Pedido:</span> #${orderCode}</div>\n                    <div><span>Cliente:</span> ${cliente}</div>\n                    <div><span>Data:</span> ${orderDate}</div>\n                    <div><span>Valor:</span> ${orderValue}</div>\n                    <div class=\"order-actions-inline\">\n                        <button class=\"icon-btn detail\" title=\"Mostrar detalhes\" onclick=\"toggleDetails('${detailId}', this)\">ℹ️</button>\n                        <button class=\"icon-btn print\" title=\"Imprimir pedido\" onclick=\"printOrder('${safeKey}')\">🖨️</button>\n                    </div>\n                </div>\n                <div class=\"order-details\" id=\"${detailId}\">\n                    <div class=\"order-items\">\n                        <div class=\"items-title\">Itens</div>\n                        ${itemsHtml}\n                    </div>\n                    ${obsHtml}\n                </div>\n            `;\n\n            listEl.appendChild(card);\n        });\n    }\n\n    function toggleDetails(id, btn) {\n        const el = document.getElementById(id);\n        if (!el) return;\n        const isOpen = el.style.display === 'block';\n        el.style.display = isOpen ? 'none' : 'block';\n        if (btn) {\n            btn.title = isOpen ? 'Mostrar detalhes' : 'Ocultar detalhes';\n            btn.textContent = isOpen ? 'ℹ️' : '🔽';\n        }\n    }\n\n    function findOrderByCode(code) {\n        return allOrders.find(o => String(o.codigo || o.codigoIdentificacao || o.__idx || '') === String(code));\n    }\n\n    function prepareReceipt(order) {\n        const area = document.getElementById('print-area');\n        const now = new Date().toLocaleString('pt-BR');\n        const dataPedido = formatDateTime(order.dataInclusao || order.data) || now;\n        const itens = Array.isArray(order.itens) ? order.itens : [];\n\n        const clienteObj = order.__cliente || {};\n        const clienteNome = order.nomeCliente || clienteObj.nome || clienteObj.razaoSocial || order.cliente || '';\n        const clienteDoc = order.cnpjCpfCliente || '';\n        const clienteTel = order.telefoneCliente || order.celularCliente || order.celular || clienteObj.celular || '';\n\n        const rua = order.enderecoEntrega || clienteObj.endereco || '';\n        const numero = order.numeroEntrega || clienteObj.numeroEndereco || '';\n        const bairro = order.bairroEntrega || clienteObj.bairro || '';\n        const cidade = order.cidadeEntrega || clienteObj.cidade || '';\n        const uf = order.estadoEntrega || clienteObj.estado || '';\n        const complemento = order.complementoEntrega || clienteObj.complemento || '';\n\n        const operador = order.operador || order.nomeOperador || extractOperator(order.observacao);\n        const entregador = order.nomeEntregador || order.entregador || order.nomeVendedor || '';\n\n        const pagamentosRaw = unwrapData(order.pagamentos || order.detalhe_pagamentos || order.financeiro?.detalhe_pagamentos || []);\n        const pagamentos = Array.isArray(pagamentosRaw) ? pagamentosRaw : [];\n        const obsInfo = parseObsPayments(order.observacao);\n\n        const pedidoCodigo = order.codigo || order.codigoIdentificacao || '---';\n        let html = `\n            <div class=\"cupom-header\">\n                <div class=\"cupom-title\">GALEGO DA AGUA E GAS</div>\n                <div class=\"cupom-company-line\">CNPJ: 13.356.436/0001-60</div>\n                <div class=\"cupom-company-line\">Rua dos Médicos, 160 - Timbí</div>\n                <div class=\"cupom-company-line\">CAMARAGIBE - PE</div>\n                <div class=\"cupom-company-line\">Telefone: (81) 8652-7555</div>\n            </div>\n            <div class=\"cupom-box-pedido\">Pedido Nº: ${pedidoCodigo}</div>\n            <div class=\"cupom-line\">Data: ${dataPedido}</div>\n            ${operador ? `<div class=\"cupom-line\">Operador: ${operador}</div>` : ''}\n            ${entregador ? `<div class=\"cupom-line\">Entregador: ${entregador}</div>` : ''}\n            <div class=\"cupom-divider\"></div>\n\n            <div class=\"cupom-section\">\n                <div class=\"cupom-section-title\">CLIENTE</div>\n                ${clienteNome ? `<div class=\"cupom-line\">Nome: ${clienteNome}</div>` : ''}\n                ${clienteDoc ? `<div class=\"cupom-line\">CPF/CNPJ: ${clienteDoc}</div>` : ''}\n                ${clienteTel ? `<div class=\"cupom-line\">Telefone: ${clienteTel}</div>` : ''}\n                ${(rua || numero) ? `<div class=\"cupom-line\">Rua: ${rua}${numero ? `, ${numero}` : ''}</div>` : ''}\n                ${bairro ? `<div class=\"cupom-line\">Bairro: ${bairro}</div>` : ''}\n                ${(cidade || uf) ? `<div class=\"cupom-line\">${cidade}${uf ? ` / ${uf}` : ''}</div>` : ''}\n            </div>\n            ${complemento ? `<div class=\"cupom-complemento\">${complemento}</div>` : ''}\n\n            <div class=\"cupom-divider\"></div>\n            <table class=\"cupom-table\">\n                <thead>\n                    <tr>\n                        <th style=\"width:50%\">Item</th>\n                        <th style=\"width:10%\">Qtd</th>\n                        <th style=\"width:20%\" class=\"text-right\">Un</th>\n                        <th style=\"width:20%\" class=\"text-right\">Tl</th>\n                    </tr>\n                </thead>\n                <tbody>\n        `;\n\n        itens.forEach(i => {\n            const desc = i.descricao || i.nomeProduto || i.nome || i.__nome || `Produto ${i.produto || i.id || ''}`;\n            const qtd = i.quantidade || i.qtd || 0;\n            const unit = fmtMoney(i.precoUnitario || i.preco || 0).replace('R$','').trim();\n            const total = fmtMoney(i.precoTotal || i.total || (parseNumber(qtd) * parseNumber(i.precoUnitario || i.preco || 0))).replace('R$','').trim();\n            html += `<tr><td colspan=\"4\" style=\"padding-top:4px; font-weight:bold\">${desc}</td></tr>`;\n            html += `<tr><td></td><td>${qtd}</td><td class=\"text-right\">${unit}</td><td class=\"text-right\">${total}</td></tr>`;\n        });\n\n        html += `</tbody></table>`;\n\n        const totalItens = itens.reduce((sum, i) => {\n            const qtd = i.quantidade || i.qtd || 0;\n            const unit = i.precoUnitario || i.preco || 0;\n            const line = parseNumber(i.precoTotal || i.total || (parseNumber(qtd) * parseNumber(unit)));\n            return sum + line;\n        }, 0);\n        const totalPedido = parseNumber(order.valor || order.total || obsInfo.totalPedido || totalItens);\n        html += `<div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\"><span>TOTAL PRODUTOS:</span><span>${fmtMoney(totalPedido)}</span></div>\n        `;\n\n        const pagamentosFinal = pagamentos.length ? pagamentos : obsInfo.pagamentos;\n        html += `<div class=\"cupom-divider\"></div><div class=\"cupom-section-title\">PAGAMENTO</div>`;\n        if (pagamentosFinal.length) {\n            pagamentosFinal.forEach(pg => {\n                const metodo = pg.metodo || pg.forma || pg.tipo || 'PAGAMENTO';\n                const valor = fmtMoney(pg.valor || pg.total || 0);\n                html += `<div class=\"cupom-total-row light\"><span>${metodo}:</span><span>${valor}</span></div>`;\n            });\n        } else if (order.condicaoPagamento) {\n            html += `<div class=\"cupom-total-row light\"><span>Condição:</span><span>${order.condicaoPagamento}</span></div>`;\n        }\n\n        if (obsInfo.troco !== null) {\n            html += `<div class=\"cupom-divider\"></div><div class=\"cupom-total-row\"><span>TROCO:</span><span>${fmtMoney(obsInfo.troco)}</span></div>`;\n            if (obsInfo.trocoPara !== null) {\n                html += `<div class=\"cupom-total-row light\"><span>(Troco para: ${fmtMoney(obsInfo.trocoPara)})</span><span></span></div>`;\n            }\n        }\n\n        const totalPago = obsInfo.totalPago !== null\n            ? obsInfo.totalPago\n            : (pagamentosFinal.length ? pagamentosFinal.reduce((sum, pg) => sum + parseNumber(pg.valor || pg.total || 0), 0) : totalPedido);\n        html += `<div class=\"cupom-divider\"></div>\n            <div class=\"cupom-total-row\"><span>TOTAL PAGO:</span><span>${fmtMoney(totalPago)}</span></div>\n        `;\n\n        const obsLine = extractObservation(order.observacao);\n        if (obsLine) {\n            html += `<div class=\"cupom-divider\"></div><div class=\"cupom-section-title\">OBS:</div><div>${obsLine}</div>`;\n        }\n\n        html += `<div class=\"cupom-divider\"></div><div style=\"text-align:center; margin-top:8px\">Obrigado pela preferência!</div>`;\n        area.innerHTML = html;\n    }\n\n    function printReceipt() { window.print(); }\n\n    function printOrder(code) {\n        const order = findOrderByCode(code);\n        if (!order) { showError('Pedido não encontrado para impressão.'); return; }\n        prepareReceipt(order);\n        printReceipt();\n    }\n\n    document.getElementById('filter-text').addEventListener('input', applyFilters);\n    document.getElementById('filter-date-start').addEventListener('change', applyFilters);\n    document.getElementById('filter-date-end').addEventListener('change', applyFilters);\n\n    loadOrders();\n  </script>\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -2608,
+        -32
+      ],
+      "id": "fc1f52ed-c8bb-4e9f-add1-6b4274ed5651",
+      "name": "Inframe Pedido1"
+    },
+    {
+      "parameters": {
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/produtos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2384,
+        -32
+      ],
+      "id": "913cfc1a-0cbc-4f63-bacf-620c7c704ce7",
+      "name": "Busca Itens",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "hcts9jB9OvsQULmR",
+          "name": "Uniplus - Galego Agua e Gas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/entidades",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1488,
+        -32
+      ],
+      "id": "e668d5b2-83ab-43a3-a989-a62dc836c225",
+      "name": "Busca Cliente",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/api/pedidos?single=false",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "all"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -592,
+        -16
+      ],
+      "id": "8f06ce44-8a29-4ce5-a5fe-df3480bca3e6",
+      "name": "Lista Pedidos1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VmXD4u6JaSxqiDw3",
+          "name": "Uniplus - Teste"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "PEDIDOS": [
+      {
+        "json": {
+          "headers": {
+            "host": "webhook.cerion.com.br",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7,no;q=0.6",
+            "cookie": "_ga=GA1.1.2128520295.1766147727; _ga_DE2E795E58=GS2.1.s1770745613$o2$g1$t1770747243$j60$l0$h0",
+            "dnt": "1",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "66.234.149.11",
+            "x-forwarded-host": "webhook.cerion.com.br",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "70c052b28762",
+            "x-real-ip": "66.234.149.11"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://webhook.cerion.com.br/webhook/uniplus/pedidos/inframe/galego",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Busca Itens1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INFORMAÇÕES": {
+      "main": [
+        [
+          {
+            "node": "Inframe Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Cliente1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PEDIDOS": {
+      "main": [
+        [
+          {
+            "node": "Busca Itens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista Pedidos": {
+      "main": [
+        [
+          {
+            "node": "INFORMAÇÕES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Busca Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Lista Pedidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inframe Pedido": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4b496726-f1cb-455b-ba0f-d8af50b2850d",
+  "meta": {
+    "instanceId": "f9628a5cdb1c747f4a8e5a0ecde91854ad155978851f75142b2e0e228d1f71a4"
+  },
+  "id": "oMYxH1w01NH5rkWs",
+  "tags": []
+}
