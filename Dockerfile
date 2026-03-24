@@ -6,8 +6,8 @@ COPY package*.json ./
 COPY prisma ./prisma
 
 RUN apk add --no-cache curl \
-  && npm ci --omit=dev \
-  && npm install prisma@5.18.0
+  && npm install \
+  && npm install prisma@5.18.0 --save-dev
 
 COPY src ./src
 COPY README.md ./
