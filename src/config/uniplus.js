@@ -52,7 +52,7 @@ async function fetchAccessToken() {
 
   console.log(
     "[UniPlus] 🔐 Gerando token OAuth...",
-    `URL: ${serverURL}/oauth/token`
+    `URL: ${serverURL}/oauth/token`,
   );
 
   try {
@@ -61,6 +61,7 @@ async function fetchAccessToken() {
         Authorization: `Basic ${authBasic}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
+      timeout: 5000,
     });
 
     const { access_token: accessToken, expires_in: expiresIn } =
@@ -72,7 +73,7 @@ async function fetchAccessToken() {
     console.log(
       "[UniPlus] ✅ Token gerado com sucesso, expira em",
       expiresIn,
-      "segundos"
+      "segundos",
     );
 
     cachedToken = accessToken;
@@ -82,31 +83,55 @@ async function fetchAccessToken() {
   } catch (error) {
     console.error("[UniPlus] ❌ ERRO ao gerar token OAuth:");
     console.error("[UniPlus] Status:", error.response?.status);
-    console.error(
-      "[UniPlus] Data:",
-      error.response?.data?.substring?.(0, 300) || error.message
-    );
+
+    if (error.response?.status === 403) {
+      console.error("[UniPlus] ⚠️  WAF está bloqueando /oauth/token!");
+      console.error(
+        "[UniPlus] ℹ️  SOLUÇÃO: Use UNIPLUS_TOKEN no .env com um token pré-gerado",
+      );
+      console.error(
+        "[UniPlus] ℹ️  Gere o token manualmente via curl e coloque em UNIPLUS_TOKEN=",
+      );
+    }
+
     throw error;
   }
 }
 
 async function getAccessToken() {
+  // Se houver token no .env, use-o (pode ser OAuth ou Basic Auth)
   if (process.env.UNIPLUS_TOKEN) {
+    console.log("[UniPlus] ✅ Usando UNIPLUS_TOKEN do .env");
     return process.env.UNIPLUS_TOKEN;
   }
 
+  // Se houver token em cache, retorne
   if (cachedToken && Date.now() < tokenExpiresAt) {
     return cachedToken;
   }
 
+  // Tente gerar token OAuth (pode falhar se WAF bloquear)
   if (!refreshingToken) {
-    refreshingToken = fetchAccessToken().finally(() => {
-      refreshingToken = null;
-    });
+    refreshingToken = fetchAccessToken()
+      .then(() => cachedToken)
+      .catch((error) => {
+        console.error("[UniPlus] ⚠️  Não conseguiu gerar token OAuth");
+        console.error(
+          "[UniPlus] ℹ️  Alternativa: Configure UNIPLUS_TOKEN no .env",
+        );
+        console.error(
+          "[UniPlus] ℹ️  Ou use UNIPLUS_AUTH_BASIC para Basic Auth direto",
+        );
+        // Retorna null para que não lance erro, deixa interceptor decidir
+        return null;
+      })
+      .finally(() => {
+        refreshingToken = null;
+      });
   }
 
-  await refreshingToken;
-  return cachedToken;
+  const token = await refreshingToken;
+  return token || null; // Null = vai usar Basic Auth como fallback
 }
 
 // Attach auth headers on every request.
@@ -114,9 +139,17 @@ uniplusClient.interceptors.request.use(async (config) => {
   const token = await getAccessToken();
   const clientId = process.env.UNIPLUS_CLIENT_ID;
   const clientSecret = process.env.UNIPLUS_CLIENT_SECRET;
+  const authBasic = normalizeBasicToken(process.env.UNIPLUS_AUTH_BASIC);
 
-  if (token) {
+  // Prioridade de autenticação:
+  // 1. Token OAuth válido
+  // 2. Fallback para Basic Auth se OAuth falhar
+  if (token && !token.startsWith("Basic ")) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (authBasic) {
+    // Se UNIPLUS_TOKEN for Basic Auth ou houver fallback, use diretamente
+    config.headers.Authorization = `Basic ${authBasic}`;
+    console.log("[UniPlus] 🔐 Usando Basic Auth como fallback");
   }
 
   // Some UniPlus tenants require client credentials in headers.
@@ -150,7 +183,7 @@ uniplusClient.interceptors.response.use(
       originalRequest.__retryCount = retryCount + 1;
       const delayMs = Math.pow(2, retryCount) * 1000;
       console.log(
-        `[UniPlus] 403 recebido. Tentativa ${retryCount + 1}/${maxRetries} em ${delayMs}ms...`
+        `[UniPlus] 403 recebido. Tentativa ${retryCount + 1}/${maxRetries} em ${delayMs}ms...`,
       );
       await new Promise((resolve) => setTimeout(resolve, delayMs));
       return uniplusClient.request(originalRequest);
