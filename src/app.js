@@ -17,6 +17,22 @@ const app = express();
 const basicAuthUser = process.env.BASIC_AUTH_USER;
 const basicAuthPass = process.env.BASIC_AUTH_PASS;
 
+// CORS - Permissivo para evitar WAF
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Accept-Language, User-Agent, Referer');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Headers para não parecer um bot
+  res.header('X-Powered-By', 'Express');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 // Parse JSON bodies.
 app.use(express.json());
 

@@ -17,11 +17,24 @@ if (!serverURL) {
 const uniplusClient = axios.create({
   baseURL,
   timeout: 15000,
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+  }
 });
 
 const authClient = axios.create({
   baseURL: serverURL,
   timeout: 15000,
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+  }
 });
 
 let cachedToken = null;
@@ -109,6 +122,17 @@ uniplusClient.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
     const originalRequest = error.config;
+    const retryCount = originalRequest?.__retryCount || 0;
+    const maxRetries = 2;
+
+    // Retry em caso de 403 com delay
+    if (status === 403 && retryCount < maxRetries && originalRequest) {
+      originalRequest.__retryCount = retryCount + 1;
+      const delayMs = Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s
+      console.log(`[UniPlus] 403 recebido. Tentativa ${retryCount + 1}/${maxRetries} em ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      return uniplusClient.request(originalRequest);
+    }
 
     if (status === 401 && originalRequest && !originalRequest.__isRetryRequest) {
       originalRequest.__isRetryRequest = true;
@@ -123,7 +147,7 @@ uniplusClient.interceptors.response.use(
     if (status === 401) {
       message = 'Nao autorizado (401). Verifique o token da UniPlus.';
     } else if (status === 403) {
-      message = 'Acesso negado (403). Verifique as credenciais.';
+      message = 'Acesso negado (403). após múltiplas tentativas. Verifique as credenciais e firewall.';
     } else if (status >= 500) {
       message = 'Erro interno no servidor da UniPlus.';
     }
