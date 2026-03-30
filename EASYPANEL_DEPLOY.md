@@ -60,7 +60,9 @@ PORTAL_API_TOKEN=token_portal
 
 # App
 UNIPLUS_ALL_LIMIT=100
-RUN_DB_MIGRATIONS=true
+# IMPORTANTE: Em produção (com banco já existente), manter RUN_DB_MIGRATIONS=false
+# Evita erro P3005: "The database schema is not empty"
+RUN_DB_MIGRATIONS=false
 ```
 
 ---
@@ -180,7 +182,7 @@ UNIPLUS_SERVER_URL            https://unisoftsistemas.com.br
 UNIPLUS_AUTH_BASIC            YWJjMTIzZGVm...
 BASIC_AUTH_USER               seu_usuario
 BASIC_AUTH_PASS               senha_segura
-RUN_DB_MIGRATIONS             true
+RUN_DB_MIGRATIONS             false
 ```
 
 ### **Passo 5: Banco de Dados**
@@ -385,7 +387,10 @@ Se tiver configurado BASIC_AUTH_USER:
 ### **Migração do banco não rodou**
 
 ```
-No EasyPanel:
+NOTA: Em produção com banco já existente, RUN_DB_MIGRATIONS deve ser FALSE
+Isso evita erro P3005: "The database schema is not empty"
+
+Se banco está vazio:
 1. Adicionar: RUN_DB_MIGRATIONS=true
 2. Ou rodar manualmente: npm run db:migrate
 3. Verificar logs do deployment
@@ -395,18 +400,18 @@ No EasyPanel:
 
 ## 🚀 Resumo Rápido
 
-| Variável             | Valor Exemplo                               | Obrigatória |
-| -------------------- | ------------------------------------------- | ----------- |
-| `NODE_ENV`           | `production`                                | ✅          |
-| `PORT`               | `3000`                                      | ✅          |
-| `DATABASE_URL`       | `mysql://user:pass@host/db`                 | ✅          |
-| `UNIPLUS_BASE_URL`   | `https://unisoftsistemas.com.br/public-api` | ✅          |
-| `UNIPLUS_SERVER_URL` | `https://unisoftsistemas.com.br`            | ✅          |
-| `UNIPLUS_AUTH_BASIC` | `Base64(id:secret)`                         | ✅          |
-| `PUBLIC_BASE_URL`    | `https://seu-dominio.com`                   | ✅          |
-| `BASIC_AUTH_USER`    | `seu_usuario`                               | ❌          |
-| `BASIC_AUTH_PASS`    | `senha_segura`                              | ❌          |
-| `RUN_DB_MIGRATIONS`  | `true`                                      | ✅          |
+| Variável             | Valor Exemplo                                      | Obrigatória |
+| -------------------- | -------------------------------------------------- | ----------- |
+| `NODE_ENV`           | `production`                                       | ✅          |
+| `PORT`               | `3000`                                             | ✅          |
+| `DATABASE_URL`       | `mysql://user:pass@host/db`                        | ✅          |
+| `UNIPLUS_BASE_URL`   | `https://unisoftsistemas.com.br/public-api`        | ✅          |
+| `UNIPLUS_SERVER_URL` | `https://unisoftsistemas.com.br`                   | ✅          |
+| `UNIPLUS_AUTH_BASIC` | `Base64(id:secret)`                                | ✅          |
+| `PUBLIC_BASE_URL`    | `https://seu-dominio.com`                          | ✅          |
+| `BASIC_AUTH_USER`    | `seu_usuario`                                      | ❌          |
+| `BASIC_AUTH_PASS`    | `senha_segura`                                     | ❌          |
+| `RUN_DB_MIGRATIONS`  | `false` (prod com DB existente), `true` (DB vazio) | ✅          |
 
 ---
 

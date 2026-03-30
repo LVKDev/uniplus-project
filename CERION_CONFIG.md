@@ -9,12 +9,14 @@ Arquivo `.env` atualizado com credenciais reais para EasyPanel.
 ## 🔐 Credenciais Salvas no Projeto
 
 ### **Autenticação da API**
+
 ```
 Usuário: admin
 Senha:   cerion363738
 ```
 
 ### **UniPlus ERP**
+
 ```
 Client ID:     galegoaguaegas
 Client Secret: b7de0482-c8f9-40d1-aa3a-f47f6e810c22
@@ -22,6 +24,7 @@ Auth Basic:    Z2FsZWdvYWd1YWVnYXM6YjdkZTA0ODItYzhmOS00MGQxLWFhM2EtZjQ3ZjZlODEwY
 ```
 
 ### **Banco de Dados**
+
 ```
 Host:     galegogas.wichat.com.br:3306
 Database: galegogas_uniplus
@@ -30,6 +33,7 @@ Password: HaD3hzkwu6tZTMSFVEEa
 ```
 
 ### **URL Pública**
+
 ```
 https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host
 ```
@@ -39,6 +43,7 @@ https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host
 ## 🌐 n8n - Configure Assim
 
 ### **URL Base para Requisições**
+
 ```
 https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host
 ```
@@ -46,6 +51,7 @@ https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host
 ### **Endpoints Disponíveis**
 
 #### **Mock (Teste sem credenciais UniPlus)**
+
 ```
 GET    /mock/pedidos                    # Lista pedidos
 GET    /mock/pedidos/:codigo            # Obtem pedido específico
@@ -62,6 +68,7 @@ Mesmos endpoints para:
 ```
 
 #### **Documentação**
+
 ```
 GET    /health                          # Health check
 GET    /docs                            # Swagger UI
@@ -69,6 +76,7 @@ GET    /openapi.json                    # OpenAPI spec
 ```
 
 #### **API Real (com credenciais UniPlus)**
+
 ```
 GET    /api/pedidos                     # Reais do sistema
 GET    /api/entidades
@@ -85,27 +93,32 @@ GET    /api/tipo-documento-financeiro
 ### **No n8n HTTP Request:**
 
 1. **URL**
+
 ```
 https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/mock/pedidos
 ```
 
 2. **Método**
+
 ```
 GET / POST / PUT / DELETE
 ```
 
 3. **Headers**
+
 ```
 Content-Type: application/json
 ```
 
 4. **Autenticação - Basic Auth**
+
 ```
 Username: admin
 Password: cerion363738
 ```
 
 Ou, no header manualmente:
+
 ```
 Authorization: Basic YWRtaW46Y2VyaW9uMzYzNzM4
 ```
@@ -152,17 +165,20 @@ Authorization: Basic YWRtaW46Y2VyaW9uMzYzNzM4
 ## 🧪 Testes Rápidos via cURL
 
 ### **Testar Health Check**
+
 ```bash
 curl -X GET \
   https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/health
 ```
 
 Resposta esperada:
+
 ```json
-{"success":true,"status":"ok","timestamp":"..."}
+{ "success": true, "status": "ok", "timestamp": "..." }
 ```
 
 ### **Listar Mock Pedidos**
+
 ```bash
 curl -X GET \
   -u admin:cerion363738 \
@@ -170,6 +186,7 @@ curl -X GET \
 ```
 
 Resposta esperada:
+
 ```json
 {
   "success": true,
@@ -187,6 +204,7 @@ Resposta esperada:
 ```
 
 ### **Criar Novo Pedido**
+
 ```bash
 curl -X POST \
   -u admin:cerion363738 \
@@ -207,6 +225,7 @@ curl -X POST \
 ```
 
 ### **Com Autenticação Manual (Base64)**
+
 ```bash
 # Codificar credenciais
 echo -n "admin:cerion363738" | base64
@@ -298,7 +317,7 @@ BASIC_AUTH_PASS                     cerion363738
 DATABASE_URL                        mysql://galegogas_uniplus:HaD3hzkwu6tZTMSFVEEa@galegogas.wichat.com.br:3306/galegogas_uniplus
 PORTAL_BASE_URL                     https://canal.intelidata.inf.br/public-api
 PORTAL_API_TOKEN                    (deixar vazio)
-RUN_DB_MIGRATIONS                   true
+RUN_DB_MIGRATIONS                   false (banco já existe com schema)
 ```
 
 ---
@@ -306,6 +325,7 @@ RUN_DB_MIGRATIONS                   true
 ## 🔒 Segurança
 
 ⚠️ **IMPORTANTE:**
+
 - ✅ Credenciais salvas apenas no `.env` (não no code)
 - ✅ Basic Auth ativada (admin/cerion363738)
 - ✅ HTTPS forçado (EasyPanel url)
@@ -317,6 +337,7 @@ RUN_DB_MIGRATIONS                   true
 ## 🆘 Troubleshooting
 
 ### **Erro 401 Unauthorized no n8n**
+
 ```
 Verificar:
 1. Username: admin (exato)
@@ -326,6 +347,7 @@ Verificar:
 ```
 
 ### **Erro "Database connection failed"**
+
 ```
 Verificar:
 DATABASE_URL=mysql://galegogas_uniplus:HaD3hzkwu6tZTMSFVEEa@galegogas.wichat.com.br:3306/galegogas_uniplus
@@ -335,6 +357,7 @@ mysql -h galegogas.wichat.com.br -u galegogas_uniplus -p (usar senha acima)
 ```
 
 ### **Erro "UNIPLUS_AUTH_BASIC is required"**
+
 ```
 Verificar se no .env tem:
 UNIPLUS_AUTH_BASIC=Z2FsZWdvYWd1YWVnYXM6YjdkZTA0ODItYzhmOS00MGQxLWFhM2EtZjQ3ZjZlODEwYzIy
@@ -343,6 +366,7 @@ Não pode estar vazio!
 ```
 
 ### **Mock endpoints retornam 404**
+
 ```
 Verificar se tem:
 GET https://aplicativos-api-uniplus-cerion.q8dbws.easypanel.host/mock/info
