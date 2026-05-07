@@ -5,9 +5,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
 
-RUN apk add --no-cache curl \
+RUN apk add --no-cache curl openssl \
   && npm ci --omit=dev \
-  && npm install prisma@5.18.0
+  && npm install prisma@5.18.0 \
+  && npx prisma generate
 
 COPY src ./src
 COPY README.md ./
