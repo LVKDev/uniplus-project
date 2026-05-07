@@ -7,18 +7,19 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:security": "jest __tests__/security.test.js",
     "test:ratelimit": "jest __tests__/ratelimit-cors.test.js",
+    "infra:check": "node scripts/check-infra.js",
+    "validate:ref8": "node scripts/validate-ref8.js",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "@supabase/supabase-js": "^2.45.4",
     "axios": "^1.7.7",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -27,9 +28,8 @@
     "express": "^4.19.2",
     "express-rate-limit": "^8.3.1",
     "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.3",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "ioredis": "^5.10.1",
+    "rate-limit-redis": "^4.3.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.3.0",

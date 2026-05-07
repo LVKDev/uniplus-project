@@ -2,6 +2,7 @@ const express = require("express");
 
 // HTTP routes for pedidos endpoints.
 const pedidosService = require("../services/pedidos.service");
+const { cacheRoute } = require("../middleware/cache.middleware");
 
 const router = express.Router();
 
@@ -15,7 +16,10 @@ function validarPedido(payload) {
   return null;
 }
 
-router.get("/api/pedidos", async (req, res, next) => {
+router.get(
+  "/api/pedidos",
+  cacheRoute(120, "pedidos"),
+  async (req, res, next) => {
   try {
     const { single, ...raw } = req.query;
     const options = { params: raw };
@@ -67,7 +71,8 @@ router.get("/api/pedidos", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+  },
+);
 
 /**
  * @openapi

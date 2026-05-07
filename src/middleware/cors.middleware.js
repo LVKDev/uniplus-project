@@ -5,6 +5,17 @@
 
 const cors = require("cors");
 
+function parseAllowedOrigins(value) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
 /**
  * Domínios permitidos para acesso CORS
  * - Producción: crm.uniplus.com.br, portal.uniplus.com.br
@@ -26,6 +37,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3001",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:3001",
+  ...parseAllowedOrigins(process.env.CORS_ALLOWED_ORIGINS),
 ];
 
 /**

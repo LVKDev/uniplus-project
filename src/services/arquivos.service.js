@@ -1,6 +1,5 @@
 const uniplusService = require("./uniplus.service");
 const auditService = require("./audit.service");
-const { validarAcessoMultiTenant } = require("./multitenant.service");
 
 const AUDIT_TABLE = "arquivos_log";
 const RESOURCE = "arquivos";
@@ -31,19 +30,7 @@ async function registrarAuditoria({
 
 async function listarArquivos(options = {}, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.listarArquivos(options);
     await registrarAuditoria({
       codigo: null,

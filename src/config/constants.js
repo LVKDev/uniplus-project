@@ -29,6 +29,25 @@ const PERMISSOES = {
 };
 
 // ============================================
+// PERMISSÕES PARA API TOKENS
+// ============================================
+const PERMISSOES_API = {
+  ver_produtos: "ver_produtos",
+  ver_clientes: "ver_clientes",
+  ver_pedidos: "ver_pedidos",
+  ver_ordens_servico: "ver_ordens_servico",
+  ver_vendas: "ver_vendas",
+  ver_entidades: "ver_entidades",
+  ver_arquivos: "ver_arquivos",
+  n8n_acesso_total: "n8n_acesso_total",
+
+  // Permissões de escrita mantidas para frontends externos controlados.
+  editar_produtos: "editar_produtos",
+  editar_clientes: "editar_clientes",
+  editar_pedidos: "editar_pedidos",
+};
+
+// ============================================
 // PERMISSOES PADRÃO POR ROLE
 // ============================================
 const PERMISSOES_POR_ROLE = {
@@ -81,6 +100,7 @@ module.exports = {
   // Roles e Permissões
   ROLES,
   PERMISSOES,
+  PERMISSOES_API,
   PERMISSOES_POR_ROLE,
 
   // Paginação

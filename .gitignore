@@ -25,3 +25,11 @@ prisma/.env
 
 # Coverage
 coverage/
+
+# Build
+dist/
+build/
+
+# Claude Code local config (pode conter tokens de sessão MCP)
+.claude/settings.local.json
+.mcp.json

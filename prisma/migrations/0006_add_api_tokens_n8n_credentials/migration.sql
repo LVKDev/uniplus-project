@@ -1,0 +1,2 @@
+-- Superseded by REF-5.
+-- API token and n8n credential tables are intentionally not part of the logs-only schema.

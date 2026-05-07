@@ -5,9 +5,17 @@
 
 // Definir NODE_ENV como test
 process.env.NODE_ENV = "test";
-process.env.JWT_SECRET = "test-secret-key-for-tests-only";
 process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/uniplus_test";
-process.env.ENCRYPTION_KEY = "0123456789abcdef0123456789abcdef"; // 32 caracteres hex para AES-256
+process.env.API_USER = process.env.API_USER || "test-api-user";
+process.env.API_PASS = process.env.API_PASS || "test-api-pass";
+process.env.UNIPLUS_BASE_URL =
+  process.env.UNIPLUS_BASE_URL || "https://uniplus.test/public-api";
+process.env.UNIPLUS_SERVER_URL =
+  process.env.UNIPLUS_SERVER_URL || "https://uniplus.test";
+process.env.UNIPLUS_AUTH_BASIC =
+  process.env.UNIPLUS_AUTH_BASIC || Buffer.from("client:secret").toString("base64");
+process.env.ENCRYPTION_KEY =
+  "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
 // Silence logs durante testes
 global.console = {

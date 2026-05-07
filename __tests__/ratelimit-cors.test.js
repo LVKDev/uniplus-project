@@ -2,13 +2,23 @@
  * Testes de Rate Limiting e CORS
  *
  * Valida que:
- * - /auth/login tem rate limit de 5 tentativas por 15 min
  * - /api/* tem rate limit de 100 requisições por 1 min
  * - CORS bloqueia origins não autorizados
  * - CORS permite origins autorizados
  */
 
+const express = require("express");
 const request = require("supertest");
+
+jest.mock("../src/services/health.service", () => ({
+  getHealthStatus: jest.fn().mockResolvedValue({
+    status: "ok",
+    redis: "ok",
+    postgres: "ok",
+    uniplus: "ok",
+    uptime: 10,
+  }),
+}));
 
 let app;
 beforeAll(() => {
@@ -25,18 +35,61 @@ describe("⏱️ TESTES DE RATE LIMITING", () => {
     expect([200, 429]).toContain(response.status);
   });
 
-  // Nota: Rate limiting total é testado em ambiente com Redis/Memcached
-  // Aqui apenas validamos que o middleware existe
-  test("✅ Middleware loginLimiter existe", async () => {
-    expect(
-      require("../src/middleware/rateLimiting.middleware").loginLimiter,
-    ).toBeDefined();
-  });
-
   test("✅ Middleware apiLimiter existe", async () => {
     expect(
       require("../src/middleware/rateLimiting.middleware").apiLimiter,
     ).toBeDefined();
+  });
+
+  test("✅ Limiters obsoletos de login, escrita e token foram removidos", async () => {
+    const rateLimiting = require("../src/middleware/rateLimiting.middleware");
+
+    expect(rateLimiting.loginLimiter).toBeUndefined();
+    expect(rateLimiting.writeLimiter).toBeUndefined();
+    expect(rateLimiting.tokenRateLimiter).toBeUndefined();
+    expect(rateLimiting.n8nTokenLimiter).toBeUndefined();
+  });
+
+  test("✅ Exceder limite retorna 429", async () => {
+    const {
+      createApiLimiter,
+    } = require("../src/middleware/rateLimiting.middleware");
+    const limitedApp = express();
+
+    limitedApp.use(
+      createApiLimiter({
+        max: 2,
+        skip: () => false,
+      }),
+    );
+    limitedApp.get("/limited", (req, res) => res.json({ success: true }));
+
+    await request(limitedApp).get("/limited").expect(200);
+    await request(limitedApp).get("/limited").expect(200);
+
+    const response = await request(limitedApp).get("/limited");
+    expect(response.status).toBe(429);
+  });
+
+  test("✅ Contador reseta após janela de tempo", async () => {
+    const {
+      createApiLimiter,
+    } = require("../src/middleware/rateLimiting.middleware");
+    const limitedApp = express();
+
+    limitedApp.use(
+      createApiLimiter({
+        max: 1,
+        skip: () => false,
+        windowMs: 50,
+      }),
+    );
+    limitedApp.get("/limited", (req, res) => res.json({ success: true }));
+
+    await request(limitedApp).get("/limited").expect(200);
+    await request(limitedApp).get("/limited").expect(429);
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    await request(limitedApp).get("/limited").expect(200);
   });
 });
 

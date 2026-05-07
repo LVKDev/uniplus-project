@@ -1,6 +1,11 @@
 services:
   uniplus-api:
     build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
@@ -8,12 +13,42 @@ services:
       PORT: 3000
       PUBLIC_BASE_URL: http://localhost:3000
       RUN_DB_MIGRATIONS: "true"
+      API_USER: ${API_USER}
+      API_PASS: ${API_PASS}
       UNIPLUS_SERVER_URL: ${UNIPLUS_SERVER_URL}
       UNIPLUS_BASE_URL: ${UNIPLUS_BASE_URL}
+      UNIPLUS_ACCOUNT: ${UNIPLUS_ACCOUNT}
       UNIPLUS_AUTH_BASIC: ${UNIPLUS_AUTH_BASIC}
       UNIPLUS_TOKEN: ${UNIPLUS_TOKEN}
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      DATABASE_URL: ${DATABASE_URL}
-      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
-      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS}
+      DATABASE_URL: ${DATABASE_INTERNAL_URL:-postgresql://postgres:postgres@postgres:5432/uniplus}
+      REDIS_URL: ${REDIS_INTERNAL_URL:-redis://redis:6379/0}
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-uniplus}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-uniplus}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD:-changeme}
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

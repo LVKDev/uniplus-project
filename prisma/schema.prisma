@@ -8,7 +8,7 @@ datasource db {
 }
 
 model PedidoLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -19,7 +19,7 @@ model PedidoLog {
 }
 
 model EntidadeLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -30,7 +30,7 @@ model EntidadeLog {
 }
 
 model ProdutoLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -41,7 +41,7 @@ model ProdutoLog {
 }
 
 model OrdemServicoLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -52,7 +52,7 @@ model OrdemServicoLog {
 }
 
 model HealthLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -63,7 +63,7 @@ model HealthLog {
 }
 
 model EmpresaLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   codigo       String?  @db.Text
   payload      Json
   operacao     String   @db.Text
@@ -74,7 +74,7 @@ model EmpresaLog {
 }
 
 model ApiLog {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   recurso      String   @db.Text
   rota         String?  @db.Text
   metodo       String?  @db.Text
@@ -85,89 +85,4 @@ model ApiLog {
   dataOperacao DateTime @map("data_operacao") @db.Timestamptz(6)
 
   @@map("api_logs")
-}
-
-// Modelos de Autenticação e Autorização
-
-// Unidade/Tenant multi-tenant
-model Unit {
-  id                      String   @id @default(uuid()) @db.Uuid
-  nome                    String   @unique @db.Text
-  credencial_uniplus_user String?  @map("credencial_uniplus_user") @db.Text  // LEGACY: username
-  credencial_uniplus_pass String?  @map("credencial_uniplus_pass") @db.Text  // LEGACY: password
-  credenciais_json        String?  @map("credenciais_json") @db.Text         // NEW: JSON completo encriptado
-  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  users     User[]
-  auditLogs AuditLog[]
-
-  @@map("units")
-}
-
-// Tenant (mantém compatibilidade com código existente)
-model Tenant {
-  id        String   @id @default(uuid()) @db.Uuid
-  nome      String   @unique @db.Text
-  createdBy String   @map("created_by") @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  
-  users User[]
-
-  @@map("tenants")
-}
-
-// Usuário do sistema
-model User {
-  id            String   @id @default(uuid()) @db.Uuid
-  email         String   @unique @db.Text
-  passwordHash  String   @map("password_hash") @db.Text
-  role          String   @db.Text // 'SUPER_ADMIN', 'ADMIN_UNIDADE', 'FUNCIONARIO'
-  tenantId      String?  @map("tenant_id") @db.Uuid
-  tenant        Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
-  unitId        String?  @map("unit_id") @db.Uuid
-  unit          Unit?    @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  isActive      Boolean  @default(true) @map("is_active")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  permissions   UserPermission[]
-  auditLogs     AuditLog[]        @relation("user_author")
-
-  @@map("users")
-  @@index([unitId])
-  @@index([tenantId])
-  @@index([email])
-}
-
-// Permissões do usuário (granulares)
-model UserPermission {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resource  String   @db.Text // 'pedidos', 'entidades', 'produtos', 'clientes'
-  action    String   @db.Text // 'CREATE', 'READ', 'UPDATE', 'DELETE'
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@map("user_permissions")
-  @@unique([userId, resource, action])
-  @@index([userId])
-}
-
-// Log de auditoria (quem editou o quê, quando)
-model AuditLog {
-  id        String   @id @default(uuid()) @db.Uuid
-  unitId    String   @map("unit_id") @db.Uuid
-  unit      Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  userId    String   @map("user_id") @db.Uuid
-  author    User     @relation("user_author", fields: [userId], references: [id], onDelete: Cascade)
-  acao      String   @db.Text // 'CREATE', 'UPDATE', 'DELETE'
-  recurso   String   @db.Text // 'produto', 'cliente', 'usuario'
-  detalhes  Json?    // Dados antigos vs novos
-  timestamp DateTime @default(now()) @map("timestamp") @db.Timestamptz(6)
-
-  @@map("audit_logs")
-  @@index([unitId])
-  @@index([userId])
-  @@index([timestamp])
 }

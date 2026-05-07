@@ -1,6 +1,5 @@
 const uniplusService = require("./uniplus.service");
 const auditService = require("./audit.service");
-const { validarAcessoMultiTenant } = require("./multitenant.service");
 
 const AUDIT_TABLE = "vendas_log";
 const RESOURCE = "vendas";
@@ -31,19 +30,7 @@ async function registrarAuditoria({
 
 async function listarVendas(options = {}, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.listarVendas(options);
     await registrarAuditoria({
       codigo: null,
@@ -73,19 +60,7 @@ async function listarVendas(options = {}, context = {}) {
 
 async function listarVendasItens(options = {}, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.listarVendasItens(options);
     await registrarAuditoria({
       codigo: null,
@@ -115,19 +90,7 @@ async function listarVendasItens(options = {}, context = {}) {
 
 async function listarMovimentacaoEstoque(options = {}, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.listarMovimentacaoEstoque(options);
     await registrarAuditoria({
       codigo: null,

@@ -3,35 +3,52 @@ require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
-const {
-  authenticate,
-  auditLog,
-  errorHandler,
-} = require("./middleware/auth.middleware");
-const {
-  globalTenantValidation,
-} = require("./middleware/tenantValidator.middleware");
+const { basicAuth } = require("./middleware/basicAuth.middleware");
 const {
   corsMiddleware,
   corsErrorHandler,
 } = require("./middleware/cors.middleware");
 const {
-  loginLimiter,
   apiLimiter,
-  writeLimiter,
 } = require("./middleware/rateLimiting.middleware");
 
-// Importar rotas
-const authRoutes = require("./routes/auth.routes");
-const unidadesRoutes = require("./routes/unidades.routes");
-const usuariosRoutes = require("./routes/usuarios.routes");
 const produtosRoutes = require("./routes/produtos.routes");
 const clientesRoutes = require("./routes/clientes.routes");
-const dadosConfigRoutes = require("./routes/dados-config.routes");
-const auditoriaRoutes = require("./routes/auditoria.routes");
+const entidadesRoutes = require("./routes/entidades.routes");
+const pedidosRoutes = require("./routes/pedidos.routes");
+const ordensServicoRoutes = require("./routes/ordens-servico.routes");
+const arquivosRoutes = require("./routes/arquivos.routes");
+const vendasRoutes = require("./routes/vendas.routes");
+const tipoDocumentoFinanceiroRoutes = require("./routes/tipo-documento-financeiro.routes");
+const { getHealthStatus } = require("./services/health.service");
 
 // Inicializar Express
 const app = express();
+
+function auditLog(req, res, next) {
+  res.on("finish", () => {
+    if (process.env.NODE_ENV === "development") {
+      const userId = req.user ? req.user.id : "public";
+      console.log(
+        `[AUDIT] ${req.method} ${req.path} - ${res.statusCode} - ${userId}`,
+      );
+    }
+  });
+
+  next();
+}
+
+function errorHandler(err, req, res, next) {
+  console.error("Erro:", err);
+
+  const statusCode = err.statusCode || err.status || 500;
+  const message = err.message || "Erro interno do servidor";
+
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+  });
+}
 
 // ============================================
 // MIDDLEWARES GLOBAIS
@@ -60,67 +77,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Rate limiting geral (100 req/min por IP)
-app.use(apiLimiter);
-
 // Logs de auditoria
 app.use(auditLog);
 
-// Servir arquivos estáticos (public)
-app.use(express.static("public"));
-
 // ============================================
-// ROTAS PÚBLICAS (sem autenticação)
+// ROTA PÚBLICA
 // ============================================
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+app.get("/health", async (req, res, next) => {
+  try {
+    const health = await getHealthStatus();
+    const statusCode = health.status === "ok" ? 200 : 503;
+
+    res.status(statusCode).json(health);
+  } catch (error) {
+    next(error);
+  }
 });
 
-// Auth routes (login, logout) com rate limiting específico para login
-app.use("/auth/login", loginLimiter);
-app.use("/auth", authRoutes);
-
 // ============================================
-// MIDDLEWARES PROTEGIDOS (requer autenticação)
+// ROTAS /api PROTEGIDAS POR BASIC AUTH
 // ============================================
 
-// Autenticação mandatória para rotas abaixo
-app.use(authenticate);
+app.use("/api", apiLimiter, basicAuth);
 
-// Validação de tenant global (adiciona unit_id ao req)
-app.use(globalTenantValidation);
-
-// ============================================
-// ROTAS PROTEGIDAS (rerem JWT válido)
-// ============================================
-
-// Rotas de Unidades (Super Admin)
-app.use("/api/unidades", unidadesRoutes);
-
-// Rotas de Usuários (Admin de Unidade)
-app.use("/api/usuarios", usuariosRoutes);
-
-// Rotas de Produtos (SPRINT 4)
 app.use("/api/produtos", produtosRoutes);
-
-// Rotas de Clientes (SPRINT 4)
 app.use("/api/clientes", clientesRoutes);
-
-// Rotas de Dados de Configuração (SPRINT 4)
-app.use("/api", dadosConfigRoutes);
-
-// Rotas de Auditoria (SPRINT 5 - Listar logs de auditoria)
-app.use("/api/auditoria", auditoriaRoutes);
-
-// Aqui virão as rotas de usuários, dados, etc
-app.get("/api/protected", (req, res) => {
-  res.json({
-    message: "Rota protegida acessada com sucesso",
-    user: req.user,
-  });
-});
+app.use(entidadesRoutes);
+app.use(pedidosRoutes);
+app.use(ordensServicoRoutes);
+app.use(arquivosRoutes);
+app.use(vendasRoutes);
+app.use(tipoDocumentoFinanceiroRoutes);
 
 // ============================================
 // TRATAMENTO DE ERROS

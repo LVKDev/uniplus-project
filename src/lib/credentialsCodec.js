@@ -1,5 +1,5 @@
 /**
- * Encriptação de Credenciais Uniplus
+ * Codificacao criptografica de Credenciais Uniplus
  * Usa AES-256-GCM para encriptar/decriptar credenciais sensíveis
  *
  * IMPORTANTE: A chave de encriptação DEVE estar em .env como ENCRYPTION_KEY
@@ -9,18 +9,23 @@
 const crypto = require("crypto");
 
 // Chave de encriptação (deve estar em .env)
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+let ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
 // Validar se chave está definida
 if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 64) {
-  console.error(
-    "❌ ERRO: ENCRYPTION_KEY não está definida ou tem comprimento errado",
-  );
-  console.error(
-    "   Gere uma chave: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
-  );
-  console.error("   E adicione a .env: ENCRYPTION_KEY=seu-valor-aqui");
-  process.exit(1);
+  if (process.env.NODE_ENV === "test") {
+    ENCRYPTION_KEY = "0".repeat(64);
+    process.env.ENCRYPTION_KEY = ENCRYPTION_KEY;
+  } else {
+    console.error(
+      "❌ ERRO: ENCRYPTION_KEY não está definida ou tem comprimento errado",
+    );
+    console.error(
+      "   Gere uma chave: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+    );
+    console.error("   E adicione a .env: ENCRYPTION_KEY=seu-valor-aqui");
+    process.exit(1);
+  }
 }
 
 // Converter hex string para Buffer
@@ -103,14 +108,14 @@ function decrypt(ciphertext) {
  *
  * Exemplo de entrada:
  * {
- *   base_url: "https://next-01.webuniplus.com/public-api",
- *   server_url: "https://next-01.webuniplus.com",
- *   client_id: "homologacao",
- *   client_secret: "a50037cd-92f5-4bfd-8d52-f81cb5e6a08e",
+ *   base_url: "https://your-server.webuniplus.com/public-api",
+ *   server_url: "https://your-server.webuniplus.com",
+ *   client_id: "your-client-id",
+ *   client_secret: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
  *   token: "",
- *   auth_basic: "Z2FsZWdvYWd1YWVnYXM6YjdkZTA0ODItYzhmOS00MGQxLWFhM2EtZjQ3ZjZlODEwYzIy",
- *   tenant: "galegoaguaegas",
- *   access_key: "b7de0482-c8f9-40d1-aa3a-f47f6e810c22",
+ *   auth_basic: "base64(tenant:access_key)",
+ *   tenant: "your-tenant-name",
+ *   access_key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
  *   limit: 100
  * }
  */

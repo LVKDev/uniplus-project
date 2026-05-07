@@ -5,14 +5,15 @@
  */
 
 const express = require("express");
-const { authenticate } = require("../middleware/auth.middleware");
-const { PERMISSOES } = require("../config/constants");
-const { requirePermission } = require("../lib/rbac");
 const {
   listarClientes,
   obterCliente,
   atualizarCliente,
 } = require("../services/clientes.service");
+const {
+  cacheRoute,
+  invalidateCache,
+} = require("../middleware/cache.middleware");
 
 const router = express.Router();
 
@@ -23,19 +24,11 @@ const router = express.Router();
  */
 router.get(
   "/",
-  authenticate,
-  requirePermission(PERMISSOES.ver_clientes),
+  cacheRoute(300, "clientes"),
   async (req, res) => {
     try {
       const { codigo, nome, cnpjCpf, limit, offset } = req.query;
       const { id: userId, unit_id: unitId, role: userRole } = req.user;
-
-      if (!unitId) {
-        return res.status(400).json({
-          success: false,
-          error: "Unit ID não informado",
-        });
-      }
 
       const filtros = {};
       if (codigo) filtros.codigo = codigo;
@@ -72,8 +65,6 @@ router.get(
  */
 router.get(
   "/:codigoCliente",
-  authenticate,
-  requirePermission(PERMISSOES.ver_clientes),
   async (req, res) => {
     try {
       const { codigoCliente } = req.params;
@@ -109,8 +100,7 @@ router.get(
  */
 router.patch(
   "/:codigoCliente",
-  authenticate,
-  requirePermission(PERMISSOES.editar_clientes),
+  invalidateCache("clientes"),
   async (req, res) => {
     try {
       const { codigoCliente } = req.params;

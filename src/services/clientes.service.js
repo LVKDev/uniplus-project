@@ -1,19 +1,43 @@
 /**
  * Serviço de Clientes - SPRINT 4
  *
- * Integra uniplumClient para buscar e editar clientes da Uniplus
+ * Integra cliente global Uniplus para buscar e editar clientes
  * Com auditoria de todas as operações
- * Usa unitId para isolamento multi-tenant
  */
 
 const auditService = require("./audit.service");
-const {
-  getClientes: getUniplusClientes,
-  atualizarCliente: atualizarUniplusCliente,
-} = require("../lib/uniplumClient");
+const uniplusClient = require("../config/uniplus");
 
 const AUDIT_TABLE = "entidades_log";
 const RESOURCE = "clientes";
+const ENTIDADES_PATH = "/v1/entidades";
+
+function extractList(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  const keys = ["data", "items", "registros", "records", "content", "conteudo"];
+  for (const key of keys) {
+    if (Array.isArray(payload?.[key])) {
+      return payload[key];
+    }
+  }
+
+  return [];
+}
+
+function buildListResult(payload, params) {
+  const items = extractList(payload);
+  return {
+    items,
+    pagination: {
+      limit: params.limit,
+      offset: params.offset,
+      total: payload?.total || items.length,
+    },
+  };
+}
 
 /**
  * Registra auditoria de operação
@@ -47,7 +71,7 @@ async function registrarAuditoria({
 }
 
 /**
- * Lista clientes (entidades tipo Cliente) da unidade com paginação
+ * Lista clientes (entidades tipo Cliente) com paginacao
  *
  * @param {object} filtros - {codigo?, nome?, cnpjCpf?, limit?, offset?}
  * @param {object} context - {userId, userRole, unitId}
@@ -57,14 +81,17 @@ async function listarClientes(filtros = {}, context = {}) {
   try {
     const { userId, unitId } = context;
 
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido no contexto");
-      error.status = 400;
-      throw error;
-    }
+    const params = {
+      limit: filtros.limit || 25,
+      offset: filtros.offset || 0,
+    };
 
-    // Chamar Uniplus via cliente descriptografado
-    const resultado = await getUniplusClientes(unitId, filtros);
+    if (filtros.codigo) params["codigo.eq"] = filtros.codigo;
+    if (filtros.nome) params["nome.ge"] = filtros.nome;
+    if (filtros.cnpjCpf) params["cnpjCpf.eq"] = filtros.cnpjCpf;
+
+    const response = await uniplusClient.get(ENTIDADES_PATH, { params });
+    const resultado = buildListResult(response.data, params);
 
     // Log de auditoria (leitura)
     await registrarAuditoria({
@@ -106,25 +133,16 @@ async function listarClientes(filtros = {}, context = {}) {
  */
 async function obterCliente(codigoCliente, context = {}) {
   try {
-    const { userId, unitId } = context;
-
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido");
-      error.status = 400;
-      throw error;
-    }
-
     if (!codigoCliente) {
       const error = new Error("Código do cliente é obrigatório");
       error.status = 400;
       throw error;
     }
 
-    // Buscar cliente específico por código
-    const resultado = await getUniplusClientes(unitId, {
+    const resultado = await listarClientes({
       codigo: codigoCliente,
       limit: 1,
-    });
+    }, context);
     const cliente = resultado.items?.[0];
 
     if (!cliente) {
@@ -149,15 +167,9 @@ async function obterCliente(codigoCliente, context = {}) {
  * @returns {Promise<object>} Resultado da atualização
  */
 async function atualizarCliente(codigoCliente, dados, context = {}) {
+  let dadosValidados = {};
   try {
     const { userId, unitId } = context;
-
-    // Validações
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido");
-      error.status = 400;
-      throw error;
-    }
 
     if (!codigoCliente) {
       const error = new Error("Código do cliente é obrigatório");
@@ -182,7 +194,6 @@ async function atualizarCliente(codigoCliente, dados, context = {}) {
       "cnpjCpf",
       "ativo",
     ];
-    const dadosValidados = {};
 
     for (const [chave, valor] of Object.entries(dados)) {
       if (
@@ -203,12 +214,11 @@ async function atualizarCliente(codigoCliente, dados, context = {}) {
       throw new Error("Nenhum campo válido para atualizar");
     }
 
-    // Chamar Uniplus
-    const resultado = await atualizarUniplusCliente(
-      unitId,
-      codigoCliente,
+    const response = await uniplusClient.patch(
+      `${ENTIDADES_PATH}/${codigoCliente}`,
       dadosValidados,
     );
+    const resultado = response.data;
 
     // Log de auditoria
     await registrarAuditoria({
@@ -231,7 +241,7 @@ async function atualizarCliente(codigoCliente, dados, context = {}) {
 
     await registrarAuditoria({
       codigo: codigoCliente,
-      payload: dados,
+      payload: { campos: Object.keys(dadosValidados) },
       operacao: "ATUALIZAR",
       status: "FALHA",
       rota: `/api/clientes/${codigoCliente}`,

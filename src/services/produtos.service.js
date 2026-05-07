@@ -1,19 +1,43 @@
 /**
  * Serviço de Produtos - SPRINT 4
  *
- * Integra uniplumClient para buscar e editar produtos da Uniplus
+ * Integra cliente global Uniplus para buscar e editar produtos
  * Com auditoria de todas as operações
- * Usa unitId para isolamento multi-tenant
  */
 
 const auditService = require("./audit.service");
-const {
-  getProdutos: getUniplusProdutos,
-  atualizarProduto: atualizarUniplusProduto,
-} = require("../lib/uniplumClient");
+const uniplusClient = require("../config/uniplus");
 
 const AUDIT_TABLE = "produtos_log";
 const RESOURCE = "produtos";
+const PRODUTOS_PATH = "/v1/produtos";
+
+function extractList(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  const keys = ["data", "items", "registros", "records", "content", "conteudo"];
+  for (const key of keys) {
+    if (Array.isArray(payload?.[key])) {
+      return payload[key];
+    }
+  }
+
+  return [];
+}
+
+function buildListResult(payload, params) {
+  const items = extractList(payload);
+  return {
+    items,
+    pagination: {
+      limit: params.limit,
+      offset: params.offset,
+      total: payload?.total || items.length,
+    },
+  };
+}
 
 /**
  * Registra auditoria de operação
@@ -48,7 +72,7 @@ async function registrarAuditoria({
 }
 
 /**
- * Lista produtos da unidade com paginação
+ * Lista produtos com paginacao
  *
  * @param {object} filtros - {codigo?, nome?, limit?, offset?}
  * @param {object} context - {userId, userRole, unitId}
@@ -58,14 +82,16 @@ async function listarProdutos(filtros = {}, context = {}) {
   try {
     const { userId, unitId } = context;
 
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido no contexto");
-      error.status = 400;
-      throw error;
-    }
+    const params = {
+      limit: filtros.limit || 25,
+      offset: filtros.offset || 0,
+    };
 
-    // Chamar Uniplus via cliente descriptografado
-    const resultado = await getUniplusProdutos(unitId, filtros);
+    if (filtros.codigo) params["codigo.eq"] = filtros.codigo;
+    if (filtros.nome) params["nome.ge"] = filtros.nome;
+
+    const response = await uniplusClient.get(PRODUTOS_PATH, { params });
+    const resultado = buildListResult(response.data, params);
 
     // Log de auditoria (leitura)
     await registrarAuditoria({
@@ -107,25 +133,16 @@ async function listarProdutos(filtros = {}, context = {}) {
  */
 async function obterProduto(codigoProduto, context = {}) {
   try {
-    const { userId, unitId } = context;
-
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido");
-      error.status = 400;
-      throw error;
-    }
-
     if (!codigoProduto) {
       const error = new Error("Código do produto é obrigatório");
       error.status = 400;
       throw error;
     }
 
-    // Buscar produto específico por código
-    const resultado = await getUniplusProdutos(unitId, {
+    const resultado = await listarProdutos({
       codigo: codigoProduto,
       limit: 1,
-    });
+    }, context);
     const produto = resultado.items?.[0];
 
     if (!produto) {
@@ -152,13 +169,6 @@ async function obterProduto(codigoProduto, context = {}) {
 async function atualizarProduto(codigoProduto, dados, context = {}) {
   try {
     const { userId, unitId } = context;
-
-    // Validações
-    if (!unitId) {
-      const error = new Error("Unit ID não fornecido");
-      error.status = 400;
-      throw error;
-    }
 
     if (!codigoProduto) {
       const error = new Error("Código do produto é obrigatório");
@@ -200,12 +210,11 @@ async function atualizarProduto(codigoProduto, dados, context = {}) {
       throw new Error("Nenhum campo válido para atualizar");
     }
 
-    // Chamar Uniplus
-    const resultado = await atualizarUniplusProduto(
-      unitId,
-      codigoProduto,
+    const response = await uniplusClient.patch(
+      `${PRODUTOS_PATH}/${codigoProduto}`,
       dadosValidados,
     );
+    const resultado = response.data;
 
     // Log de auditoria
     await registrarAuditoria({
@@ -241,8 +250,64 @@ async function atualizarProduto(codigoProduto, dados, context = {}) {
   }
 }
 
+/**
+ * Remove um produto na Uniplus.
+ *
+ * @param {string} codigoProduto - Código do produto
+ * @param {object} context - {userId, unitId}
+ * @returns {Promise<object>} Resultado da remoção
+ */
+async function apagarProduto(codigoProduto, context = {}) {
+  try {
+    const { userId, unitId } = context;
+
+    if (!codigoProduto) {
+      const error = new Error("Código do produto é obrigatório");
+      error.status = 400;
+      throw error;
+    }
+
+    const response = await uniplusClient.delete(
+      `${PRODUTOS_PATH}/${codigoProduto}`,
+    );
+    const resultado = response.data;
+
+    await registrarAuditoria({
+      codigo: codigoProduto,
+      payload: { codigo: codigoProduto },
+      operacao: "APAGAR",
+      status: "SUCESSO",
+      rota: `/api/produtos/${codigoProduto}`,
+      metodo: "DELETE",
+      userId,
+      unitId,
+    });
+
+    return resultado;
+  } catch (error) {
+    console.error(
+      `❌ Erro ao apagar produto ${codigoProduto}:`,
+      error.message,
+    );
+
+    await registrarAuditoria({
+      codigo: codigoProduto,
+      payload: { codigo: codigoProduto },
+      operacao: "APAGAR",
+      status: "FALHA",
+      rota: `/api/produtos/${codigoProduto}`,
+      metodo: "DELETE",
+      userId: context.userId,
+      unitId: context.unitId,
+    });
+
+    throw error;
+  }
+}
+
 module.exports = {
   listarProdutos,
   obterProduto,
   atualizarProduto,
+  apagarProduto,
 };

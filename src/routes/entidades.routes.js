@@ -2,6 +2,7 @@ const express = require("express");
 
 const entidadesService = require("../services/entidades.service");
 const { DEFAULT_LIMIT } = require("../config/constants");
+const { cacheRoute } = require("../middleware/cache.middleware");
 
 const router = express.Router();
 
@@ -75,7 +76,10 @@ const router = express.Router();
  *                       cnpjCpf: "12345678901"
  */
 
-router.get("/api/entidades", async (req, res, next) => {
+router.get(
+  "/api/entidades",
+  cacheRoute(300, "entidades"),
+  async (req, res, next) => {
   try {
     const { single, all, vendedores, ...raw } = req.query;
     const options = { params: raw };
@@ -142,7 +146,8 @@ router.get("/api/entidades", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+  },
+);
 
 /**
  * @openapi

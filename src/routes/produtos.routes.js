@@ -5,14 +5,16 @@
  */
 
 const express = require("express");
-const { authenticate } = require("../middleware/auth.middleware");
-const { PERMISSOES } = require("../config/constants");
-const { requirePermission } = require("../lib/rbac");
 const {
   listarProdutos,
   obterProduto,
   atualizarProduto,
+  apagarProduto,
 } = require("../services/produtos.service");
+const {
+  cacheRoute,
+  invalidateCache,
+} = require("../middleware/cache.middleware");
 
 const router = express.Router();
 
@@ -23,19 +25,11 @@ const router = express.Router();
  */
 router.get(
   "/",
-  authenticate,
-  requirePermission(PERMISSOES.ver_produtos),
+  cacheRoute(300, "produtos"),
   async (req, res) => {
     try {
       const { codigo, nome, limit, offset } = req.query;
       const { id: userId, unit_id: unitId, role: userRole } = req.user;
-
-      if (!unitId) {
-        return res.status(400).json({
-          success: false,
-          error: "Unit ID não informado",
-        });
-      }
 
       const filtros = {};
       if (codigo) filtros.codigo = codigo;
@@ -71,8 +65,6 @@ router.get(
  */
 router.get(
   "/:codigoProduto",
-  authenticate,
-  requirePermission(PERMISSOES.ver_produtos),
   async (req, res) => {
     try {
       const { codigoProduto } = req.params;
@@ -108,8 +100,7 @@ router.get(
  */
 router.patch(
   "/:codigoProduto",
-  authenticate,
-  requirePermission(PERMISSOES.editar_produtos),
+  invalidateCache("produtos"),
   async (req, res) => {
     try {
       const { codigoProduto } = req.params;
@@ -147,8 +138,6 @@ router.patch(
   },
 );
 
-module.exports = router;
-
 /**
  * @openapi
  * /api/produtos/{codigo}:
@@ -172,27 +161,31 @@ module.exports = router;
  *                 value:
  *                   success: true
  */
-router.delete("/api/produtos/:codigo", async (req, res, next) => {
-  try {
-    const { codigo } = req.params;
-    const context = {
-      rota: req.path,
-      metodo: req.method,
-      userId: req.user?.id,
-      userRole: req.user?.role,
-      tenantId: req.user?.tenantId,
-    };
-    if (!codigo) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Codigo obrigatorio." });
-    }
+router.delete(
+  "/:codigo",
+  invalidateCache("produtos"),
+  async (req, res, next) => {
+    try {
+      const { codigo } = req.params;
+      const context = {
+        rota: req.path,
+        metodo: req.method,
+        userId: req.user?.id,
+        userRole: req.user?.role,
+        unitId: req.user?.unit_id,
+      };
+      if (!codigo) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Codigo obrigatorio." });
+      }
 
-    const data = await produtosService.apagarProduto(codigo, context);
-    return res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-});
+      const data = await apagarProduto(codigo, context);
+      return res.json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 module.exports = router;

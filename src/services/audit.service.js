@@ -1,6 +1,18 @@
-const supabase = require("../config/supabase");
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
 
 const API_LOG_TABLE = "api_logs";
+
+// Map table name strings to Prisma model delegates
+const TABLE_DELEGATE = {
+  pedidos_log: "pedidoLog",
+  entidades_log: "entidadeLog",
+  produtos_log: "produtoLog",
+  ordens_servico_log: "ordemServicoLog",
+  health_log: "healthLog",
+  empresas_log: "empresaLog",
+};
 
 async function registrarAuditoria(
   {
@@ -12,8 +24,6 @@ async function registrarAuditoria(
     payload,
     operacao,
     status,
-    userId = null,
-    tenantId = null,
   },
   { ignoreFailure = false } = {},
 ) {
@@ -22,33 +32,36 @@ async function registrarAuditoria(
     payload: payload ?? {},
     operacao,
     status,
-    data_operacao: new Date().toISOString(),
-    user_id: userId,
-    tenant_id: tenantId,
+    dataOperacao: new Date(),
   };
 
   const errors = [];
 
-  if (table) {
-    const { error } = await supabase.from(table).insert(base);
-    if (error) {
-      errors.push({ table, message: error.message });
+  // Write to specific resource log table if it has a Prisma model
+  if (table && TABLE_DELEGATE[table]) {
+    try {
+      await prisma[TABLE_DELEGATE[table]].create({ data: base });
+    } catch (err) {
+      errors.push({ table, message: err.message });
     }
   }
 
-  const apiLog = {
-    ...base,
-    recurso: recurso || "desconhecido",
-    rota: rota || null,
-    metodo: metodo || null,
-  };
-  const { error: apiError } = await supabase.from(API_LOG_TABLE).insert(apiLog);
-  if (apiError) {
-    errors.push({ table: API_LOG_TABLE, message: apiError.message });
+  // Always write to api_logs (general audit trail)
+  try {
+    await prisma.apiLog.create({
+      data: {
+        ...base,
+        recurso: recurso || "desconhecido",
+        rota: rota ?? null,
+        metodo: metodo ?? null,
+      },
+    });
+  } catch (err) {
+    errors.push({ table: API_LOG_TABLE, message: err.message });
   }
 
   if (errors.length && !ignoreFailure) {
-    const err = new Error("Falha ao registrar auditoria no Supabase.");
+    const err = new Error("Falha ao registrar auditoria.");
     err.details = errors
       .map((item) => `${item.table}: ${item.message}`)
       .join(" | ");
@@ -56,6 +69,4 @@ async function registrarAuditoria(
   }
 }
 
-module.exports = {
-  registrarAuditoria,
-};
+module.exports = { registrarAuditoria };

@@ -1,6 +1,7 @@
 const express = require("express");
 
 const ordensServicoService = require("../services/ordens-servico.service");
+const { cacheRoute } = require("../middleware/cache.middleware");
 
 const router = express.Router();
 
@@ -33,7 +34,10 @@ const router = express.Router();
  *       200:
  *         description: Lista de ordens de servico
  */
-router.get("/api/ordens-servico", async (req, res, next) => {
+router.get(
+  "/api/ordens-servico",
+  cacheRoute(120, "ordens-servico"),
+  async (req, res, next) => {
   try {
     const { single, ...raw } = req.query;
     const options = { params: raw };
@@ -66,7 +70,8 @@ router.get("/api/ordens-servico", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+  },
+);
 
 /**
  * @openapi

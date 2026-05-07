@@ -1,6 +1,5 @@
 const auditService = require("./audit.service");
 const uniplusService = require("./uniplus.service");
-const { validarAcessoMultiTenant } = require("./multitenant.service");
 
 const AUDIT_TABLE = "entidades_log";
 const RESOURCE = "entidades";
@@ -15,35 +14,27 @@ async function registrarAuditoria({
   userId = null,
   tenantId = null,
 }) {
-  await auditService.registrarAuditoria({
-    table: AUDIT_TABLE,
-    recurso: RESOURCE,
-    rota,
-    metodo,
-    codigo,
-    payload,
-    operacao,
-    status,
-    userId,
-    tenantId,
-  });
+  try {
+    await auditService.registrarAuditoria({
+      table: AUDIT_TABLE,
+      recurso: RESOURCE,
+      rota,
+      metodo,
+      codigo,
+      payload,
+      operacao,
+      status,
+      userId,
+      tenantId,
+    });
+  } catch (error) {
+    console.error("⚠️ Erro ao registrar auditoria de entidade:", error.message);
+  }
 }
 
 async function listarEntidades(options = {}, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.listarEntidades(options);
     await registrarAuditoria({
       codigo: null,
@@ -75,19 +66,7 @@ async function listarEntidades(options = {}, context = {}) {
 
 async function obterEntidadePorCodigo(codigo, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const data = await uniplusService.obterEntidadePorCodigo(codigo);
     await registrarAuditoria({
       codigo,
@@ -119,26 +98,7 @@ async function obterEntidadePorCodigo(codigo, context = {}) {
 
 async function criarEntidade(dados, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      if (!["admin", "superadmin"].includes(userRole)) {
-        const err = new Error(
-          "Apenas Admin e SuperAdmin podem criar entidades",
-        );
-        err.status = 403;
-        throw err;
-      }
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const resposta = await uniplusService.criarEntidade(dados);
     const codigo = resposta?.codigo || dados?.codigo || null;
 
@@ -173,26 +133,7 @@ async function criarEntidade(dados, context = {}) {
 
 async function atualizarEntidade(dados, context = {}) {
   try {
-    const { userId, userRole, tenantId } = context;
-    if (userId && userRole) {
-      if (!["admin", "superadmin"].includes(userRole)) {
-        const err = new Error(
-          "Apenas Admin e SuperAdmin podem atualizar entidades",
-        );
-        err.status = 403;
-        throw err;
-      }
-      const { canAccess, reason } = await validarAcessoMultiTenant(
-        userId,
-        userRole,
-        tenantId,
-      );
-      if (!canAccess) {
-        const err = new Error(`Acesso negado: ${reason}`);
-        err.status = 403;
-        throw err;
-      }
-    }
+    const { userId, tenantId } = context;
     const resposta = await uniplusService.atualizarEntidade(dados);
     const codigo = resposta?.codigo || dados?.codigo || null;
 
