@@ -34,7 +34,11 @@ router.get(
       const filtros = {};
       if (codigo) filtros.codigo = codigo;
       if (nome) filtros.nome = nome;
-      if (limit) filtros.limit = parseInt(limit);
+      if (limit === "all") {
+        filtros.all = true;
+      } else if (limit) {
+        filtros.limit = parseInt(limit);
+      }
       if (offset) filtros.offset = parseInt(offset) || 0;
       if (all !== undefined) filtros.all = all === "true";
 

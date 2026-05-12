@@ -34,7 +34,11 @@ router.get(
       if (codigo) filtros.codigo = codigo;
       if (nome) filtros.nome = nome;
       if (cnpjCpf) filtros.cnpjCpf = cnpjCpf;
-      if (limit) filtros.limit = parseInt(limit) || 25;
+      if (limit === "all") {
+        filtros.all = true;
+      } else if (limit) {
+        filtros.limit = parseInt(limit) || 25;
+      }
       if (offset) filtros.offset = parseInt(offset) || 0;
 
       const resultado = await listarClientes(filtros, {

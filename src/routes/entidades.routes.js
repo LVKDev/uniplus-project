@@ -92,7 +92,11 @@ router.get(
     };
 
     if (options.params.limit !== undefined) {
-      options.params.limit = Number(options.params.limit);
+      if (options.params.limit === "all") {
+        delete options.params.limit;
+      } else {
+        options.params.limit = Number(options.params.limit);
+      }
     }
     if (options.params.offset !== undefined) {
       options.params.offset = Number(options.params.offset);

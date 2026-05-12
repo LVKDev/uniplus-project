@@ -7,6 +7,7 @@
 
 const auditService = require("./audit.service");
 const uniplusClient = require("../config/uniplus");
+const uniplusService = require("./uniplus.service");
 
 const AUDIT_TABLE = "entidades_log";
 const RESOURCE = "clientes";
@@ -81,17 +82,28 @@ async function listarClientes(filtros = {}, context = {}) {
   try {
     const { userId, unitId } = context;
 
-    const params = {
-      limit: filtros.limit || 25,
+    const filterParams = {};
+    if (filtros.codigo) filterParams["codigo.eq"] = filtros.codigo;
+    if (filtros.nome) filterParams["nome.ge"] = filtros.nome;
+    if (filtros.cnpjCpf) filterParams["cnpjCpf.eq"] = filtros.cnpjCpf;
+
+    let responseData;
+    if (filtros.all === true) {
+      responseData = await uniplusService.listarEntidades({ all: true, params: filterParams });
+    } else {
+      const params = {
+        limit: filtros.limit || 25,
+        offset: filtros.offset || 0,
+        ...filterParams,
+      };
+      const response = await uniplusClient.get(ENTIDADES_PATH, { params });
+      responseData = response.data;
+    }
+
+    const resultado = buildListResult(responseData, {
+      limit: filtros.all ? undefined : filtros.limit || 25,
       offset: filtros.offset || 0,
-    };
-
-    if (filtros.codigo) params["codigo.eq"] = filtros.codigo;
-    if (filtros.nome) params["nome.ge"] = filtros.nome;
-    if (filtros.cnpjCpf) params["cnpjCpf.eq"] = filtros.cnpjCpf;
-
-    const response = await uniplusClient.get(ENTIDADES_PATH, { params });
-    const resultado = buildListResult(response.data, params);
+    });
 
     // Log de auditoria (leitura)
     await registrarAuditoria({
