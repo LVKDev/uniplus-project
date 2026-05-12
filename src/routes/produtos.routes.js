@@ -10,6 +10,8 @@ const {
   obterProduto,
   atualizarProduto,
   apagarProduto,
+  buscarCatalogoProdutos,
+  sincronizarCatalogoProdutos,
 } = require("../services/produtos.service");
 const {
   cacheRoute,
@@ -19,28 +21,56 @@ const {
 const router = express.Router();
 
 /**
+ * POST /api/produtos/sync
+ * Força sincronização completa do catálogo de produtos no Redis.
+ * Útil para webhooks e integrações que precisam do catálogo atualizado.
+ */
+router.post("/sync", async (req, res) => {
+  try {
+    const items = await sincronizarCatalogoProdutos();
+    res.status(200).json({
+      success: true,
+      message: `Catálogo sincronizado: ${items.length} produtos`,
+      total: items.length,
+    });
+  } catch (error) {
+    console.error("Erro ao sincronizar catálogo:", error.message);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message || "Erro ao sincronizar catálogo de produtos",
+    });
+  }
+});
+
+/**
  * GET /api/produtos
- * Lista produtos da unidade
- * Protected: Requer permissão ver_produtos
+ * Sem limit/offset → retorna catálogo completo do Redis (todos os produtos).
+ * Com limit/offset ou filtros → paginação normal direto da Uniplus.
  */
 router.get(
   "/",
-  cacheRoute(300, "produtos"),
   async (req, res) => {
     try {
       const { codigo, nome, limit, offset, all } = req.query;
       const { id: userId, unit_id: unitId, role: userRole } = req.user;
 
+      const isFullCatalog =
+        !codigo && !nome && (all === "true" || limit === "all" || (!limit && !offset));
+
+      if (isFullCatalog) {
+        const items = await buscarCatalogoProdutos();
+        return res.status(200).json({
+          success: true,
+          data: items,
+          pagination: { total: items.length, limit: null, offset: 0 },
+        });
+      }
+
       const filtros = {};
       if (codigo) filtros.codigo = codigo;
       if (nome) filtros.nome = nome;
-      if (limit === "all") {
-        filtros.all = true;
-      } else if (limit) {
-        filtros.limit = parseInt(limit);
-      }
+      if (limit && limit !== "all") filtros.limit = parseInt(limit);
       if (offset) filtros.offset = parseInt(offset) || 0;
-      if (all !== undefined) filtros.all = all === "true";
 
       const resultado = await listarProdutos(filtros, {
         userId,

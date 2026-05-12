@@ -8,10 +8,16 @@
 const auditService = require("./audit.service");
 const uniplusClient = require("../config/uniplus");
 const uniplusService = require("./uniplus.service");
+const { connectRedis } = require("../lib/redis");
 
 const AUDIT_TABLE = "produtos_log";
 const RESOURCE = "produtos";
 const PRODUTOS_PATH = "/v1/produtos";
+
+const CATALOG_CACHE_KEY = "produtos:catalogo:completo";
+const CATALOG_CACHE_TTL = 600;
+
+let syncInProgress = null;
 
 function extractList(payload) {
   if (Array.isArray(payload)) {
@@ -308,9 +314,63 @@ async function apagarProduto(codigoProduto, context = {}) {
   }
 }
 
+/**
+ * Busca todos os produtos da Uniplus e salva no Redis.
+ * Previne syncs simultâneos reutilizando a Promise em andamento.
+ */
+async function sincronizarCatalogoProdutos() {
+  if (syncInProgress) {
+    return syncInProgress;
+  }
+
+  syncInProgress = (async () => {
+    try {
+      console.log("[produtos-cache] Sincronizando catálogo completo...");
+      const data = await uniplusService.listarProdutos({ all: true });
+      const lista = extractList(data);
+
+      const redis = await connectRedis();
+      await redis.set(
+        CATALOG_CACHE_KEY,
+        JSON.stringify(lista),
+        "EX",
+        CATALOG_CACHE_TTL,
+      );
+
+      console.log(
+        `[produtos-cache] ${lista.length} produtos salvos no Redis (TTL ${CATALOG_CACHE_TTL}s).`,
+      );
+      return lista;
+    } finally {
+      syncInProgress = null;
+    }
+  })();
+
+  return syncInProgress;
+}
+
+/**
+ * Retorna todos os produtos do cache Redis, ou dispara sincronização se vazio.
+ */
+async function buscarCatalogoProdutos() {
+  const redis = await connectRedis();
+  const cached = await redis.get(CATALOG_CACHE_KEY);
+
+  if (cached) {
+    const lista = JSON.parse(cached);
+    console.log(`[produtos-cache] Cache HIT: ${lista.length} produtos.`);
+    return lista;
+  }
+
+  console.log("[produtos-cache] Cache MISS — sincronizando...");
+  return sincronizarCatalogoProdutos();
+}
+
 module.exports = {
   listarProdutos,
   obterProduto,
   atualizarProduto,
   apagarProduto,
+  buscarCatalogoProdutos,
+  sincronizarCatalogoProdutos,
 };
