@@ -56,12 +56,7 @@ async function listarTodasPaginas(path, baseParams = {}) {
     const data = response.data;
     const { list, wrapperKey: currentKey } = extrairLista(data);
 
-    if (pagina === 0) {
-      const topKeys = data && typeof data === "object" && !Array.isArray(data)
-        ? Object.keys(data)
-        : ["<array>"];
-      console.log(`[DEBUG listarTodasPaginas] path=${path} page=0 keys=${JSON.stringify(topKeys)} wrapperKey=${currentKey} listLength=${list?.length ?? "null"}`);
-    }
+    console.log(`[paginas] ${path} page=${pagina} offset=${offset} recebidos=${list?.length ?? "null"} acumulado=${acumuladoWrapper ? acumuladoWrapper[wrapperKey]?.length : acumuladoArray.length}`);
 
     if (!list) {
       if (acumuladoWrapper) {
@@ -227,11 +222,26 @@ async function listarProdutos(options = {}) {
         params.limit === undefined &&
         params.offset === undefined);
     if (carregarTudo) {
-      const pageLimit = Math.min(ALL_LIMIT, MAX_PAGE_SIZE);
-      return await listarTodasPaginas(PRODUTOS_PATH, {
-        ...params,
-        limit: pageLimit,
-      });
+      // Chama sem limit/offset para obter todos os produtos de uma vez.
+      // A Uniplus retorna o catálogo completo quando nenhum limite é enviado.
+      const { limit: _l, offset: _o, ...paramsLivres } = params;
+      const response = await uniplusClient.get(PRODUTOS_PATH, { params: paramsLivres });
+      const data = response.data;
+      const { list } = extrairLista(data);
+
+      console.log(`[produtos] Catálogo completo: ${list?.length ?? 0} produtos recebidos da Uniplus.`);
+
+      // Se a resposta parece incompleta (múltiplo exato de MAX_PAGE_SIZE),
+      // faz paginação como fallback para garantir todos os registros.
+      if (list && list.length > 0 && list.length % MAX_PAGE_SIZE === 0) {
+        console.log(`[produtos] Resposta múltipla de ${MAX_PAGE_SIZE} — verificando via paginação...`);
+        return await listarTodasPaginas(PRODUTOS_PATH, {
+          ...paramsLivres,
+          limit: MAX_PAGE_SIZE,
+        });
+      }
+
+      return data;
     }
 
     if (params.limit !== undefined) {
