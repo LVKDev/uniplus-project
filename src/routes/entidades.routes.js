@@ -1,7 +1,7 @@
 const express = require("express");
 
 const entidadesService = require("../services/entidades.service");
-const { DEFAULT_LIMIT } = require("../config/constants");
+const { DEFAULT_LIMIT, LIST_KEYS } = require("../config/constants");
 const { cacheRoute } = require("../middleware/cache.middleware");
 
 const router = express.Router();
@@ -120,7 +120,17 @@ router.get(
 
     if (vendedores === "true") {
       const vendedoresMap = new Map();
-      const lista = Array.isArray(data) ? data : [];
+      let lista = [];
+      if (Array.isArray(data)) {
+        lista = data;
+      } else {
+        for (const key of LIST_KEYS) {
+          if (Array.isArray(data?.[key])) {
+            lista = data[key];
+            break;
+          }
+        }
+      }
 
       for (const entidade of lista) {
         if (entidade.codigoVendedor && entidade.nomeVendedor) {

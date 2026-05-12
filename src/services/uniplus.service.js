@@ -91,25 +91,20 @@ async function listarPedidos(options = {}) {
     const params = options.params ? { ...options.params } : {};
 
     if (!options.params) {
-      if (options.offset !== undefined) {
-        params.offset = options.offset;
-      }
+      if (options.offset !== undefined) params.offset = options.offset;
+      if (options.limit !== undefined) params.limit = options.limit;
+      if (options.cliente) params["cliente.eq"] = options.cliente;
+      if (options.codigo) params["codigo.eq"] = options.codigo;
+      if (options.status) params["status.eq"] = options.status;
+    }
 
-      if (options.limit !== undefined) {
-        params.limit = options.limit;
-      }
+    if (options.all === true) {
+      const pageLimit = Math.min(ALL_LIMIT, MAX_PAGE_SIZE);
+      return await listarTodasPaginas(DAVS_PATH, { ...params, limit: pageLimit });
+    }
 
-      if (options.cliente) {
-        params["cliente.eq"] = options.cliente;
-      }
-
-      if (options.codigo) {
-        params["codigo.eq"] = options.codigo;
-      }
-
-      if (options.status) {
-        params["status.eq"] = options.status;
-      }
+    if (params.limit !== undefined) {
+      params.limit = Math.min(Number(params.limit), MAX_PAGE_SIZE);
     }
 
     const response = await uniplusClient.get(DAVS_PATH, { params });

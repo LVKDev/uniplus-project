@@ -7,6 +7,7 @@
 
 const auditService = require("./audit.service");
 const uniplusClient = require("../config/uniplus");
+const uniplusService = require("./uniplus.service");
 
 const AUDIT_TABLE = "produtos_log";
 const RESOURCE = "produtos";
@@ -82,16 +83,18 @@ async function listarProdutos(filtros = {}, context = {}) {
   try {
     const { userId, unitId } = context;
 
-    const params = {
-      limit: filtros.limit || 25,
+    const options = {};
+    if (filtros.codigo) options.codigo = filtros.codigo;
+    if (filtros.nome) options.nome = filtros.nome;
+    if (filtros.limit !== undefined) options.limit = filtros.limit;
+    if (filtros.offset !== undefined) options.offset = filtros.offset;
+    if (filtros.all !== undefined) options.all = filtros.all;
+
+    const data = await uniplusService.listarProdutos(options);
+    const resultado = buildListResult(data, {
+      limit: filtros.limit,
       offset: filtros.offset || 0,
-    };
-
-    if (filtros.codigo) params["codigo.eq"] = filtros.codigo;
-    if (filtros.nome) params["nome.ge"] = filtros.nome;
-
-    const response = await uniplusClient.get(PRODUTOS_PATH, { params });
-    const resultado = buildListResult(response.data, params);
+    });
 
     // Log de auditoria (leitura)
     await registrarAuditoria({

@@ -21,7 +21,7 @@ router.get(
   cacheRoute(120, "pedidos"),
   async (req, res, next) => {
   try {
-    const { single, ...raw } = req.query;
+    const { single, all, ...raw } = req.query;
     const options = { params: raw };
     const context = {
       rota: req.path,
@@ -36,6 +36,9 @@ router.get(
     }
     if (options.params.offset !== undefined) {
       options.params.offset = Number(options.params.offset);
+    }
+    if (all !== undefined) {
+      options.all = all === "true";
     }
 
     if (

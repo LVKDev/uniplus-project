@@ -28,14 +28,15 @@ router.get(
   cacheRoute(300, "produtos"),
   async (req, res) => {
     try {
-      const { codigo, nome, limit, offset } = req.query;
+      const { codigo, nome, limit, offset, all } = req.query;
       const { id: userId, unit_id: unitId, role: userRole } = req.user;
 
       const filtros = {};
       if (codigo) filtros.codigo = codigo;
       if (nome) filtros.nome = nome;
-      if (limit) filtros.limit = parseInt(limit) || 25;
+      if (limit) filtros.limit = parseInt(limit);
       if (offset) filtros.offset = parseInt(offset) || 0;
+      if (all !== undefined) filtros.all = all === "true";
 
       const resultado = await listarProdutos(filtros, {
         userId,
