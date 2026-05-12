@@ -20,6 +20,7 @@ const ordensServicoRoutes = require("./routes/ordens-servico.routes");
 const arquivosRoutes = require("./routes/arquivos.routes");
 const vendasRoutes = require("./routes/vendas.routes");
 const tipoDocumentoFinanceiroRoutes = require("./routes/tipo-documento-financeiro.routes");
+const funcionariosRoutes = require("./routes/funcionarios.routes");
 const { getHealthStatus } = require("./services/health.service");
 
 // Inicializar Express
@@ -109,6 +110,7 @@ app.use(ordensServicoRoutes);
 app.use(arquivosRoutes);
 app.use(vendasRoutes);
 app.use(tipoDocumentoFinanceiroRoutes);
+app.use(funcionariosRoutes);
 
 // ============================================
 // TRATAMENTO DE ERROS
