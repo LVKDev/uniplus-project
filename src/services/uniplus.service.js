@@ -56,6 +56,11 @@ async function listarTodasPaginas(path, baseParams = {}) {
     const data = response.data;
     const { list, wrapperKey: currentKey } = extrairLista(data);
     if (!list) {
+      if (acumuladoWrapper) {
+        acumuladoWrapper.total = acumuladoWrapper[wrapperKey].length;
+        return acumuladoWrapper;
+      }
+      if (acumuladoArray.length > 0) return acumuladoArray;
       return data;
     }
 
@@ -68,6 +73,7 @@ async function listarTodasPaginas(path, baseParams = {}) {
       acumuladoWrapper[wrapperKey] = acumuladoWrapper[wrapperKey].concat(list);
 
       if (list.length < limit) {
+        acumuladoWrapper.total = acumuladoWrapper[wrapperKey].length;
         return acumuladoWrapper;
       }
     } else {
@@ -103,9 +109,10 @@ async function listarPedidos(options = {}) {
       return await listarTodasPaginas(DAVS_PATH, { ...params, limit: pageLimit });
     }
 
-    if (params.limit !== undefined) {
-      params.limit = Math.min(Number(params.limit), MAX_PAGE_SIZE);
+    if (params.limit === undefined) {
+      params.limit = DEFAULT_LIMIT;
     }
+    params.limit = Math.min(Number(params.limit), MAX_PAGE_SIZE);
 
     const response = await uniplusClient.get(DAVS_PATH, { params });
     return response.data;

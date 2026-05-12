@@ -18,12 +18,12 @@ if (!serverURL) {
 
 const uniplusClient = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 60000,
 });
 
 const authClient = axios.create({
   baseURL: serverURL,
-  timeout: 15000,
+  timeout: 60000,
 });
 
 let refreshingToken = null;
