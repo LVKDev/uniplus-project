@@ -55,6 +55,14 @@ async function listarTodasPaginas(path, baseParams = {}) {
 
     const data = response.data;
     const { list, wrapperKey: currentKey } = extrairLista(data);
+
+    if (pagina === 0) {
+      const topKeys = data && typeof data === "object" && !Array.isArray(data)
+        ? Object.keys(data)
+        : ["<array>"];
+      console.log(`[DEBUG listarTodasPaginas] path=${path} page=0 keys=${JSON.stringify(topKeys)} wrapperKey=${currentKey} listLength=${list?.length ?? "null"}`);
+    }
+
     if (!list) {
       if (acumuladoWrapper) {
         acumuladoWrapper.total = acumuladoWrapper[wrapperKey].length;
