@@ -102,6 +102,68 @@ app.get("/health", async (req, res, next) => {
 
 app.use("/api", apiLimiter, basicAuth);
 
+app.use("/api", (req, res, next) => {
+  const start = Date.now();
+
+  const incoming = {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    url: req.originalUrl,
+    path: req.path,
+    query: req.query,
+    headers: {
+      "content-type": req.headers["content-type"],
+      "user-agent": req.headers["user-agent"],
+      "x-forwarded-for": req.headers["x-forwarded-for"],
+      host: req.headers["host"],
+      origin: req.headers["origin"],
+      referer: req.headers["referer"],
+    },
+    body: req.method !== "GET" ? req.body : undefined,
+    auth: req.auth,
+    user: req.user
+      ? {
+          id: req.user.id,
+          role: req.user.role,
+          unit_id: req.user.unit_id,
+          permissions: req.user.permissions,
+        }
+      : null,
+  };
+
+  console.log("[REQUEST]", JSON.stringify(incoming, null, 2));
+
+  const originalJson = res.json.bind(res);
+  res.json = function loggedJson(body) {
+    const duration = Date.now() - start;
+    const outgoing = {
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      duration_ms: duration,
+      cache: res.getHeader("X-Cache"),
+      response_summary: summarizeBody(body),
+    };
+    console.log("[RESPONSE]", JSON.stringify(outgoing, null, 2));
+    return originalJson(body);
+  };
+
+  next();
+});
+
+function summarizeBody(body) {
+  if (!body || typeof body !== "object") return body;
+  if (Array.isArray(body)) return { type: "array", length: body.length };
+  const summary = { ...body };
+  if (Array.isArray(summary.data)) {
+    summary.data = `[array length=${summary.data.length}]`;
+  }
+  if (summary.pagination) summary.pagination = summary.pagination;
+  if (summary.error) summary.error = summary.error;
+  return summary;
+}
+
 app.use("/api/produtos", produtosRoutes);
 app.use("/api/clientes", clientesRoutes);
 app.use(entidadesRoutes);
