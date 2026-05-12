@@ -24,7 +24,7 @@ function createRedisRateLimitStore(prefix) {
 function createApiLimiter(options = {}) {
   return rateLimit({
     windowMs: 60 * 1000,
-    max: 100,
+    max: 10000,
     store: createRedisRateLimitStore("rl:api:"),
     message: "Muitas requisições. Tente novamente em 1 minuto.",
     standardHeaders: true,
