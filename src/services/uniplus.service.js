@@ -222,26 +222,11 @@ async function listarProdutos(options = {}) {
         params.limit === undefined &&
         params.offset === undefined);
     if (carregarTudo) {
-      // Chama sem limit/offset para obter todos os produtos de uma vez.
-      // A Uniplus retorna o catálogo completo quando nenhum limite é enviado.
-      const { limit: _l, offset: _o, ...paramsLivres } = params;
-      const response = await uniplusClient.get(PRODUTOS_PATH, { params: paramsLivres });
-      const data = response.data;
-      const { list } = extrairLista(data);
-
-      console.log(`[produtos] Catálogo completo: ${list?.length ?? 0} produtos recebidos da Uniplus.`);
-
-      // Se a resposta parece incompleta (múltiplo exato de MAX_PAGE_SIZE),
-      // faz paginação como fallback para garantir todos os registros.
-      if (list && list.length > 0 && list.length % MAX_PAGE_SIZE === 0) {
-        console.log(`[produtos] Resposta múltipla de ${MAX_PAGE_SIZE} — verificando via paginação...`);
-        return await listarTodasPaginas(PRODUTOS_PATH, {
-          ...paramsLivres,
-          limit: MAX_PAGE_SIZE,
-        });
-      }
-
-      return data;
+      // A Uniplus tem limite padrão de 25 por página — precisa paginar com limit=100.
+      return await listarTodasPaginas(PRODUTOS_PATH, {
+        ...params,
+        limit: MAX_PAGE_SIZE,
+      });
     }
 
     if (params.limit !== undefined) {
