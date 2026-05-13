@@ -327,7 +327,12 @@ async function sincronizarCatalogoProdutos() {
     try {
       console.log("[produtos-cache] Sincronizando catálogo completo...");
       const data = await uniplusService.listarProdutos({ all: true });
-      const lista = extractList(data);
+      const todos = extractList(data);
+      const lista = todos.filter((p) => !p.inativo);
+
+      console.log(
+        `[produtos-cache] ${lista.length} ativos de ${todos.length} total.`,
+      );
 
       const redis = await connectRedis();
       await redis.set(
